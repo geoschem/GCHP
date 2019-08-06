@@ -1,0 +1,18 @@
+[submodule "src/MAPL"]
+	path = src/MAPL
+	url = https://github.com/geoschem/MAPL
+[submodule "src/GMAO_Shared"]
+	path = src/GMAO_Shared
+	url = https://github.com/geoschem/GMAO_Shared
+[submodule "ecbuild"]
+	path = ecbuild
+	url = https://github.com/geoschem/ecbuild
+[submodule "ESMA_cmake"]
+	path = ESMA_cmake
+	url = https://github.com/geoschem/ESMA_cmake
+[submodule "src/GIGC_GridComp/AdvCore_GridComp"]
+	path = src/GIGC_GridComp/AdvCore_GridComp
+	url = https://github.com/geoschem/GEOSgcm_GridComp
+[submodule "src/GIGC_GridComp/GEOSChem_GridComp/geos-chem"]
+	path = src/GIGC_GridComp/GEOSChem_GridComp/geos-chem
+	url = https://github.com/geoschem/geos-chem
