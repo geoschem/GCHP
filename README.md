@@ -1,6 +1,14 @@
 # gchp_ctm
 Wrapper for GEOS-Chem chemical-transport model to enable the high performance option (GCHP).
 
+## Cloning
+  ```console
+  liam:~> git clone git@github.com:geoschem/gchp_ctm.git
+  liam:~> cd gchp_ctm
+  liam:~/gchp_ctm> git submodule update --init --recursive
+  ```
+
+
 ## Build instructions
 
 ### Requirements
