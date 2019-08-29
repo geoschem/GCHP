@@ -5,6 +5,7 @@ Wrapper for GEOS-Chem chemical-transport model to enable the high performance op
   ```console
   liam:~> git clone git@github.com:geoschem/gchp_ctm.git
   liam:~> cd gchp_ctm
+  liam:~/gchp_ctm> git checkout dev/gchp
   liam:~/gchp_ctm> git submodule update --init --recursive
   ```
 
