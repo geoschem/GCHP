@@ -1,12 +1,14 @@
 cmake_minimum_required (VERSION 3.13)
-
 project (gchp_ctm
   VERSION 13.0.0
   LANGUAGES Fortran CXX C
 )
 
 # Add ESMA_cmake and ecbuild's module directories to the module path
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake ${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake)
+list(APPEND CMAKE_MODULE_PATH 
+  ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake 
+  ${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake
+)
 
 # Import ESMA's cmake macros
 include(esma-community)
@@ -18,6 +20,7 @@ ecbuild_declare_project()
 find_package(MPI REQUIRED COMPONENTS C CXX Fortran)
 
 # Add MPI compiler flags
+# This approach (using variables) is only temporary. This should be fixed.
 set(CMAKE_Fortran_FLAGS ${CMAKE_Fortran_FLAGS} ${MPI_Fortran_COMPILE_OPTIONS})
 set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${MPI_C_COMPILE_OPTIONS})
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${MPI_CXX_COMPILE_OPTIONS})
