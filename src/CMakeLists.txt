@@ -14,3 +14,4 @@ add_executable(geos
 target_link_libraries(geos
 	PUBLIC GIGC_GridComp ${CMAKE_DL_LIBS}
 )
+install(TARGETS geos)
