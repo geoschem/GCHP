@@ -14,7 +14,7 @@ Wrapper for GEOS-Chem chemical-transport model to enable the high performance op
 
 ### Requirements
 - CMake (version 3.13 or greater)
-- ESMF (version 8.0.0-beta or greater)
+- ESMF (version 8.0.0-beta or greater; after bdda2a8)
 - gFTL (version 1.0.1 or greater)
 - NetCDF-C, NetCDF-CXX, NetCDF-Fortran
 - MPI (C, C++, and Fortran)
