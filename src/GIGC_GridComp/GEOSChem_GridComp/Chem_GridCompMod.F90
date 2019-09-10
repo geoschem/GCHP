@@ -41,7 +41,7 @@
 !\\
 ! !INTERFACE:
 !
-#if defined( MODEL_GEOS )
+#ifdef MODEL_GEOS
 MODULE GEOSCHEMchem_GridCompMod
 #else
 MODULE Chem_GridCompMod
