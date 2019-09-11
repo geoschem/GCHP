@@ -19,14 +19,15 @@ Program GIGC_Main
 
 !EOP
 
-   integer           :: STATUS
-   character(len=18) :: Iam="GIGC_Main"
-   type (MAPL_Cap)   :: cap
+   character(len=18)      :: Iam="GIGC_Main"
+   type (MAPL_Cap)        :: cap
+   type (MAPL_CapOptions) :: cap_options
+   integer                :: status
 
-   ! Create MAPL_Cap instance and run
-   cap = MAPL_CAP('GCHP', ROOT_SetServices, cap_rc_file='CAP.rc')
+   cap_options = MAPL_CapOptions(cap_rc_file='CAP.rc')
+   cap = MAPL_CAP('GCHP', ROOT_SetServices, cap_options=cap_options)
    call cap%run(_RC)
-   _VERIFY(STATUS)
+   _VERIFY(status)
 
  end Program GIGC_Main
 
