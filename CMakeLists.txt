@@ -10,22 +10,31 @@ list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake
 )
 
-# Import ESMA's cmake macros
-include(esma-community)
+# Set variables so that include(esma) does what we want
+set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
+set(ENABLE_TESTS OFF)
+set(PFUNIT OFF)
+# Override REQUIRED-ness of certain packages
+set(MKL_IS_REQUIRED "" CACHE INTERNAL "MKL is not required for gchp_ctm")
+set(FLAP_IS_REQUIRED "" CACHE INTERNAL "FLAP is not required for gchp_ctm")
+# Disable find packages that aren't required for gchp_ctm
+set(CMAKE_DISABLE_FIND_PACKAGE_MKL          TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_FLAP         TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_GFTL_SHARED  TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
+# Add gchp_ctm's expected environment variables to CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH 
+  $ENV{gFTL_ROOT} $ENV{GFTL_ROOT}
+  $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
+)
+include(esma)
 
 # Declare ecbuild project
 ecbuild_declare_project()
 
 # Find MPI
 find_package(MPI REQUIRED COMPONENTS C CXX Fortran)
-
-# Add MPI compiler flags
-# This approach (using variables) is only temporary. This should be fixed.
-set(CMAKE_Fortran_FLAGS ${CMAKE_Fortran_FLAGS} ${MPI_Fortran_COMPILE_OPTIONS})
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${MPI_C_COMPILE_OPTIONS})
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${MPI_CXX_COMPILE_OPTIONS})
-add_definitions(${MPI_Fortran_COMPILE_DEFINITIONS} ${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS})
-include_directories(${MPI_Fortran_INCLUDE_DIRS} ${MPI_C_INCLUDE_DIRS} ${MPI_CXX_INCLUDE_DIRS})
 
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   list(APPEND CMAKE_Fortran_FLAGS "-ffree-line-length-none")
