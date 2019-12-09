@@ -19,6 +19,16 @@
       implicit none
       private
 
+      ! External rotate and restagger subroutine from FV3
+      interface 
+        subroutine fv_A2D2C(U, V, npz, getC)
+          real, intent(inout) :: U(:,:,:)
+          real, intent(inout) :: V(:,:,:)
+          integer, intent(in) :: npz
+          logical, intent(in) :: getC
+        end subroutine
+      end interface
+
 ! !PUBLIC MEMBER FUNCTIONS:
 
       public SetServices
@@ -180,21 +190,21 @@
 !      _VERIFY(STATUS)
 
       call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'UC',                                        &
-           LONG_NAME  = 'eastward_wind_on_C-Grid',                   &
+           SHORT_NAME = 'ULL',                                       &
+           LONG_NAME  = 'eastward_wind_on_A-Grid',                   &
            UNITS      = 'm s-1',                                     &
-           STAGGERING = MAPL_CGrid,                                  &
-           ROTATION   = MAPL_RotateCube,                             & 
+           STAGGERING = MAPL_AGrid,                                  &
+           ROTATION   = MAPL_RotateLL,                               & 
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
       _VERIFY(STATUS)
 
       call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'VC',                                        &
-           LONG_NAME  = 'northward_wind_on_C-Grid',                  &
+           SHORT_NAME = 'VLL',                                       &
+           LONG_NAME  = 'northward_wind_on_A-Grid',                  &
            UNITS      = 'm s-1',                                     &
-           STAGGERING = MAPL_CGrid,                                  &
-           ROTATION   = MAPL_RotateCube,                             &
+           STAGGERING = MAPL_AGrid,                                  &
+           ROTATION   = MAPL_RotateLL,                               &
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
       _VERIFY(STATUS)
@@ -491,8 +501,8 @@
       !--------
       real, pointer, dimension(:,:)   ::       PS0 => null()
       real, pointer, dimension(:,:)   ::       PS1 => null()
-      real, pointer, dimension(:,:,:) ::        UC => null()
-      real, pointer, dimension(:,:,:) ::        VC => null()
+      real, pointer, dimension(:,:,:) ::       UA  => null()
+      real, pointer, dimension(:,:,:) ::       VA  => null()
       real, pointer, dimension(:,:,:) ::     SPHU0 => null()
       real, pointer, dimension(:,:,:) ::     SPHU1 => null()
       real, pointer, dimension(:,:,:) ::        th => null()
@@ -520,6 +530,8 @@
       real, pointer, dimension(:,:,:) ::     CX => null()
       real, pointer, dimension(:,:,:) ::     CY => null()
 !--
+      real,     pointer, dimension(:,:,:) ::      UC => null()
+      real,     pointer, dimension(:,:,:) ::      VC => null()
       real(r8), pointer, dimension(:,:,:) ::      UCr8 => null()
       real(r8), pointer, dimension(:,:,:) ::      VCr8 => null()
       real(r8), pointer, dimension(:,:,:) ::     PLEr8 => null()
@@ -564,9 +576,9 @@
       _VERIFY(STATUS)
       call MAPL_GetPointer ( IMPORT,     PS1,    'PS2', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,      UC,     'UC', RC=STATUS )
+      call MAPL_GetPointer ( IMPORT,      UA,    'ULL', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,      VC,     'VC', RC=STATUS )
+      call MAPL_GetPointer ( IMPORT,      VA,    'VLL', RC=STATUS )
       _VERIFY(STATUS)
       call MAPL_GetPointer ( IMPORT,   SPHU0,  'SPHU1', RC=STATUS )
       _VERIFY(STATUS)
@@ -591,9 +603,19 @@
       DryPLE1r8(:,:,:) = 0.0d0
 
       ! Get local dimensions
-      is = lbound(UC,1); ie = ubound(UC,1)
-      js = lbound(UC,2); je = ubound(UC,2)
-      lm = size  (UC,3)
+      is = lbound(UA,1); ie = ubound(UA,1)
+      js = lbound(UA,2); je = ubound(UA,2)
+      lm = size  (UA,3)
+
+      ! Restagger A-grid winds to C-grid and rotate for CS - L.Bindle
+      ! -------------------------------------------------------------
+      ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
+      _VERIFY(STATUS)
+      ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
+      _VERIFY(STATUS)
+      UC(:,:,:) = UA(:,:,:)
+      VC(:,:,:) = VA(:,:,:)
+      call fv_A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
 
       ! Calcaulate PLE0/1 - M.Long
       ! ---------------------
@@ -667,7 +689,7 @@
                                    MFXr8, MFYr8, CXr8, CYr8, dt)
 
       !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
-      DEALLOCATE( UCr8, VCr8, PLEr8 )
+      DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC)
 
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
