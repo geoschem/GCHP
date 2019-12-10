@@ -1,3 +1,4 @@
 build/
 .nfs*
 ycm*.log
+build*/
