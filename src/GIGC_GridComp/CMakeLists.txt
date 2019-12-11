@@ -13,6 +13,7 @@ set(GTMM                    FALSE)
 set(TOMAS                   FALSE)
 set(MECH                    "Standard") # for now, we only support "Standard"
 set(GCHP                    TRUE)
+set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/MAPL_Base/mapl_acg.pl)
 add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure BaseTarget for GEOS-Chem
@@ -40,4 +41,4 @@ add_subdirectory(GEOSctmEnv_GridComp EXCLUDE_FROM_ALL)
 add_library(GIGC_GridComp STATIC
     GIGC_GridCompMod.F90
 )
-target_link_libraries(GIGC_GridComp PUBLIC GEOSctmEnv_GridComp GeosCore GCHP)
+target_link_libraries(GIGC_GridComp PUBLIC GEOSctmEnv_GridComp GCHP)
