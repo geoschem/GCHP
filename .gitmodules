@@ -16,3 +16,6 @@
 [submodule "src/GIGC_GridComp/AdvCore_GridComp"]
 	path = src/GIGC_GridComp/AdvCore_GridComp
 	url = https://github.com/geoschem/FVdycoreCubed_GridComp.git
+[submodule "src/GIGC_GridComp/geos-chem"]
+	path = src/GIGC_GridComp/geos-chem
+	url = git@github.com:geoschem/geos-chem
