@@ -1,0 +1,96 @@
+# Build matrix pipeline:
+# 
+# This pipeline checks that pre-releases and the master branch
+# compile in a wide variety of build environments. This pipeline
+# is intended to be a rigorous check of GCHP's build.
+
+
+# This pipeline triggers on tagged pre-releases (alpha and beta 
+# versions, as well as release candidates). Commits to the master 
+# branch also trigger this pipeline.
+trigger:
+  branches:
+    include:
+      - master
+  tags:
+    include:        # Semantic versioning 2.0.0 examples:
+      - '*-alpha*'  # 12.7.1-alpha.3
+      - '*-beta*'   # 12.7.0-beta.1
+      - '*-rc*'     # 12.7.0-rc.1
+pr: none
+
+
+# Basic agent set up
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+# Define the "matrix" of build images to try building GCHP in
+strategy:
+  matrix:
+    # GCC majors
+    ubuntu_openmpi314:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-openmpi3.1.4-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: openmpi
+    centos_openmpi314:
+      containerImage: liambindle/penelope:2019.12-centos7-openmpi3.1.4-esmf8.0.0
+      GCC_VERSION: 8
+      MPI_PACKAGE_NAME: openmpi
+    ubuntu_openmpi314_gcc7:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-gcc7-openmpi3.1.4-esmf8.0.0
+      GCC_VERSION: 7
+      MPI_PACKAGE_NAME: openmpi
+    # OpenMPIs (note: 3.1.4 is covered by other tests)
+    ubuntu_openmpi304:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-openmpi3.0.4-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: openmpi
+    ubuntu_openmpi401:
+      containerImage:  liambindle/penelope:2019.12-ubuntu16.04-openmpi4.0.1-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: openmpi
+    # MVAPICH2s 
+    ubuntu_mvapich22:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mvapich2.2-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: mvapich2
+    ubuntu_mvapich231:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mvapich2.3.1-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: mvapich2
+    # MPICHs
+    ubuntu_mpich314:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mpich3.1.4-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: mpich
+    ubuntu_mpich321:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mpich3.2.1-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: mpich
+    ubuntu_mpich331:
+      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mpich3.3.1-esmf8.0.0
+      GCC_VERSION: 9
+      MPI_PACKAGE_NAME: mpich
+container: $[ variables['containerImage'] ]
+
+
+# Try building GCHP (this is run for each "matrix" entry above)
+steps:
+- script: |
+    source /init.rc
+    module load gcc/${GCC_VERSION}
+    export CC=gcc
+    export CXX=g++
+    export FC=gfortran
+    spack load ${MPI_PACKAGE_NAME}
+    spack load hdf5 
+    spack load netcdf-c
+    spack load netcdf-fortran
+    spack load esmf
+    git -c $(Build.Repository.LocalPath) submodule update --init --recursive
+    mkdir build
+    cd build
+    cmake -DCMAKE_COLOR_MAKEFILE=FALSE $(Build.Repository.LocalPath)
+    make -j geos
+  displayName: 'Building GEOS-Chem'
