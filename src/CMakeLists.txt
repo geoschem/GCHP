@@ -1,3 +1,6 @@
+# Add gFTL
+add_subdirectory(gFTL)
+
 # Add MAPL
 set(LATEX_FOUND FALSE) # Disable LaTeX support (to avoid dependencies like ImageMagick)
 add_subdirectory(MAPL EXCLUDE_FROM_ALL)
