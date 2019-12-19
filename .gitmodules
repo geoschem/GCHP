@@ -22,3 +22,6 @@
 [submodule "src/gFTL"]
 	path = src/gFTL
 	url = https://github.com/Goddard-Fortran-Ecosystem/gFTL.git
+[submodule "src/fms"]
+	path = src/fms
+	url = https://github.com/geoschem/fms
