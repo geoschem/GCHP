@@ -10,6 +10,13 @@ list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake
 )
 
+# Run directory
+set(RUNDIR ${CMAKE_BINARY_DIR}/.. CACHE PATH "Path to GCHPctm run directory")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX ${RUNDIR} CACHE PATH "Install prefix for GCHPctm" FORCE)
+  set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
+endif()
+
 # Set variables so that include(esma) does what we want
 set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
 set(ENABLE_TESTS OFF)
