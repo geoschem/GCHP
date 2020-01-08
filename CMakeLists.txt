@@ -42,3 +42,41 @@ endif()
 
 # Add the directory with gchp_ctm's source code
 add_subdirectory(src)
+
+# Exclude the following libraries from the "all" target 
+set_target_properties(
+  force-generation-of-includes
+  MAPL_cfio_r8
+  GMAO_pilgrim
+  NSIDC-OSTIA_SST-ICE_blend
+  LANL_cice
+  GEOS_PertShared
+  GEOS_PertSvecs
+  Tapenade
+  GMAO_psas
+
+  GMAO_transf
+  GMAO_stoch
+  
+  arpack
+  
+  lanso
+  planso
+  post
+  post_nompi
+
+  nc_diag_write
+  nc_diag_res
+  nc_diag_read
+  nc_diag_cat
+
+  parpack
+  putil
+
+  util
+  
+  GMAO_gfio_r4
+  GFDL_fms_r4
+  
+  PROPERTIES EXCLUDE_FROM_ALL TRUE
+)
