@@ -1,5 +1,5 @@
 # Add gFTL
-add_subdirectory(gFTL)
+add_subdirectory(gFTL EXCLUDE_FROM_ALL)
 
 # Add MAPL
 set(LATEX_FOUND FALSE) # Disable LaTeX support (to avoid dependencies like ImageMagick)
@@ -19,4 +19,4 @@ add_executable(geos
 target_link_libraries(geos
 	PUBLIC GIGC_GridComp ${CMAKE_DL_LIBS}
 )
-install(TARGETS geos)
+install(TARGETS geos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

@@ -10,6 +10,13 @@ list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake
 )
 
+# Run directory
+set(RUNDIR ${CMAKE_BINARY_DIR}/.. CACHE PATH "Path to GCHPctm run directory")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX ${RUNDIR} CACHE PATH "Install prefix for GCHPctm" FORCE)
+  set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
+endif()
+
 # Set variables so that include(esma) does what we want
 set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
 set(ENABLE_TESTS OFF)
@@ -42,3 +49,41 @@ endif()
 
 # Add the directory with gchp_ctm's source code
 add_subdirectory(src)
+
+# Exclude the following libraries from the "all" target 
+set_target_properties(
+  force-generation-of-includes
+  MAPL_cfio_r8
+  GMAO_pilgrim
+  NSIDC-OSTIA_SST-ICE_blend
+  LANL_cice
+  GEOS_PertShared
+  GEOS_PertSvecs
+  Tapenade
+  GMAO_psas
+
+  GMAO_transf
+  GMAO_stoch
+  
+  arpack
+  
+  lanso
+  planso
+  post
+  post_nompi
+
+  nc_diag_write
+  nc_diag_res
+  nc_diag_read
+  nc_diag_cat
+
+  parpack
+  putil
+
+  util
+  
+  GMAO_gfio_r4
+  GFDL_fms_r4
+  
+  PROPERTIES EXCLUDE_FROM_ALL TRUE
+)
