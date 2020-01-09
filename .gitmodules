@@ -19,9 +19,9 @@
 [submodule "src/GIGC_GridComp/geos-chem"]
 	path = src/GIGC_GridComp/geos-chem
 	url = https://github.com/geoschem/geos-chem
-[submodule "src/gFTL"]
-	path = src/gFTL
-	url = https://github.com/Goddard-Fortran-Ecosystem/gFTL.git
 [submodule "src/fms"]
 	path = src/fms
 	url = https://github.com/geoschem/fms
+[submodule "src/gFTL-shared"]
+	path = src/gFTL-shared
+	url = https://github.com/geoschem/gFTL-shared.git

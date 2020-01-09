@@ -35,6 +35,9 @@ list(APPEND CMAKE_PREFIX_PATH
   $ENV{gFTL_ROOT} $ENV{GFTL_ROOT}
   $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
 )
+# Add gFTL-shared
+add_subdirectory(src/gFTL-shared EXCLUDE_FROM_ALL)
+# Include ESMA macros
 include(esma)
 
 # Declare ecbuild project
@@ -83,7 +86,7 @@ set_target_properties(
   util
   
   GMAO_gfio_r4
-  GFDL_fms_r4
+  #GFDL_fms_r4
   
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
