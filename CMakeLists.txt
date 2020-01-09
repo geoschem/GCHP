@@ -22,11 +22,13 @@ set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
 set(ENABLE_TESTS OFF)
 set(PFUNIT OFF)
 # Override REQUIRED-ness of certain packages
-set(MKL_IS_REQUIRED "" CACHE INTERNAL "MKL is not required for gchp_ctm")
-set(FLAP_IS_REQUIRED "" CACHE INTERNAL "FLAP is not required for gchp_ctm")
+set(GFTL_IS_REQUIRED_ARG "" CACHE INTERNAL "GFTL is not required for gchp_ctm")
+set(MKL_IS_REQUIRED_ARG  "" CACHE INTERNAL "MKL is not required for gchp_ctm")
+set(FLAP_IS_REQUIRED_ARG "" CACHE INTERNAL "FLAP is not required for gchp_ctm")
 # Disable find packages that aren't required for gchp_ctm
 set(CMAKE_DISABLE_FIND_PACKAGE_MKL          TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_FLAP         TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_GFTL         TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_GFTL_SHARED  TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
@@ -35,8 +37,6 @@ list(APPEND CMAKE_PREFIX_PATH
   $ENV{gFTL_ROOT} $ENV{GFTL_ROOT}
   $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
 )
-# Add gFTL-shared
-add_subdirectory(src/gFTL-shared EXCLUDE_FROM_ALL)
 # Include ESMA macros
 include(esma)
 
@@ -55,38 +55,14 @@ add_subdirectory(src)
 
 # Exclude the following libraries from the "all" target 
 set_target_properties(
-  force-generation-of-includes
-  MAPL_cfio_r8
-  GMAO_pilgrim
-  NSIDC-OSTIA_SST-ICE_blend
-  LANL_cice
-  GEOS_PertShared
-  GEOS_PertSvecs
-  Tapenade
-  GMAO_psas
-
-  GMAO_transf
-  GMAO_stoch
-  
-  arpack
-  
-  lanso
-  planso
-  post
-  post_nompi
-
-  nc_diag_write
-  nc_diag_res
-  nc_diag_read
-  nc_diag_cat
-
-  parpack
-  putil
-
-  util
-  
-  GMAO_gfio_r4
-  #GFDL_fms_r4
+  force-generation-of-includes    MAPL_cfio_r8    GMAO_pilgrim
+  NSIDC-OSTIA_SST-ICE_blend       LANL_cice       GEOS_PertShared
+  GEOS_PertSvecs                  Tapenade        GMAO_psas
+  GMAO_transf                     GMAO_stoch      arpack
+  lanso                           planso          post
+  post_nompi                      nc_diag_write   nc_diag_res
+  nc_diag_read                    nc_diag_cat     parpack
+  putil                           util            GMAO_gfio_r4
   
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
