@@ -1,4 +1,5 @@
 # Add gFTL-shared
+set(GIT_SUBMODULE OFF CACHE BOOL "Prevent gFTL-shared from trying to checkout its gFTL submodule")
 add_subdirectory(gFTL-shared EXCLUDE_FROM_ALL)
 
 # Add MAPL
