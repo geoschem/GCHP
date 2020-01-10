@@ -17,6 +17,27 @@ if(RUNDIR)
   set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
 endif()
 
+# Find nc-config and nf-config
+find_program(NC_CONFIG NAMES "nc-config" DOC "Location of nc-config utility")
+find_program(NF_CONFIG NAMES "nf-config" DOC "Location of nf-config utility")
+
+# A function to call nx-config with an argument, and append the resulting path to a list
+function(inspect_netcdf_config VAR NX_CONFIG ARG)
+    execute_process(
+        COMMAND ${NX_CONFIG} ${ARG}
+        OUTPUT_VARIABLE NX_CONFIG_OUTPUT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(EXISTS "${NX_CONFIG_OUTPUT}")
+        list(APPEND ${VAR} ${NX_CONFIG_OUTPUT})
+        set(${VAR} ${${VAR}} PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Add nc-config and nf-config paths to CMAKE_PREFIX_PATH
+inspect_netcdf_config(CMAKE_PREFIX_PATH "${NC_CONFIG}" "--prefix")
+inspect_netcdf_config(CMAKE_PREFIX_PATH "${NF_CONFIG}" "--prefix")
+
 # Set variables so that include(esma) does what we want
 set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
 set(ENABLE_TESTS OFF)
@@ -34,7 +55,6 @@ set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
 # Add gchp_ctm's expected environment variables to CMAKE_PREFIX_PATH
 list(APPEND CMAKE_PREFIX_PATH 
-  $ENV{gFTL_ROOT} $ENV{GFTL_ROOT}
   $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
 )
 # Include ESMA macros
