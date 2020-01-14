@@ -10,9 +10,6 @@
 [submodule "ESMA_cmake"]
 	path = ESMA_cmake
 	url = https://github.com/geoschem/ESMA_cmake
-[submodule "src/GIGC_GridComp/GEOSChem_GridComp/geos-chem"]
-	path = src/GIGC_GridComp/GEOSChem_GridComp/geos-chem
-	url = https://github.com/geoschem/geos-chem
 [submodule "src/GIGC_GridComp/AdvCore_GridComp"]
 	path = src/GIGC_GridComp/AdvCore_GridComp
 	url = https://github.com/geoschem/FVdycoreCubed_GridComp.git
