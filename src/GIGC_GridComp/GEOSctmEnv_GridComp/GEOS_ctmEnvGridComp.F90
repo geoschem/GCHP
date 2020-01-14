@@ -14,20 +14,11 @@
       use ESMF
       use MAPL_Mod
       use FV_StateMod, only : fv_computeMassFluxes
+      use GEOS_FV3_UtilitiesMod, only : A2D2C
       use m_set_eta,  only : set_eta
 
       implicit none
       private
-
-      ! External rotate and restagger subroutine from FV3
-      interface 
-        subroutine fv_A2D2C(U, V, npz, getC)
-          real, intent(inout) :: U(:,:,:)
-          real, intent(inout) :: V(:,:,:)
-          integer, intent(in) :: npz
-          logical, intent(in) :: getC
-        end subroutine
-      end interface
 
 ! !PUBLIC MEMBER FUNCTIONS:
 
@@ -615,7 +606,7 @@
       _VERIFY(STATUS)
       UC(:,:,:) = UA(:,:,:)
       VC(:,:,:) = VA(:,:,:)
-      call fv_A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
+      call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
 
       ! Calcaulate PLE0/1 - M.Long
       ! ---------------------
