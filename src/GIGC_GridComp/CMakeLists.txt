@@ -18,7 +18,7 @@ add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure BaseTarget for GEOS-Chem
 target_compile_definitions(BaseTarget INTERFACE
-        ESMF_ EXTERNAL_GRID USE_REAL8 NC_HAS_COMPRESSION BPCH_TBPC
+        ESMF_ EXTERNAL_GRID USE_REAL8 NC_HAS_COMPRESSION BPCH_TBPC MODEL_GCHPCTM
 )
 target_link_libraries(BaseTarget INTERFACE
     MAPL_Base
