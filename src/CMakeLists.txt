@@ -13,14 +13,14 @@ add_subdirectory(GMAO_Shared EXCLUDE_FROM_ALL)
 # Add FMS
 add_subdirectory(FMS fms_r8 EXCLUDE_FROM_ALL)
 
-# Add GIGC_GridComp
-add_subdirectory(GIGC_GridComp EXCLUDE_FROM_ALL)
+# Add GCHP_GridComp
+add_subdirectory(GCHP_GridComp EXCLUDE_FROM_ALL)
 
 # The executable
 add_executable(geos
     GEOSChem.F90
 )
 target_link_libraries(geos
-	PUBLIC GIGC_GridComp ${CMAKE_DL_LIBS}
+	PUBLIC GCHP_GridComp ${CMAKE_DL_LIBS}
 )
 install(TARGETS geos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

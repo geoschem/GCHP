@@ -13,3 +13,12 @@
 [submodule "src/FMS"]
 	path = src/FMS
 	url = https://github.com/geoschem/FMS.git
+[submodule "src/GCHP_GridComp/FVdycoreCubed_GridComp"]
+	path = src/GCHP_GridComp/FVdycoreCubed_GridComp
+	url = https://github.com/geoschem/FVdycoreCubed_GridComp.git
+[submodule "src/GCHP_GridComp/GEOSChem_GridComp/geos-chem"]
+	path = src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
+	url = https://github.com/geoschem/geos-chem.git
+[submodule "src/GCHP_GridComp/HEMCO_GridComp/HEMCO"]
+	path = src/GCHP_GridComp/HEMCO_GridComp/HEMCO
+	url = https://github.com/geoschem/HEMCO.git
