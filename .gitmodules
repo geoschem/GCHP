@@ -19,3 +19,6 @@
 [submodule "src/gFTL-shared"]
 	path = src/gFTL-shared
 	url = https://github.com/geoschem/gFTL-shared.git
+[submodule "src/FMS"]
+	path = src/FMS
+	url = https://github.com/geoschem/FMS.git
