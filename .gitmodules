@@ -4,9 +4,6 @@
 [submodule "src/GMAO_Shared"]
 	path = src/GMAO_Shared
 	url = https://github.com/geoschem/GMAO_Shared
-[submodule "ecbuild"]
-	path = ecbuild
-	url = https://github.com/geoschem/ecbuild
 [submodule "ESMA_cmake"]
 	path = ESMA_cmake
 	url = https://github.com/geoschem/ESMA_cmake
