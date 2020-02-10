@@ -7,7 +7,7 @@ project (gchp_ctm
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
   ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake 
-  ${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake/ecbuild/cmake
 )
 
 # Run directory
