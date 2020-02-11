@@ -10,7 +10,7 @@
 
 #include "MAPL_Generic.h"
 
-Program GIGC_Main
+Program GCHPctm_Main
 
    use MAPL_Mod
    use GIGC_GridCompMod, only:  ROOT_SetServices => SetServices
@@ -29,6 +29,6 @@ Program GIGC_Main
    call cap%run(_RC)
    _VERIFY(status)
 
- end Program GIGC_Main
+ end Program GCHPctm_Main
 
 !EOC

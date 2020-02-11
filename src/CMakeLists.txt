@@ -18,7 +18,7 @@ add_subdirectory(GCHP_GridComp EXCLUDE_FROM_ALL)
 
 # The executable
 add_executable(geos
-    GEOSChem.F90
+    GCHPctm.F90
 )
 target_link_libraries(geos
 	PUBLIC GCHP_GridComp ${CMAKE_DL_LIBS}
