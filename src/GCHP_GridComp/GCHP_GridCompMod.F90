@@ -3,11 +3,11 @@
 !BOP
 
 ! !MODULE: 
-! GIGC\_GridCompMod -- this gridded component (GC) builds an ESMF application 
+! GCHP\_GridCompMod -- this gridded component (GC) builds an ESMF application 
 ! out of the following three (children) components:
 !   1. Advection (DYNAMICS)
 !   2. Traditional GEOS-Chem except for advection (GIGCchem)
-!   3. Cinderella component to derive variables for other components (GIGCenv)
+!   3. Cinderella component to derive variables for other comps (GCHPctmEnv)
 !
 ! !NOTES:
 ! (1) For now, the dynamics module is rather primitive and based upon netCDF
@@ -24,7 +24,7 @@
 !
 ! !INTERFACE:
 
-module GIGC_GridCompMod
+module GCHP_GridCompMod
 
 ! !USES:
 
@@ -32,7 +32,7 @@ module GIGC_GridCompMod
   use MAPL_Mod
   use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
   use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
-  use GEOS_ctmEnvGridComp, only : EctmSetServices      => SetServices
+  use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
 
   implicit none
   private
@@ -71,7 +71,7 @@ contains
     type(ESMF_GridComp), intent(INOUT) :: GC  ! gridded component
     integer,             intent(  OUT) :: RC  ! return code
 
-! !DESCRIPTION:  The SetServices for the GIGC gridded component needs to 
+! !DESCRIPTION:  The SetServices for the GCHP gridded component needs to 
 !   register its Initialize, Run, and Finalize.  It uses the MAPL_Generic 
 !   construct for defining state specifications and couplings among its 
 !   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM) 
@@ -125,7 +125,7 @@ contains
 ! -----------------------------------------------------------------
 
    ! Add component for deriving variables for other components
-   ECTM = MAPL_AddChild(GC, NAME='GIGCenv' , SS=EctmSetServices,      &
+   ECTM = MAPL_AddChild(GC, NAME='GCHPctmEnv' , SS=EctmSetServices,      &
                             RC=STATUS)
    _VERIFY(STATUS)
 
@@ -207,7 +207,7 @@ contains
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! !IROUTINE: Initialize -- Initialize method for the GIGC Gridded Component
+! !IROUTINE: Initialize -- Initialize method for the GCHP Gridded Component
 
 ! !INTERFACE:
 
@@ -221,9 +221,9 @@ contains
   type(ESMF_Clock),    intent(inout) :: CLOCK  ! The clock
   integer, optional,   intent(  out) :: RC     ! Error code
 
-! !DESCRIPTION: The Initialize method of the GIGC Composite Gridded 
+! !DESCRIPTION: The Initialize method of the GCHP Composite Gridded 
 !  Component. It acts as a driver for the initialization of the three 
-!  children: DYNAMICS, GIGCchem, and GIGCenv.
+!  children: DYNAMICS, GIGCchem, and GCHPctmEnv.
 !
 !EOP
 
@@ -311,7 +311,7 @@ contains
 
 !BOP
 
-! !IROUTINE: Run -- Run method for the composite GIGC Gridded Component
+! !IROUTINE: Run -- Run method for the composite GCHP Gridded Component
                  
 ! !INTERFACE:
 
@@ -329,7 +329,7 @@ contains
   type(ESMF_Clock),    intent(inout) :: CLOCK  ! The clock
   integer, optional,   intent(  out) :: RC     ! Error code
 
-! !DESCRIPTION: The run method for the GIGC gridded component calls the 
+! !DESCRIPTION: The run method for the GCHP gridded component calls the 
 !   children`s run methods. It also prepares inputs and couplings amongst them.
 
 !EOP
@@ -408,7 +408,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before GEOS_ctmE: ', RC=STATUS )
+                  'GCHP, before GCHPctmEnv: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -426,7 +426,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  GEOS_ctmE: ', RC=STATUS )
+                  'GCHP, after  GCHPctmEnv: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -441,7 +441,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before Advection: ', RC=STATUS )
+                  'GCHP, before Advection: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -460,7 +460,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  Advection: ', RC=STATUS )
+                  'GCHP, after  Advection: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -471,7 +471,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before GEOS-Chem: ', RC=STATUS )
+                  'GCHP, before GEOS-Chem: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -490,7 +490,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  GEOS-Chem: ', RC=STATUS )
+                  'GCHP, after  GEOS-Chem: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -544,4 +544,4 @@ contains
 
 !=============================================================================
 
- end module GIGC_GridCompMod
+ end module GCHP_GridCompMod

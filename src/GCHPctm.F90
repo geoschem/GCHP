@@ -13,13 +13,13 @@
 Program GCHPctm_Main
 
    use MAPL_Mod
-   use GIGC_GridCompMod, only:  ROOT_SetServices => SetServices
+   use GCHP_GridCompMod, only:  ROOT_SetServices => SetServices
 
    implicit none
 
 !EOP
 
-   character(len=18)      :: Iam="GIGC_Main"
+   character(len=18)      :: Iam="GCHP_Main"
    type (MAPL_Cap)        :: cap
    type (MAPL_CapOptions) :: cap_options
    integer                :: status
