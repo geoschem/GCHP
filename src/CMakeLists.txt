@@ -23,4 +23,6 @@ add_executable(geos
 target_link_libraries(geos
 	PUBLIC GCHP_GridComp ${CMAKE_DL_LIBS}
 )
+set_target_properties(geos PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 install(TARGETS geos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
