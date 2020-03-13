@@ -1,3 +1,5 @@
+# GEOSChem_GridComp/CMakeLists.txt
+
 set(GC_EXTERNAL_CONFIG      TRUE)
 set(RRTMG                   FALSE)
 set(GTMM                    FALSE)
@@ -18,6 +20,7 @@ target_link_libraries(BaseTarget INTERFACE
     MAPL_Base
     FVdycoreCubed_GridComp
     MPI::MPI_C MPI::MPI_Fortran
+    HCOI
 )
 
 # Configure BaseTarget's compiler options
