@@ -1,12 +1,12 @@
 # HEMCO_GridComp/CMakeLists.txt
 
+add_subdirectory(HEMCO EXCLUDE_FROM_ALL)
+
 #add_library(HEMCO_GridComp STATIC
 #    HEMCO_GridCompMod.F90
 #)
 #target_link_libraries(HEMCO_GridComp PUBLIC GeosCore)
 
-add_subdirectory(HEMCO EXCLUDE_FROM_ALL)
-set(HEMCO_EXTERNAL_CONFIG   TRUE)
 
 #   set(GC_EXTERNAL_CONFIG      TRUE)
 #   set(RRTMG                   FALSE)
