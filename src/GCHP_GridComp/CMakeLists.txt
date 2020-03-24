@@ -1,8 +1,22 @@
+# GCHP_GridComp/CMakeLists.txt
+
+#---------------
+# Set cmake logicals needed for subprojects
+#---------------
+set(FV_PRECISION          R8   ) # FV3 precision is R8
+set(HEMCO_EXTERNAL_CONFIG TRUE ) # Not HEMCO standalone
+set(GC_EXTERNAL_CONFIG    TRUE ) # Not GEOS-Chem Classic
+set(MAPL_ESMF             TRUE ) # HEMCO and GEOS-Chem will use MAPL/ESMF
+
 #---------------
 # Add FV3
 #---------------
-set(FV_PRECISION R8) # GCHP's FV3 precision is R8
 add_subdirectory(FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
+
+#---------------
+# Add HEMCO
+#---------------
+add_subdirectory(HEMCO_GridComp EXCLUDE_FROM_ALL)
 
 #---------------
 # Add GEOS-Chem
@@ -20,4 +34,4 @@ add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 add_library(GCHP_GridComp STATIC
     GCHP_GridCompMod.F90
 )
-target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP)
+target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP HCOI)
