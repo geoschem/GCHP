@@ -25,4 +25,4 @@ target_link_libraries(GEOSChemBuildProperties INTERFACE
 
 # Configure GEOSChemBuildProperties's compiler options
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/geos-chem/CMakeScripts)
-include(GC-DefaultCompilerOptions)
+
