@@ -8,7 +8,6 @@ set(MECH                    "Standard") # for now, we only support "Standard"
 set(GCHP                    TRUE)
 set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
-set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../../MAPL/MAPL_Base/mapl_acg.pl)
 add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure build properties for GEOS-Chem
@@ -20,7 +19,7 @@ target_link_libraries(GEOSChemBuildProperties INTERFACE
     MAPL_Base
     FVdycoreCubed_GridComp
     MPI::MPI_C MPI::MPI_Fortran
-    HCOI
+    HCOI_GCHP
 )
 
 # Configure GEOSChemBuildProperties's compiler options
