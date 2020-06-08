@@ -62,10 +62,10 @@ git submodule update --init --recursive
     ```console
     mkdir build
     cd build
-    cmake .. -DRUNDIR=IGNORE # the first argument must be the relative path to the root gchp_ctm directory
+    cmake .. # the first argument must be the relative path to the root gchp_ctm directory
     ```
     
-    Building with CMake is different to with gnumake (the "traditional" way of building GEOS-Chem). With CMake, there are two stops: a `cmake` command, and a `make` command. The `cmake` command is used to set major options, and is often run just once per build directory. Running this command with `-DCMAKE_BUILD_TYPE=Debug` will result in a GCHP build with bounds checking and other debug options; to explicitly build without those options, run the `cmake` command with `-DCMAKE_BUILD_TYPE=Release`. Once the `cmake` step has been performed once, only the `make` step (below) should be necessary each time you need to rebuild the code (either for the first time or after code modification).
+    Building with CMake is different to with gnumake (the "traditional" way of building GEOS-Chem). With CMake, there are two steps: a `cmake` command, and a `make` command. The `cmake` command is used to set major options, and is often run just once per build directory. Running this command with `-DCMAKE_BUILD_TYPE=Debug` will result in a GCHP build with bounds checking and other debug options; to explicitly build without those options, run the `cmake` command with `-DCMAKE_BUILD_TYPE=Release`. Once the `cmake` step has been performed once, only the `make` step (below) should be necessary each time you need to rebuild the code (either for the first time or after code modification).
   
     If the last few lines of output from `cmake` look similar to the following snippet then your build was configured successfully.
     ```
