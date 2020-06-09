@@ -181,7 +181,7 @@
 !      _VERIFY(STATUS)
 
       call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'ULL',                                       &
+           SHORT_NAME = 'UA',                                        &
            LONG_NAME  = 'eastward_wind_on_A-Grid',                   &
            UNITS      = 'm s-1',                                     &
            STAGGERING = MAPL_AGrid,                                  &
@@ -191,7 +191,7 @@
       _VERIFY(STATUS)
 
       call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'VLL',                                       &
+           SHORT_NAME = 'VA',                                        &
            LONG_NAME  = 'northward_wind_on_A-Grid',                  &
            UNITS      = 'm s-1',                                     &
            STAGGERING = MAPL_AGrid,                                  &
@@ -567,9 +567,9 @@
       _VERIFY(STATUS)
       call MAPL_GetPointer ( IMPORT,     PS1,    'PS2', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,      UA,    'ULL', RC=STATUS )
+      call MAPL_GetPointer ( IMPORT,      UA,    'UA',  RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,      VA,    'VLL', RC=STATUS )
+      call MAPL_GetPointer ( IMPORT,      VA,    'VA',  RC=STATUS )
       _VERIFY(STATUS)
       call MAPL_GetPointer ( IMPORT,   SPHU0,  'SPHU1', RC=STATUS )
       _VERIFY(STATUS)
