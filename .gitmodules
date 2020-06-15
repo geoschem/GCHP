@@ -22,3 +22,9 @@
 [submodule "src/GCHP_GridComp/HEMCO_GridComp/HEMCO"]
 	path = src/GCHP_GridComp/HEMCO_GridComp/HEMCO
 	url = https://github.com/geoschem/HEMCO.git
+[submodule "src/yaFyaml"]
+	path = src/yaFyaml
+	url = https://github.com/Goddard-Fortran-Ecosystem/yaFyaml.git
+[submodule "src/pFlogger"]
+	path = src/pFlogger
+	url = https://github.com/Goddard-Fortran-Ecosystem/pFlogger.git

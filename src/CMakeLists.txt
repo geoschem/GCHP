@@ -2,6 +2,14 @@
 set(GIT_SUBMODULE OFF CACHE BOOL "Prevent gFTL-shared from trying to checkout its gFTL submodule")
 add_subdirectory(gFTL-shared EXCLUDE_FROM_ALL)
 
+# Add yaFyaml
+set(YAFYAML_FOUND FALSE) # Disable yaFyaml support (to avoid dependencies like ImageMagick)
+add_subdirectory(yaFyaml EXCLUDE_FROM_ALL)
+
+# Add pFlogger
+set(PFLOGGER_FOUND FALSE) # Disable pFlogger support (to avoid dependencies like ImageMagick)
+add_subdirectory(pFlogger EXCLUDE_FROM_ALL)
+
 # Add MAPL
 set(LATEX_FOUND FALSE) # Disable LaTeX support (to avoid dependencies like ImageMagick)
 add_subdirectory(MAPL EXCLUDE_FROM_ALL)
