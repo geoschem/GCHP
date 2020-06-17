@@ -24,7 +24,7 @@
 	url = https://github.com/geoschem/HEMCO.git
 [submodule "src/yaFyaml"]
 	path = src/yaFyaml
-	url = https://github.com/Goddard-Fortran-Ecosystem/yaFyaml.git
+	url = https://github.com/geoschem/yaFyaml.git
 [submodule "src/pFlogger"]
 	path = src/pFlogger
-	url = https://github.com/Goddard-Fortran-Ecosystem/pFlogger.git
+	url = https://github.com/geoschem/pFlogger.git
