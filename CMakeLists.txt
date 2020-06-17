@@ -42,17 +42,37 @@ inspect_netcdf_config(CMAKE_PREFIX_PATH "${NF_CONFIG}" "--prefix")
 set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
 set(ENABLE_TESTS OFF)
 set(PFUNIT OFF)
-# Override REQUIRED-ness of certain packages
-set(GFTL_IS_REQUIRED_ARG "" CACHE INTERNAL "GFTL is not required for gchp_ctm")
-set(MKL_IS_REQUIRED_ARG  "" CACHE INTERNAL "MKL is not required for gchp_ctm")
-set(FLAP_IS_REQUIRED_ARG "" CACHE INTERNAL "FLAP is not required for gchp_ctm")
+
+# Override REQUIRED-ness of certain packages searced for in FindBaselibs.cmake
+set(GFTL_IS_REQUIRED_ARG
+	"" CACHE INTERNAL
+	"Prevent Baselibs from requiring GFTL as an external library")
+set(GFTL_SHARED_IS_REQUIRED_ARG
+	"" CACHE INTERNAL
+	"Prevent Baselibs from requiring GFTL_SHARED as an external library")
+set(YAFYAML_IS_REQUIRED_ARG
+	"" CACHE INTERNAL
+	"Prevent Baselibs from requiring YAFYAML as an external library")
+set(PFLOGGER_IS_REQUIRED_ARG
+	"" CACHE INTERNAL
+	"Prevent Baselibs from requiring PFLOGGER as an external library")
+set(MKL_IS_REQUIRED_ARG
+	"" CACHE INTERNAL
+	"Prevent Baselibs from requiring MKL as an external library")
+set(FLAP_IS_REQUIRED_ARG
+	"" CACHE INTERNAL
+	"Prevent Baselibs from requiring FLAG as an external library")
+
 # Disable find packages that aren't required for gchp_ctm
 set(CMAKE_DISABLE_FIND_PACKAGE_MKL          TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_FLAP         TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_GFTL         TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_GFTL_SHARED  TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_YAFYAML      TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_PFLOGGER     TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
+
 # Add gchp_ctm's expected environment variables to CMAKE_PREFIX_PATH
 list(APPEND CMAKE_PREFIX_PATH 
   $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
