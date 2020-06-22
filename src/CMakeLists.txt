@@ -2,6 +2,12 @@
 set(GIT_SUBMODULE OFF CACHE BOOL "Prevent gFTL-shared from trying to checkout its gFTL submodule")
 add_subdirectory(gFTL-shared EXCLUDE_FROM_ALL)
 
+# Add pFUnit
+set(PFUNIT_FOUND FALSE) # Do not rely on ESMA_cmake/FindBaseLibs.cmake to set this
+if(PFUNIT_FOUND)
+  add_subdirectory(pFUnit EXCLUDE_FROM_ALL)
+endif()
+
 # Add yaFyaml
 add_subdirectory(yaFyaml EXCLUDE_FROM_ALL)
 
