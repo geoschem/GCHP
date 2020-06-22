@@ -43,7 +43,7 @@ set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
 set(ENABLE_TESTS OFF)
 set(PFUNIT OFF)
 
-# Override REQUIRED-ness of certain packages searced for in FindBaselibs.cmake
+# Override REQUIRED-ness of certain packages searched for in FindBaselibs.cmake
 set(GFTL_IS_REQUIRED_ARG
 	"" CACHE INTERNAL
 	"Prevent Baselibs from requiring GFTL as an external library")
