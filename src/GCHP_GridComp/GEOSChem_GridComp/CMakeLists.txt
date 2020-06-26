@@ -16,7 +16,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
-    MAPL_Base
+    MAPL.base
     FVdycoreCubed_GridComp
     MPI::MPI_C MPI::MPI_Fortran
     HCOI_GCHP
