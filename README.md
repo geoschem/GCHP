@@ -1,6 +1,13 @@
 # GCHPctm
 Wrapper for GEOS-Chem chemical-transport model to enable the high performance option (GCHP).
 
+## CI statuses
+
+Pipeline | Status
+:---|:---
+Build Matrix (main) | [![Build Status](https://dev.azure.com/geoschem/gchp_ctm/_apis/build/status/Build%20Matrix?branchName=main)](https://dev.azure.com/geoschem/gchp_ctm/_build/latest?definitionId=7&branchName=main)
+Quick Build (dev/gchp_13.0.0) | [![Build Status](https://dev.azure.com/geoschem/gchp_ctm/_apis/build/status/Quick%20Build?branchName=dev%2Fgchp_13.0.0)](https://dev.azure.com/geoschem/gchp_ctm/_build/latest?definitionId=6&branchName=dev%2Fgchp_13.0.0)
+
 ## Getting started
 
 ### 1. Set up your environment

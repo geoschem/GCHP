@@ -6,7 +6,7 @@
 
 
 # This pipeline triggers on commits to development and bug-fix 
-# branches. Commits to the master branch do not trigger this pipeline
+# branches. Commits to the main branch do not trigger this pipeline
 # because those are tested against the build matrix. Commits to 
 # feature branches do not trigger this pipeline, but open pull requests
 # and commits to pull requests do.
