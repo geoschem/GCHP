@@ -27,7 +27,7 @@ If you don't already have ESMF 8.0.0+, you will need to download and build it. Y
 
 It is good practice to store your environment setup in a text file for reuse. Below are a couple examples that load libraries and export the necessary environment variables for building and running GCHP. Note that library version information is included in the filename for easy reference. Be sure to use the same libraries that were used to create the ESMF build install directory stored in environment variable ESMF_ROOT.
 
-####Environment file example 1:
+#### Environment file example 1:
 > ```
 > # file: gchpctm_ifort18.0.5_openmpi4.0.1.env
 > 
@@ -49,7 +49,7 @@ It is good practice to store your environment setup in a text file for reuse. Be
 > export ESMF_ROOT=/n/lab_shared/libraries/ESMF/ESMF_8_0_1/INSTALL_ifort18_openmpi4
 > ```
 
-####Environment file example 2:
+#### Environment file example 2:
 > ```
 > # file: gchpctm_gcc7.4_openmpi.rc
 > 
