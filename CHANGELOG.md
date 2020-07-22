@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GFDL_atmos_cubed_sphere (fvdycore directory) geos/v1.1.2
 - FVdycoreCubed_GridComp v1.1.3
 - gFTL-shared v1.0.7
-- gFTL branch major-refactor commit a8e72c42, off of v1.2.5
+- gFTL v1.2.5
 - yaFyaml v0.4.0
 - pFlogger v1.4.2
 - pFUnit v4.1.9
