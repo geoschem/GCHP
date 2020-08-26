@@ -19,9 +19,9 @@ Requirements:
 - ESMF (version 8.0.0 or greater)
 
 You must load your environment file prior to building and running GCHP.
-    ```console
-    source /home/envs/gchpctm_ifort18.0.5_openmpi4.0.1.env
-    ```
+```console
+source /home/envs/gchpctm_ifort18.0.5_openmpi4.0.1.env
+```
 
 If you don't already have ESMF 8.0.0+, you will need to download and build it. You only need to build ESMF once per compiler and MPI configuration (this includes for ALL users on a cluster!). It is therefore worth downloading and building somewhere stable and permanent, as almost no users of GCHP would be expected to need to modify or rebuild ESMF except when adding a new compiler or MPI. Instructions for downloading and building ESMF are available at the [GCHP wiki](http://wiki.seas.harvard.edu/geos-chem/index.php/GCHP_Hardware_and_Software_Requirements).
 
@@ -76,18 +76,18 @@ It is good practice to store your environment setup in a text file for reuse. Be
 
 ### 2. Clone the `gchpctm` repository and fill its submodules
 When cloning GCHP you will get the `main` branch by default.
-    ```console
-    git clone https://github.com/geoschem/gchpctm.git Code.GCHP
-    cd Code.GCHP
-    git submodule update --init --recursive
-    ```
+```console
+git clone https://github.com/geoschem/gchpctm.git Code.GCHP
+cd Code.GCHP
+git submodule update --init --recursive
+```
 
 If you would like a different version of GCHP you can checkout the branch or tag from the top-level directory. Beware that you must always then update the submodules again to checkout the compatible submodule versions. If you have any unsaved changes in a submdodule, such as local GEOS-Chem development, make sure you commit those to a branch prior to updating versions.
-    ```console
-    cd Code.GCHP
-    git checkout tags/13.0.0-alpha.6
-    git submodule update --init --recursive
-    ```
+```console
+cd Code.GCHP
+git checkout tags/13.0.0-alpha.6
+git submodule update --init --recursive
+```
 
 
 ### 3. First-time build
@@ -98,35 +98,35 @@ Building with CMake is different than with GNU Make (the way to build GEOS-Chem 
 The build directory will contain all files related to building GCHP with a specific environment and set of compiler flags. All source code directories outside of the build directory remain unchanged during compilation, unlike in earlier versions of GCHP in which *.o files (for example) were scattered throughout the source code tree. You can put your build directory in the root directory of `Code.GCHP` or you can put it anywhere else.
 
 For your very first built we recommend that you build from the source code for simplicity. 
-    ```console
-    cd Code.GCHP
-    mkdir build
-    ```
+```console
+cd Code.GCHP
+mkdir build
+```
 
 As you get more advanced, you may wish to create your build directory in your run directory or in a directory specific to GCHP version.
     
 #### b. Configure with CMake
   The first argument passed to the cmake command must be the relative path to the root GCHP directory. For the case of the build directory within source code directory, the root GCHP directory is one level up.
-    ```console
-    cd build
-    cmake ..
-    ```
+```console
+cd build
+cmake ..
+```
 
 If you store your build directory in your run directory instead then the relative path would be `../CodeDir`, making use of the symbolic link to the source code that is automatically generated when creating a run directory.
 
 If the last few lines of output from `cmake` look similar to the following snippet then your build was configured successfully.
-    ```
-    ...
-    -- Configuring done
-    -- Generating done
-    -- Build files have been written to: /data10/bindle/Code.GCHP/build
-    ```
+```console
+...
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /data10/bindle/Code.GCHP/build
+```
 
 #### c. Build the executable `geos`
 The full build does not occur until you run the `make` command.
-    ```console
-    make -j
-    ```
+```console
+make -j
+```
 
 #### d. How to recompile
 
@@ -136,16 +136,16 @@ Once the above steps have been performed only the `make` step should be necessar
 
 First, make a high-level directory to contain all the run directories associated with this version of GCHP. This should be somewhere with plenty of space, as all run output will be in subdirectories of this directory. You can optionally create one or more build directories here for storage and easy access to GCHP builds specific to a certain version (see previous section on building GCHP).
 
-```
+```console
 mkdir /scratch/testruns/GCHP/13.0.0
 ```
 
 Next, enter the `run` directory in `Code.GCHP`. Do not edit this directory - this is the template for all other run directories! Instead, use the script there to create a new run directory, following the instructions printed to the screen.
-    ```console
-    cd Code.GCHP
-    cd run
-    ./createRunDir.sh
-    ```
+```console
+cd Code.GCHP
+cd run
+./createRunDir.sh
+```
 
 For example, to create a standard (full-chemistry) run directory, choose (actual responses in brackets):
  - Standard simulation (`2`)
@@ -158,18 +158,18 @@ This will create and set up a full-chemistry, MERRA-2, GCHP run directory in `/s
 
 ### 5. Configure your run directory
 Navigate to your new run directory, and set it up for the first run:
-    ```console
-    cd /scratch/testruns/GCHP/13.0.0/fullchem_first_test
-    ./setEnvironment /home/envs/gchpctm_ifort18.0.5_openmpi4.0.1.env # This sets up the gchp.env symlink
-    source gchp.env # Set up build environment, if not already done
-    cp runScriptSamples/gchp.run . # Set up run script - your system is likely to be different! See also gchp.local.run.
-    cp CodeDir/build/bin/geos . # Get the compiled executable
-    ```
+```console
+cd /scratch/testruns/GCHP/13.0.0/fullchem_first_test
+./setEnvironment /home/envs/gchpctm_ifort18.0.5_openmpi4.0.1.env # This sets up the gchp.env symlink
+source gchp.env # Set up build environment, if not already done
+cp runScriptSamples/gchp.run . # Set up run script - your system is likely to be different! See also gchp.local.run.
+cp CodeDir/build/bin/geos . # Get the compiled executable
+```
 
 ### 6. Submit your first GCHP job using GCHP!
-    ```console
-    sbatch gchp.run
-    ```
+```console
+sbatch gchp.run
+```
 
 For more information about GCHP, see the following resources:
 [GCHP wiki](http://wiki.seas.harvard.edu/geos-chem/index.php/GCHP_Main_Page).
