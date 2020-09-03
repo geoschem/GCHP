@@ -4,7 +4,7 @@ set(GC_EXTERNAL_CONFIG      TRUE)
 set(RRTMG "OFF" CACHE BOOL "Switch to build RRTMG as a component of GEOS-Chem")
 set(GTMM                    FALSE)
 set(TOMAS                   FALSE)
-set(MECH                    "Standard") # for now, we only support "Standard"
+set(MECH                    "fullchem") # for now, we only support "fullchem"
 set(GCHP                    TRUE)
 set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
