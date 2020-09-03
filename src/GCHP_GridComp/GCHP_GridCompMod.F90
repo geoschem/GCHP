@@ -6,7 +6,7 @@
 ! GCHP\_GridCompMod -- this gridded component (GC) builds an ESMF application 
 ! out of the following three (children) components:
 !   1. Advection (DYNAMICS)
-!   2. Traditional GEOS-Chem except for advection (GIGCchem)
+!   2. Traditional GEOS-Chem except for advection (GCHPchem)
 !   3. Cinderella component to derive variables for other comps (GCHPctmEnv)
 !
 ! !NOTES:
@@ -130,7 +130,7 @@ contains
    _VERIFY(STATUS)
 
    ! Add chemistry
-   CHEM = MAPL_AddChild(GC, NAME='GIGCchem', SS=AtmosChemSetServices, &
+   CHEM = MAPL_AddChild(GC, NAME='GCHPchem', SS=AtmosChemSetServices, &
                         RC=STATUS)
    _VERIFY(STATUS)
 
@@ -223,7 +223,7 @@ contains
 
 ! !DESCRIPTION: The Initialize method of the GCHP Composite Gridded 
 !  Component. It acts as a driver for the initialization of the three 
-!  children: DYNAMICS, GIGCchem, and GCHPctmEnv.
+!  children: DYNAMICS, GCHPchem, and GCHPctmEnv.
 !
 !EOP
 
