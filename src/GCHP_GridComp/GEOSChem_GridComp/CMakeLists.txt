@@ -31,5 +31,14 @@ target_link_libraries(GEOSChemBuildProperties INTERFACE
     HCOI_GCHP
 )
 
-# Configure GEOSChemBuildProperties's compiler options
+# Print the options that are turned on in GEOS-Chem
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/geos-chem/CMakeScripts)
+include(GC-Helpers)
+gc_pretty_print(SECTION "Settings")
+gc_pretty_print(VARIABLE MECH OPTIONS "fullchem")
+gc_pretty_print(VARIABLE OMP IS_BOOLEAN)
+gc_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
+gc_pretty_print(VARIABLE APM IS_BOOLEAN)
+gc_pretty_print(VARIABLE RRTMG IS_BOOLEAN)
+gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
+gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
