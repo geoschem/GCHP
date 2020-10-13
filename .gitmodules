@@ -31,3 +31,6 @@
 [submodule "src/pFUnit"]
 	path = src/pFUnit
 	url = https://github.com/geoschem/pFUnit.git
+[submodule "docs/geos-chem-shared-docs"]
+	path = docs/geos-chem-shared-docs
+	url = https://github.com/geoschem/geos-chem-shared-docs.git
