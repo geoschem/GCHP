@@ -2,6 +2,12 @@ GEOS-Chem High Performance
 ==========================
 
 .. toctree::
+   :maxdepth: 1
+   :caption: Getting Started
+
+   getting-started/quick-start.rst
+
+.. toctree::
    :maxdepth: 2
    :caption: User Guide
 
