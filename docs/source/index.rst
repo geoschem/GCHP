@@ -1,20 +1,19 @@
-.. GCHP documentation master file, created by
-   sphinx-quickstart on Tue Oct 13 17:48:36 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to GCHP's documentation!
-================================
+GEOS-Chem High Performance
+==========================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User Guide
+
+   user-guide/requirements.rst
+   user-guide/downloading.rst
+   user-guide/compiling.rst
+   user-guide/rundir-init.rst
+   user-guide/rundir-config.rst
 
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Help & Reference
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   geos-chem-shared-docs/editing_these_docs.rst 
