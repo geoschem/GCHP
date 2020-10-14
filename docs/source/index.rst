@@ -10,6 +10,15 @@ GEOS-Chem High Performance
    user-guide/compiling.rst
    user-guide/rundir-init.rst
    user-guide/rundir-config.rst
+   user-guide/running.rst
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Step-by-step Guides
+
+   step-by-step/plotting-output.rst
+   step-by-step/stretched-grid.rst
 
 
 .. toctree::
