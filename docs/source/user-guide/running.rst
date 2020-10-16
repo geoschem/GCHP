@@ -1,4 +1,5 @@
 
+.. _running_gchp:
 
 Running GCHP
 ============

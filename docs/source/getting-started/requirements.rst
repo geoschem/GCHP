@@ -1,5 +1,7 @@
-Requirements
-============
+System Requirements
+===================
+
+.. _software_requirements:
 
 Software requirements
 ---------------------
