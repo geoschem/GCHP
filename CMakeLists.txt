@@ -11,11 +11,9 @@ list(APPEND CMAKE_MODULE_PATH
 )
 
 # Run directory
-set(RUNDIR ${CMAKE_BINARY_DIR}/.. CACHE PATH "Path to GCHPctm run directory")
-if(RUNDIR)
-  set(CMAKE_INSTALL_PREFIX ${RUNDIR} CACHE PATH "Install prefix for GCHPctm" FORCE)
-  set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
-endif()
+set(RUNDIR "" CACHE PATH "Path(s) to run directory (semicolon separated list). Specifies install locations for geos")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Fake CMAKE_INSTALL_PREFIX (use RUNDIR instead)" FORCE)
+set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
 
 # Find nc-config and nf-config
 find_program(NC_CONFIG NAMES "nc-config" DOC "Location of nc-config utility")
