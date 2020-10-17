@@ -34,7 +34,7 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
    :caption: Step-by-step Guides
 
    step-by-step/plotting-output.rst
-   step-by-step/stretched-grid.rst
+   stretched-grid.rst
 
 
 .. toctree::

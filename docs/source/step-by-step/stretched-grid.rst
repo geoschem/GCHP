@@ -1,6 +1,0 @@
-
-
-Stretched-grid simulations
-==========================
-
-todo
