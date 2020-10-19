@@ -1,6 +1,11 @@
 System Requirements
 ===================
 
+Hardware requirements
+---------------------
+
+todo
+
 .. _software_requirements:
 
 Software requirements
