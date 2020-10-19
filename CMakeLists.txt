@@ -4,6 +4,9 @@ project (gchp_ctm
   LANGUAGES Fortran CXX C
 )
 
+# Disable OMP by default
+set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
+
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
   ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake 
