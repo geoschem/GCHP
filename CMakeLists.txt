@@ -14,7 +14,7 @@ list(APPEND CMAKE_MODULE_PATH
 )
 
 # Run directory
-set(RUNDIR "" CACHE PATH "Path(s) to run directory (semicolon separated list). Specifies install locations for geos")
+set(RUNDIR "../.." CACHE PATH "Path(s) to run directory (semicolon separated list). Specifies install locations for gchp")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Fake CMAKE_INSTALL_PREFIX (use RUNDIR instead)" FORCE)
 set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
 
