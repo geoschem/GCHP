@@ -38,5 +38,9 @@ target_link_libraries(gchp
 set_target_properties(gchp PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 foreach(RUNDIR_PATH ${RUNDIR})
+	# If RUNDIR is not a relative path, make it an absolute path relative to the build directory
+	if(NOT IS_ABSOLUTE "${RUNDIR_PATH}")
+		get_filename_component(RUNDIR_PATH "${RUNDIR_PATH}" ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}")
+	endif()
 	install(TARGETS gchp RUNTIME DESTINATION ${RUNDIR_PATH})
 endforeach()
