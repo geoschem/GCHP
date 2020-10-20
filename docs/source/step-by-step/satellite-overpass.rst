@@ -99,15 +99,21 @@ The resulting track file, :file:`tropomi_overpass_c24.nc`, looks like so
 Updating HISTORY
 ----------------
 
-To configure HISTORY to sample along the TROPOMI track you need to add the :literal:`track_file`
-and :literal:`recycle_track` attributes to your desired colleciton. For example, to sample
-the SpeciesConc collection along the :file:`tropomi_overpass_c24.nc` track, you would add
-the following lines to the SpeciesConc collection in :file:`HISTORY.rc`:
+Open :file:`HISTORY.rc` and add the :literal:`track_file` and :literal:`recycle_track` attributes to
+your desired colleciton. For example, the following is a custom collection that samples NO2 along
+the :file:`tropomi_overpass_c24.nc`.
 
 .. code-block:: none
 
-   SpeciesConc.track_file: /path/to/tropomi_overpass_c24.nc
-   SpeciesConc.recycle_track: 1
+     TROPOMI_NO2.template:       '%y4%m2%d2_%h2%n2z.nc4',
+     TROPOMI_NO2.format:         'CFIO',
+     TROPOMI_NO2.frequency:      240000
+     TROPOMI_NO2.duration:       240000
+     TROPOMI_NO2.track_file:     tropomi_overpass_c24.nc
+     TROPOMI_NO2.recycle_track:  1
+     TROPOMI_NO2.mode:           'instantaneous'
+     TROPOMI_NO2.fields:         'SpeciesConc_NO2            ', 'GCHPchem',
+   ::
 
 
 Unravelling 1D overpass timeseries
@@ -120,7 +126,7 @@ for this program's exact usage, and for installation instructions.
 
 .. code-block:: console
 
-   $ python -m gcpy.1D_raveller unravel --track tropomi_overpass_c24.nc -i OutputDir/GCHP.SpeciesConc.20180101_1330z.nc4 -o OutputDir/GCHP.SpeciesConc.20180101_1330z.TROPOMI.nc4
+   $ python -m gcpy.1D_raveller unravel --track tropomi_overpass_c24.nc -i OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.nc4 -o OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4
 
-The resulting dataset, :file:`GCHP.SpeciesConc.20180101_1330z.TROPOMI.nc4`, are simulated concentration on the model grid, sampled
+The resulting dataset, :file:`GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4`, are simulated concentration on the model grid, sampled
 at the times that correspond to TROPOMI's overpass.
