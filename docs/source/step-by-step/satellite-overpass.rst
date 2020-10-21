@@ -29,6 +29,9 @@ NetCDF file with the following format
          latitude:units = "degrees_north" ;
    }
 
+.. important::
+   Longitudes must be between 0 and 360.
+
 To configure 1D output, you can add the following attributes to any collection in 
 :file:`HISTORY.rc`.
 
@@ -44,7 +47,9 @@ To configure 1D output, you can add the following attributes to any collection i
 
 
 .. note::  
-   1D output is only valid for instantaneous sampling.
+   1D output only works for instantaneous sampling.
+
+   The :literal:`frequency` attribute is ignored when :literal:`track_file` is used.
 
 
 Creating a satellite track file
@@ -107,7 +112,6 @@ the :file:`tropomi_overpass_c24.nc`.
 
      TROPOMI_NO2.template:       '%y4%m2%d2_%h2%n2z.nc4',
      TROPOMI_NO2.format:         'CFIO',
-     TROPOMI_NO2.frequency:      240000
      TROPOMI_NO2.duration:       240000
      TROPOMI_NO2.track_file:     tropomi_overpass_c24.nc
      TROPOMI_NO2.recycle_track:  1
