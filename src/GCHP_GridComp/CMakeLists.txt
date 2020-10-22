@@ -35,4 +35,4 @@ add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 add_library(GCHP_GridComp STATIC
     GCHP_GridCompMod.F90
 )
-target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP HCOI_GCHP)
+target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP HCOI_MAPL_ESMF)

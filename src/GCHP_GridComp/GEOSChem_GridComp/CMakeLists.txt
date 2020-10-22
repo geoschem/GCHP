@@ -28,7 +28,7 @@ target_link_libraries(GEOSChemBuildProperties INTERFACE
     MAPL.base
     FVdycoreCubed_GridComp
     MPI::MPI_C MPI::MPI_Fortran
-    HCOI_GCHP
+    HCOI_MAPL_ESMF
 )
 
 # Print the options that are turned on in GEOS-Chem
