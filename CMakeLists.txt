@@ -4,8 +4,14 @@ project (gchp_ctm
   LANGUAGES Fortran CXX C
 )
 
-# Disable OMP by default
-set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
+# Disable OMP by default if using gfortran to avoid a performance hit.
+# Enable OMP if using ifort to avoid a run-time seg fault. Both of these issues
+# are bugs under investigation.
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(OMP ON CACHE BOOL "Switch to enable/disable OpenMP")
+endif()
 
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
