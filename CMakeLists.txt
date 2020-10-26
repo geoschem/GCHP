@@ -11,6 +11,8 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
 elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
   set(OMP ON CACHE BOOL "Switch to enable/disable OpenMP")
+else()
+    message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
 endif()
 
 # Add ESMA_cmake and ecbuild's module directories to the module path
