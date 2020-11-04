@@ -31,7 +31,8 @@ RUN source /init.rc \
 
 RUN echo "#!/usr/bin/env bash" > /opt/geos-chem/bin/createRunDir.sh \
 &&  echo "cd /gc-src/run" >> /opt/geos-chem/bin/createRunDir.sh \
-&&  echo "bash createRunDir.sh" >> /opt/geos-chem/bin/createRunDir.sh
+&&  echo "bash createRunDir.sh" >> /opt/geos-chem/bin/createRunDir.sh \
+&&  chmod +x /opt/geos-chem/bin/createRunDir.sh
 
 RUN echo "#!/usr/bin/env bash" > /usr/bin/start-container.sh \
 &&  echo ". /init.rc" >> /usr/bin/start-container.sh \
