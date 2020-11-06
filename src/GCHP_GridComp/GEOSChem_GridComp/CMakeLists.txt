@@ -78,6 +78,12 @@ target_compile_options(GEOSChemBuildProperties
    >
 )
 
+target_compile_definitions(GEOSChemBuildProperties
+    INTERFACE
+    $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},"Intel">:LINUX_IFORT>
+    $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},"GNU">:LINUX_GFORTRAN>
+)
+
 # Print the options that are turned on in GEOS-Chem
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/geos-chem/CMakeScripts)
 include(GC-Helpers)
