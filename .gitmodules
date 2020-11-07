@@ -34,3 +34,6 @@
 [submodule "docs/geos-chem-shared-docs"]
 	path = docs/source/geos-chem-shared-docs
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
+[submodule ".ci-pipelines/MinimumStandaloneTransportTracer"]
+	path = .ci-pipelines/MinimumStandaloneTransportTracer
+	url = https://github.com/geoschem/MinimumStandaloneTransportTracer.git
