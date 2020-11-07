@@ -42,7 +42,7 @@ steps:
     mkdir build
     cd build
     cmake $(Build.Repository.LocalPath) -DCMAKE_COLOR_MAKEFILE=FALSE -DRUNDIR=$(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
-    make -j gchp
+    make -j install
   displayName: 'Build GCHP'
 - script: |
     source /init.rc
