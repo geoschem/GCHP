@@ -1,4 +1,4 @@
-# Quick build pipeline:
+# Quick test pipeline:
 # 
 # This pipeline checks that commits and pull requests don't introduce build errors or runtime
 # errors. This is meant to be a quick and simple check that runs frequently.
@@ -24,7 +24,7 @@ pool:
 container: liambindle/penelope:2019.12-centos7-openmpi3.1.4-esmf8.0.0
 
 
-# Try building GEOS-Chem
+# Pipeline definition
 steps:
 - checkout: self
   submodules: recursive
