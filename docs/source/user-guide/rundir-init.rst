@@ -2,45 +2,107 @@
 Creating a run directory
 ========================
 
-First, make a high-level directory to contain all the run directories associated with this version
-of GCHP. This should be somewhere with plenty of space, as all run output will be in subdirectories
-of this directory. You can optionally create one or more build directories here for storage and easy
-access to GCHP builds specific to a certain version (see previous section on building GCHP).
+GCHP run directories are created from within the source code.
+A new run directory should be created for each different version of GEOS-Chem you use. 
+Git version information is logged to file :file:`rundir.version` within the run directory upon creation.
+
+To create a run directory, navigate to the :file:`run/` subdirectory of the source code and execute shell script :file:`createRunDir.sh`.
 
 .. code-block:: console
 
-   $ mkdir /scratch/testruns/GCHP/13.0.0
+   gcuser:~$ cd Code.GCHP/run
+   gcuser:~/Code.GCHP/run$
 
-Next, enter the :file:`run/` subdirectory in :file:`Code.GCHP`. Do not edit this directory - this is the template for
-all other run directories! Instead, use the script there to create a new run directory, following
-the instructions printed to the screen.
+During the course of script execution you will be asked a series of questions:
 
+Enter ExtData path
+------------------
 
-.. code-block:: console
+The first time you create a GCHP run directory on your system you will be prompted for a path to GEOS-Chem shared data directories. 
+The path should include the name of your :file:`ExtData/` directory and should not contain symbolic links. 
+The path you enter will be stored in file :file:`.geoschem/config` in your home directory as environment variable :envvar:`GC_DATA_ROOT`. 
+If that file does not already exist it will be created for you. 
+When creating additional run directories you will only be prompted again if the file is missing or if the path within it is not valid.
 
-   $ cd Code.GCHP
-   $ cd run
-   $ ./createRunDir.sh
+.. code-block:: none
 
-For example, to create a standard (full-chemistry) run directory, choose (actual responses in brackets):
+   -----------------------------------------------------------
+   Enter path for ExtData:
+   -----------------------------------------------------------
 
-* Standard simulation (2)
-* MERRA2 meteorology (2)
-* The directory you just created in step 1 (:file:`/scratch/rundirs/GCHP/13.0.0`)
-* A distinctive run directory name (fullchem_first_test)
-* Use git to track run directory changes (y)
+Choose a simulation type
+------------------------
 
-This will create and set up a full-chemistry, MERRA-2, GCHP run directory in
-:file:`/scratch/testruns/GCHP/13.0.0/fullchem_first_test`. Note that these options only affect the run
-directory contents, and NOT the build process - the same GCHP executable is usable for almost all
-simulation types and supported met data options.
+Enter the integer number that is next to the simulation type you want to use.
 
-Navigate to your new run directory, and set it up for the first run:
+.. code-block:: none
 
-.. code-block:: console
+   -----------------------------------------------------------
+   Choose simulation type:
+   -----------------------------------------------------------
+     1. Full chemistry
+     2. TransportTracers
 
-   $ cd /scratch/testruns/GCHP/13.0.0/fullchem_first_test
-   $ ./setEnvironment /home/envs/gchpctm_ifort18.0.5_openmpi4.0.1.env # This sets up the gchp.env symlink
-   $ source gchp.env # Set up build environment, if not already done
-   $ cp runScriptSamples/gchp.run . # Set up run script - your system is likely to be different! See also gchp.local.run.
-   $ cp CodeDir/build/bin/geos . # Get the compiled executable
+If creating a full chemistry run directory you will be given additional options. Enter the integer number that is next to the simulation option you want to run.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Choose additional simulation option:
+   -----------------------------------------------------------
+     1. Standard
+     2. Benchmark
+     3. Complex SOA
+     4. Marine POA
+     5. Acid uptake on dust
+     6. TOMAS
+     7. APM
+     8. RRTMG
+
+Choose meteorology source
+-------------------------
+
+Enter the integer number that is next to the input meteorology source you would like to use.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Choose meteorology source:
+   -----------------------------------------------------------
+     1. MERRA2 (Recommended)
+     2. GEOS-FP
+
+Enter run directory path
+------------------------
+
+Enter the target path where the run directory will be stored. You will be prompted to enter a new path if the one you enter does not exist.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Enter path where the run directory will be created:
+   -----------------------------------------------------------
+
+Enter run directory name
+------------------------
+
+Enter the run directory name, or accept the default. You will be prompted for a new name if a run directory of the same name already exists at the target path.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Enter run directory name, or press return to use default:
+   -----------------------------------------------------------
+
+Enable version control (optional)
+---------------------------------
+
+Enter whether you would like your run directory tracked with git version control. 
+With version control you can keep track of exactly what you changed relative to the original settings. 
+This is useful for trouble-shooting as well as tracking run directory feature changes you wish to migrate back to the standard model.
+
+.. code-block:: none
+
+   -----------------------------------------------------------
+   Do you want to track run directory changes with git? (y/n)
+   -----------------------------------------------------------

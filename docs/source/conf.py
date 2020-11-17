@@ -63,5 +63,5 @@ html_logo = "geos-chem-shared-docs/_static/geos-chem-logo.svg"
 html_theme_options = {
     'logo_only': True,
     'display_version': False,
-    'style_nav_header_background': '#F0F0F0' # '#FCFCFC',
+    'style_nav_header_background': '#FCFCFC',
 }
