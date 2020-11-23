@@ -44,6 +44,11 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
    stretched-grid.rst
    step-by-step/satellite-overpass.rst
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+
+   tutorials/stretched-grid.rst
 
 .. toctree::
    :maxdepth: 1
