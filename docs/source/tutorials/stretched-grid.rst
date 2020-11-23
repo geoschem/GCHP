@@ -68,9 +68,9 @@ following modifications to :file:`runConfig.sh`:
   demands are about :math:`1.5\times` that of a C48 or 2°x2.5° simulation.
   
 .. note::
-    I chose to use 30 cores on 1 node. The simulation took 7 hours
-    to run. For comparison, I also ran the simulation on 300 cores across 10 
-    nodes, and that took 1 hour to run.
+    I chose to use 30 cores on 1 node, and the simulation took 7 hours
+    to run. For comparison, I also ran the simulation on 180 cores across 6 
+    nodes, and that took about 2 hours.
 
 .. I started the 30 core simulation at ~3:45--4:00 (
 
