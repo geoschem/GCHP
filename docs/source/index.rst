@@ -40,6 +40,7 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
    :caption: Step-by-step Guides
 
    step-by-step/rundir-config.rst
+   step-by-step/config-files.rst
    step-by-step/plotting-output.rst
    stretched-grid.rst
    step-by-step/satellite-overpass.rst
