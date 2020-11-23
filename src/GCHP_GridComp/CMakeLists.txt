@@ -3,7 +3,6 @@
 #---------------
 # Set cmake logicals needed for subprojects
 #---------------
-set(OMP                   FALSE ) # Do not use OpenMP
 set(FV_PRECISION          R8    ) # FV3 precision is R8
 set(HEMCO_EXTERNAL_CONFIG TRUE  ) # Not HEMCO standalone
 set(GC_EXTERNAL_CONFIG    TRUE  ) # Not GEOS-Chem Classic
@@ -36,4 +35,4 @@ add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 add_library(GCHP_GridComp STATIC
     GCHP_GridCompMod.F90
 )
-target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP HCOI_GCHP)
+target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)

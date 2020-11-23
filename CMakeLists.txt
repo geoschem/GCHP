@@ -4,6 +4,17 @@ project (gchp_ctm
   LANGUAGES Fortran CXX C
 )
 
+# Disable OMP by default if using gfortran to avoid a performance hit.
+# Enable OMP if using ifort to avoid a run-time seg fault. Both of these issues
+# are bugs under investigation.
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
+elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
+  set(OMP ON CACHE BOOL "Switch to enable/disable OpenMP")
+else()
+    message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
+endif()
+
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
   ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake 
@@ -11,11 +22,9 @@ list(APPEND CMAKE_MODULE_PATH
 )
 
 # Run directory
-set(RUNDIR ${CMAKE_BINARY_DIR}/.. CACHE PATH "Path to GCHPctm run directory")
-if(RUNDIR)
-  set(CMAKE_INSTALL_PREFIX ${RUNDIR} CACHE PATH "Install prefix for GCHPctm" FORCE)
-  set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
-endif()
+set(RUNDIR ".." CACHE PATH "Path(s) to run directory (semicolon separated list). Specifies install locations for gchp")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Fake CMAKE_INSTALL_PREFIX (use RUNDIR instead)" FORCE)
+set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
 
 # Find nc-config and nf-config
 find_program(NC_CONFIG NAMES "nc-config" DOC "Location of nc-config utility")
