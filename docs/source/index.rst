@@ -17,6 +17,7 @@ GEOS-Chem High Performance
    user-guide/rundir-init.rst
    user-guide/rundir-config.rst
    user-guide/running.rst
+   user-guide/containers.rst
 
 
 .. toctree::
