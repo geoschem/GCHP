@@ -103,8 +103,8 @@ If you do not intend to use a job scheduler like Slurm to run GCHP, use the foll
 
 .. code-block:: console
 
-      $ spack install openmpi@4.0.4%gcc@9.3.0
-      $ spack install netcdf-fortran%gcc@9.3.0 ^netcdf-c^hdf5^openmpi@4.0.4
+   $ spack install openmpi@4.0.4%gcc@9.3.0
+   $ spack install netcdf-fortran%gcc@9.3.0 ^netcdf-c^hdf5^openmpi@4.0.4
 
 
 **Intel MPI**
@@ -113,7 +113,6 @@ If you do not intend to use a job scheduler like Slurm to run GCHP, use the foll
 
    $ spack install intel-mpi%gcc@9.3.0
    $ spack install netcdf-fortran%gcc@9.3.0 ^intel-mpi
-
 
 
 **MVAPICH2**
