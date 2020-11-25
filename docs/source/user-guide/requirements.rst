@@ -122,7 +122,7 @@ If you do not intend to use a job scheduler like Slurm to run GCHP, use the foll
    $ spack install mvapich2%gcc@9.3.0
    $ spack install netcdf-fortran%gcc@9.3.0 ^netcdf-c^hdf5^mvapich2
 
- 
+
 Configuring libraries with Slurm support
 ########################################
  
