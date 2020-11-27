@@ -3,101 +3,121 @@
 Quick start
 ===========
 
-This page gives a brief description of downloading, building, and running GCHP. This quickstart
-guide assumes that your environment already satisfies :ref:`GCHP's requirements
-<software_requirements>`. This means it assumes you have already loaded software modules
-etc. so programs like :program:`cmake` and :program:`mpirun` are available
-(along with the rest of GCHP's requirements).
-
-Refer to the user guide for more detailed instructions.
+This quickstart guide assumes that your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
+This means we assume you have already loaded software modules etc. so programs like :program:`cmake` and :program:`mpirun` are available (along with the rest of GCHP's requirements). 
+You can find more detailed instructions in the user guide.
 
 1. Clone GCHP
 -------------
 
-Download the GCHP source code.
+Download the source code:
 
 .. code-block:: console
 
-   $ git clone https://github.com/geoschem/GCHPctm.git ~/GCHPctm
-   $ cd ~/GCHPctm
+   gcuser:~$ git clone https://github.com/geoschem/GCHPctm.git ~/GCHPctm
+   gcuser:~$ cd ~/GCHPctm
 
-Checkout the version that you want to use.
+Checkout the version that you want to use:
 
 .. code-block:: console
 
-   $ git checkout 13.0.0
+   gcuser:~/GCHPctm$ git checkout 13.0.0-beta.1
 
 Initialize and update all the submodules.
 
 .. code-block:: console
 
-   $ git submodule update --init --recursive
-
+   gcuser:~/GCHPctm$ git submodule update --init --recursive
 
 2. Create a run directory
 -------------------------
 
-Navigate to the :file:`run/` subdirectory of the source code. To create a run directory,
-use :program:`createRunDir.sh` and follow the prompts.
+Navigate to the :file:`run/` subdirectory. 
+Create a run directory by running :file:`./createRunDir.sh` and following the prompts:
 
 .. code-block:: console
 
-   $ cd ~/GCHPctm/run
-   $ ./createRunDir.sh
+   gcuser:~/GCHPctm$ cd run/
+   gcuser:~/GCHPctm$ ./createRunDir.sh
 
 3. Configure your build
 -----------------------
 
-Create a build directory and :command:`cd` into it. The name doesn't matter but :file:`build/` is a
-good choice. A good place to put this directory is in the top-level of the source code.
+Create a build directory and :command:`cd` into it. 
+A good name for this directory is :file:`build/`, and a good place to put it is in the 
+top-level of the source code:
 
 .. code-block:: console
 
-   $ mkdir ~/GCHPctm/build
-   $ cd ~/GCHPctm/build
+   gcuser:~/GCHPctm$ mkdir ~/GCHPctm/build
+   gcuser:~/GCHPctm$ cd ~/GCHPctm/build
 
-Configure your build with :program:`cmake`. Pass :program:`cmake` the path to the source code.
-
-.. code-block:: console
-
-   $ cmake ~/GCHPctm
-
-Configure your build to install :program:`geos` to your run directory. You can specify multiple
-run directories with a semicolon-separated list.
+Initialize your build directory by running :program:`cmake` and passing it the path to your source code:
 
 .. code-block:: console
 
-   $ cmake . -DRUNDIR="/path/to/your/run/directory"
+   gcuser:~/GCHPctm/build$ cmake ~/GCHPctm
 
+Now you can configure :ref:`build options <gchp_build_options>`. 
+These are persistent settings that are saved to your build directory.
+A common build option is :literal:`-DRUNDIR`. 
+This option lets you specify one or more run directories that GCHP is "installed" to when you do :command:`make install`. 
+Configure your build so it installs GCHP to the run directory you created in Step 2:
+
+.. code-block:: console
+
+   gcuser:~/GCHPctm/build$ cmake . -DRUNDIR="/path/to/your/run/directory"
+
+.. note::
+   The :literal:`.` in the :program:`cmake` command above is important. It tells CMake that your 
+   current working directory (i.e., :literal:`.`) is your build directory.
 
 4. Compile and install
 ----------------------
 
-Compile GCHP with the :program:`make` command.
+Compiling GCHP takes about 20 minutes, but it can varry depending on your system. 
+Next, compile GCHP:
 
 .. code-block:: console
 
-   $ make -j
+   gcuser:~/GCHPctm/build$ make -j
 
-Install :program:`geos` to your run directory (or directories). This step copies :file:`bin/geos` to
-the directories listed in the :literal:`RUNDIR` CMake variable.
+Next, install the compiled executable to your run directory (or directories):
 
 .. code-block:: console
 
-   $ make install
+   gcuser:~/GCHPctm/build$ make install
+
+This copies :file:`bin/gchp` and supplemental files to your run directory. 
+
+.. note::
+   You can update build settings at any time:
+   
+   1. Navigate to your build directory.
+   2. Update your build settings with :program:`cmake`. See 
+   3. Recompile with :command:`make -j`. Note that the build system automatically figures out what (if any) files
+      need to be recompiled.
+   4. Install the rebuilt executable with :command:`make install`.
+
 
 5. Configure your run directory
 -------------------------------
 
-Navigate to your run directory. Most simulation settings are configured in the :program:`runConfig.sh` 
-script. You edit this file, and others in the directory, to configure
-your simulation. Once you have updated these files, run the :program:`runConfig.sh` script.
+Now, navigate to your run directory:
 
 .. code-block:: console
 
    $ cd path/to/your/run/directory
+
+Most simulation settings are configured in :file:`./runConfig.sh`. 
+You should review this file as it explains how to configure most simulation settings.
+Note that :file:`./runConfig.sh` is actually a helper script that updates other configuration files. 
+Therefore, you need to run it to actually apply the updates:
+
+.. code-block:: console
+
    $ vim runConfig.sh               # edit simulation settings here
-   $ ./runConfig.sh
+   $ ./runConfig.sh                 # applies the updated settings
 
 6. Run GCHP
 -----------
@@ -107,23 +127,23 @@ MVAPICH2, etc.) and scheduler (e.g., SLURM, LSF, etc.). If you aren't familiar w
 programs on your system, see :ref:`Running GCHP <running_gchp>` in the user guide, or ask your
 system administrator.
 
-Your MPI library and scheduler will have a command for launching MPI programs---it is usually
-something like :program:`mpirun`, :program:`mpiexec`, or :program:`srun`. Refer to its documentation
-for its usage, but this is the command you use to launch the :program:`geos` executable in your run
-directory. For example, with OpenMPI you might do
+Your MPI library and scheduler will have a command for launching MPI programs---it's usually something like :program:`mpirun`, :program:`mpiexec`, or :program:`srun`. 
+This is the command you use to launch the :program:`gchp` executable that is in your run directory. 
+You'll need to refer to your system's documentation for specific instructions on running MPI programs,
+but generally it looks something like this:
 
 .. code-block:: console
 
-   $ mpirun -np 6 ./geos   # example for OpenMPI with 6 slots
+   $ mpirun -np 6 ./gchp   # example of running GCHP with 6 slots with OpenMPI 
 
 It's recommended you run GCHP as a batch job. This means that you will write a script that runs GCHP,
 and then you will submit that script to your scheduler.
 
 .. note::
-   When GCHP runs, either partially or to completion, it outputs a number of files including
-   :file:`cap_restart` and :file:`gcchem_internal_checkpoint`. If these files exist when you
-   start GCHP, it won't overwrite these, and instead it will exit with an error. Because of this,
-   it's common to do
+   When GCHP runs, partially or to completion, it generates several files including
+   :file:`cap_restart` and :file:`gcchem_internal_checkpoint`. Subsequent runs won't
+   overwrite these files, and instead the run will exit with an error. Because of this it is
+   common to do
 
    .. code-block:: console
 

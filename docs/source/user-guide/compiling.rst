@@ -138,6 +138,7 @@ and optionally, do :command:`make install`.
 
 ------------
 
+.. _gchp_build_options:
 
 GCHP build options
 ------------------
