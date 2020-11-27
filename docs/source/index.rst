@@ -33,7 +33,6 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
    user-guide/compiling.rst
    user-guide/rundir-init.rst
    user-guide/running.rst
-   user-guide/containers.rst
 
 
 .. toctree::
@@ -42,6 +41,7 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
 
    step-by-step/rundir-config.rst
    step-by-step/config-files.rst
+   step-by-step/containers.rst
    step-by-step/plotting-output.rst
    stretched-grid.rst
    step-by-step/satellite-overpass.rst
