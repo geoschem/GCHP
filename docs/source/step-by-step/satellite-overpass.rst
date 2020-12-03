@@ -32,6 +32,9 @@ NetCDF file with the following format
 .. important::
    Longitudes must be between 0 and 360.
 
+.. important::
+    When using :literal:`recycle_track`, the time offsets must be between 0 and 24 hours.
+
 To configure 1D output, you can add the following attributes to any collection in 
 :file:`HISTORY.rc`.
 
@@ -41,7 +44,7 @@ To configure 1D output, you can add the following attributes to any collection i
    sampled at (nearest neighbor).
 
 :recycle_track:
-   Either :literal:`0` (default) or :literal:`1`. When enabled, HISTORY replaces the date of the
+   Either :literal:`.false.` (default) or :literal:`.true.`. When enabled, HISTORY replaces the date of the
    :literal:`time` coordinate in the track file with the simulation's current day. This lets you use
    the same track file for every day of your simulation.
 
@@ -55,17 +58,17 @@ To configure 1D output, you can add the following attributes to any collection i
 Creating a satellite track file
 -------------------------------
 
-GCPy includes a command line tool, :program:`gcpy.1D_raveller`, for generating track files
+GCPy includes a command line tool, :program:`gcpy.raveller_1D`, for generating track files
 for polar orbiting satellites. These track files will sample model grid-boxes at the times that correspond
 to the satellite's overpass time. You can also use this tool to "unravel" the resulting 1D output back
-to a cubed-sphere grid. Below is an example of using :program:`gcpy.1D_raveller` to create a track
+to a cubed-sphere grid. Below is an example of using :program:`gcpy.raveller_1D` to create a track
 file for a C180 simulation for TROPOMI, which is in ascending sun-synchronous orbit with 14 orbits
 per day and an overpass time of 13:30. Please see the GCPy documentation for this program's exact
 usage, and for installation instructions.
 
 .. code-block:: console
 
-   $ python -m gcpy.1D_raveller create_track --cs_res 180 --overpass_time 13:30 --direction ascending --orbits_per_day 14 -o tropomi_overpass.nc
+   $ python -m gcpy.raveller_1D create_track --cs_res 24 --overpass_time 13:30 --direction ascending --orbits_per_day 14 -o tropomi_overpass_c24.nc
 
 The resulting track file, :file:`tropomi_overpass_c24.nc`, looks like so
 
@@ -98,8 +101,12 @@ The resulting track file, :file:`tropomi_overpass_c24.nc`, looks like so
 
 .. note::
    Track files do not require the :literal:`nf`, :literal:`Ydim`, :literal:`Xdim` variables.
-   The are used for post-process "ravelling" with :program:`gcpy.1D_raveller` (changing the 1D output's
+   The are used for post-process "ravelling" with :program:`gcpy.raveller_1D` (changing the 1D output's
    coordinates to a cubed-sphere grid).
+
+.. note::
+   With :literal:`recycle_track`, HISTORY replaces the reference date (e.g., 1900-01-01) with the simulation's 
+   current date, so you can use any reference date.
 
 Updating HISTORY
 ----------------
@@ -114,7 +121,7 @@ the :file:`tropomi_overpass_c24.nc`.
      TROPOMI_NO2.format:         'CFIO',
      TROPOMI_NO2.duration:       240000
      TROPOMI_NO2.track_file:     tropomi_overpass_c24.nc
-     TROPOMI_NO2.recycle_track:  1
+     TROPOMI_NO2.recycle_track:  .true.
      TROPOMI_NO2.mode:           'instantaneous'
      TROPOMI_NO2.fields:         'SpeciesConc_NO2            ', 'GCHPchem',
    ::
@@ -123,14 +130,14 @@ the :file:`tropomi_overpass_c24.nc`.
 Unravelling 1D overpass timeseries
 ----------------------------------
 
-To covert the 1D timeseries back to a cubed-sphere grid, you can use :program:`gcpy.1D_raveller`.
+To covert the 1D timeseries back to a cubed-sphere grid, you can use :program:`gcpy.raveller_1D`.
 Below is an example of changing the 1D output back to model grid. Again, see the GCPy documentation
 for this program's exact usage, and for installation instructions.
 
 
 .. code-block:: console
 
-   $ python -m gcpy.1D_raveller unravel --track tropomi_overpass_c24.nc -i OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.nc4 -o OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4
+   $ python -m gcpy.raveller_1D unravel --track tropomi_overpass_c24.nc -i OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.nc4 -o OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4
 
 The resulting dataset, :file:`GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4`, are simulated concentration on the model grid, sampled
 at the times that correspond to TROPOMI's overpass.
