@@ -9,9 +9,9 @@ Software requirements
 The following are GCHP's required dependencies:
 
 * Git
-* Make or GMake
+* Make or GNUMake
 * CMake (version 3.13 or greater)
-* Fortran compiler (gfortran 8.3 or greater, ifort 18 or greater)
+* Compilers (C, C++, and Fortran): GNU 8.3 or greater, Intel 18 or greater
 * HDF5
 * NetCDF-C, NetCDF-CXX, NetCDF-Fortran
 * MPI (C, C++, and Fortran)
