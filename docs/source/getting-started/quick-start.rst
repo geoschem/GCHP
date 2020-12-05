@@ -3,8 +3,8 @@
 Quick start
 ===========
 
-This quickstart guide assumes that your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
-This means we assume you have already loaded software modules etc. so programs like :program:`cmake` and :program:`mpirun` are available (along with the rest of GCHP's requirements). 
+This quickstart guide assumes your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
+This means you should load a compute environment with programs like :program:`cmake` and :program:`mpirun` before continuing.
 You can find more detailed instructions in the user guide.
 
 1. Clone GCHP
@@ -14,20 +14,20 @@ Download the source code:
 
 .. code-block:: console
 
-   gcuser:~$ git clone https://github.com/geoschem/GCHPctm.git ~/GCHPctm
-   gcuser:~$ cd ~/GCHPctm
+   gcuser:~$ git clone https://github.com/geoschem/GCHP.git ~/GCHP
+   gcuser:~$ cd ~/GCHP
 
-Checkout the version that you want to use:
+Checkout the GEOS-Chem version that you want to use:
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm$ git checkout 13.0.0-beta.1
+   gcuser:~/GCHP$ git checkout 13.0.0-beta.1
 
 Initialize and update all the submodules.
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm$ git submodule update --init --recursive
+   gcuser:~/GCHP$ git submodule update --init --recursive
 
 2. Create a run directory
 -------------------------
@@ -37,8 +37,8 @@ Create a run directory by running :file:`./createRunDir.sh` and following the pr
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm$ cd run/
-   gcuser:~/GCHPctm$ ./createRunDir.sh
+   gcuser:~/GCHP$ cd run/
+   gcuser:~/GCHP$ ./createRunDir.sh
 
 3. Configure your build
 -----------------------
@@ -49,14 +49,14 @@ top-level of the source code:
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm$ mkdir ~/GCHPctm/build
-   gcuser:~/GCHPctm$ cd ~/GCHPctm/build
+   gcuser:~/GCHP$ mkdir ~/GCHP/build
+   gcuser:~/GCHP$ cd ~/GCHP/build
 
 Initialize your build directory by running :program:`cmake` and passing it the path to your source code:
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm/build$ cmake ~/GCHPctm
+   gcuser:~/GCHP/build$ cmake ~/GCHP
 
 Now you can configure :ref:`build options <gchp_build_options>`. 
 These are persistent settings that are saved to your build directory.
@@ -66,7 +66,7 @@ Configure your build so it installs GCHP to the run directory you created in Ste
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm/build$ cmake . -DRUNDIR="/path/to/your/run/directory"
+   gcuser:~/GCHP/build$ cmake . -DRUNDIR="/path/to/your/run/directory"
 
 .. note::
    The :literal:`.` in the :program:`cmake` command above is important. It tells CMake that your 
@@ -80,13 +80,13 @@ Next, compile GCHP:
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm/build$ make -j
+   gcuser:~/GCHP/build$ make -j
 
 Next, install the compiled executable to your run directory (or directories):
 
 .. code-block:: console
 
-   gcuser:~/GCHPctm/build$ make install
+   gcuser:~/GCHP/build$ make install
 
 This copies :file:`bin/gchp` and supplemental files to your run directory. 
 

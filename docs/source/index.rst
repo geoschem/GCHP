@@ -21,9 +21,9 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
    :caption: Getting Started
 
    getting-started/quick-start.rst
-   getting-started/gentle-intro.rst
-   getting-started/getting-help.rst
    getting-started/requirements.rst
+..    getting-started/gentle-intro.rst
+..    getting-started/getting-help.rst
 
 .. toctree::
    :maxdepth: 2
@@ -41,6 +41,7 @@ Modeling Group at Harvard University <http://acmg.seas.harvard.edu/index.html>`_
 
    step-by-step/rundir-config.rst
    step-by-step/config-files.rst
+   step-by-step/spack.rst
    step-by-step/containers.rst
    step-by-step/plotting-output.rst
    stretched-grid.rst

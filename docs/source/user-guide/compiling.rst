@@ -96,8 +96,8 @@ You should notice that when you run :program:`cmake` it ends with:
 
 This tells you the configuration was successful, and that you are ready to compile. 
 
-Compile
--------
+Compile GCHP
+------------
 
 You compile GCHP with:
 

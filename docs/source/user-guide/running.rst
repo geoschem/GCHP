@@ -52,7 +52,7 @@ You may copy any of the example run scripts to your run directory and adapt for 
 At the top of all batch job scripts are configurable run settings. 
 Most critically are requested # cores, # nodes, time, and memory. 
 Figuring out the optimal values for your run can take some trial and error. 
-For a basic six core standard simulation job on one node you should request at least ___ min and __ Gb. 
+For a basic six core standard simulation job on one node you should request at least 20 min and 32GB of memory. 
 The more cores you request the faster GCHP will run.
 
 To submit a batch job using SLURM:
@@ -153,3 +153,19 @@ Prior to running GCHP, always run through the following checklist to ensure ever
 4. If running via a job scheduler: you have a run script and the resource allocation in :file:`runConfig.sh` and your run script are consistent (# nodes and cores)
 5. If running interactively: the resource allocation in :file:`runConfig.sh` is available locally
 6. If reusing a run directory (optional but recommended): you have archived your last run with :literal:`./archiveRun.sh` if you want to keep it and you have deleted old output files with :literal:`./cleanRunDir.sh`
+
+Recommended MPI configuration
+-----------------------------
+
+IntelMPI
+^^^^^^^^
+
+.. code-block:: bash
+
+    export I_MPI_ADJUST_GATHERV=3
+    export I_MPI_ADJUST_ALLREDUCE=12
+
+OpenMPI
+^^^^^^^
+
+At high-core counts (e.g., > ~1000 cores) it's recommended to set :literal:`WRITE_RESTART_BY_OSERVER: YES` in :file:`GCHP.rc`.
