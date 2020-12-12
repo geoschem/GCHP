@@ -29,12 +29,18 @@ add_subdirectory(FMS fms_r8 EXCLUDE_FROM_ALL)
 add_subdirectory(GCHP_GridComp EXCLUDE_FROM_ALL)
 
 # The executable
-add_executable(geos
+add_executable(gchp
     GCHPctm.F90
 )
-target_link_libraries(geos
+target_link_libraries(gchp
 	PUBLIC GCHP_GridComp ${CMAKE_DL_LIBS}
 )
-set_target_properties(geos PROPERTIES
+set_target_properties(gchp PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-install(TARGETS geos RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+foreach(RUNDIR_PATH ${RUNDIR})
+	# If RUNDIR is not a relative path, make it an absolute path relative to the build directory
+	if(NOT IS_ABSOLUTE "${RUNDIR_PATH}")
+		get_filename_component(RUNDIR_PATH "${RUNDIR_PATH}" ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}")
+	endif()
+	install(TARGETS gchp RUNTIME DESTINATION ${RUNDIR_PATH})
+endforeach()
