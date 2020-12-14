@@ -6,6 +6,9 @@ Compiling GCHP
     This user guide assumes you have loaded a computing environment that satisfies
     :ref:`GCHP's software requirements <software_requirements>`.
 
+.. note::
+   Another useful resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_.
+
 There are two steps to build GCHP. The first step is configuring your build. 
 To configure your build you use :program:`cmake` to configure build settings. 
 Build settings cover options like enabling or disabling components like 
@@ -52,6 +55,22 @@ of creating a build directory in the top-level of the GCHP source code:
    -- Generating done
    -- Build files have been written to: /src/build
    gcuser:~/Code.GCHP/build$ 
+
+.. note:: 
+   If you get a CMake error saying "Could not find XXXX" (where XXXX is a dependency like
+   ESMF, NetCDF, HDF5, etc.), the problem is that CMake can't automatically find where that library 
+   is installed on your system. You can add custom paths to CMake's default list of search paths with the
+   :literal:`CMAKE_PREFIX_PATH` variable.
+
+   For example, if you got an error saying "Could not find ESMF", and ESMF were installed
+   at :file:`/software/ESMF`, you would do
+
+   .. code-block:: console
+      
+      gcuser:~/Code.GCHP/build$ cmake . -DCMAKE_PREFIX_PATH=/software/ESMF
+    
+   See the next section for details on setting build variables like :literal:`CMAKE_PREFIX_PATH`.
+   
 
 Configure your build
 --------------------
