@@ -91,7 +91,7 @@ as you need to configure your desired settings.
    The :literal:`.` argument is important. It is the path to your build directory which
    is :literal:`.` here.
 
-GCHP has no required build settings. You can find the complete list of GCHP's build settings `here <Build options for GCHP>`_.
+GCHP has no required build settings. You can find the complete list of :ref:`GCHP's build settings here <gchp_build_options>`.
 The most frequently used build setting is :literal:`RUNDIR` which lets you specify one or more run directories
 to install GCHP to. Here, "install" refers to copying the compiled executable, and some supplemental files
 with build settings, to your run directories.
@@ -206,7 +206,7 @@ RRTMG
     Switch to enable/disable the RRTMG component.
 
 OMP
-   Switch to enable/disable OpenMP multithreading. As is standard in CMake (see `here <https://cmake.org/cmake/help/latest/command/if.html>`_) valid values are :literal:`ON`, :literal:`YES`, :literal:`Y`, :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
+   Switch to enable/disable OpenMP multithreading. As is standard in CMake (see `if documentation <https://cmake.org/cmake/help/latest/command/if.html>`_) valid values are :literal:`ON`, :literal:`YES`, :literal:`Y`, :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
    false values are their opposites.
 
 INSTALLCOPY

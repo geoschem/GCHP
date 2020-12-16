@@ -1,6 +1,6 @@
 
 
-Quick start
+Quick Start
 ===========
 
 This quickstart guide assumes your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 

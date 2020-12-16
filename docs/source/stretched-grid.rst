@@ -35,7 +35,7 @@ covers the refion that you want to refine.
 .. note::
 
    The interactive figure above can be a bit fiddly. Refresh the page if the view gets messed up.
-   If the figure above is not showing up properly, please :ref:`open an issue <open_an_issue>`.
+   If the figure above is not showing up properly, please :doc:`open an issue <reference/SUPPORT>`.
 
 Next you need to choose a cubed-sphere size. The cubed-sphere size must be an even integer (e.g.,
 C90, C92, C94, etc.). Remeber that the resolution of the target face is enhanced by approximately the

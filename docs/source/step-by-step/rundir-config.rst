@@ -52,10 +52,10 @@ Please get very familiar with the options in :file:`runConfig.sh` and be conscie
 You generally will not need to know more about the GCHP configuration files beyond what is listed on this page. 
 However, for a comprehensive description of all configuration files used by GCHP see the last section of this user manual.
 
+---------------------------------------------------------------------------------------------------
+
 Common options
 --------------
-
----------------------------------------------------------------------------------------------------
 
 Compute configuration
 ^^^^^^^^^^^^^^^^^^^^^
