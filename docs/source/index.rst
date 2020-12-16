@@ -40,15 +40,15 @@ problems.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Supplemental Guides
+   :caption: Supplement
 
-   step-by-step/rundir-config.rst
-   step-by-step/config-files.rst
-   step-by-step/spack.rst
-   step-by-step/containers.rst
-   step-by-step/plotting-output.rst
+   supplement/rundir-config.rst
+   supplement/config-files.rst
+   supplement/spack.rst
+   supplement/containers.rst
+   supplement/plotting-output.rst
    stretched-grid.rst
-   step-by-step/satellite-overpass.rst
+   supplement/satellite-overpass.rst
 
 .. toctree::
    :maxdepth: 1
@@ -62,7 +62,7 @@ problems.
 
    reference/SUPPORT.md
    reference/CONTRIBUTING.md
-   reference/glossary.rst
    geos-chem-shared-docs/editing_these_docs.rst
    reference/git-submodules.rst
+   reference/glossary.rst
    reference/versioning.rst

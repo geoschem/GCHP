@@ -1,7 +1,7 @@
 
 .. _installing_with_spack:
 
-Installing dependencies with Spack
+Installing Dependencies with Spack
 ==================================
 
 

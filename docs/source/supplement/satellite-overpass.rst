@@ -1,6 +1,6 @@
 
 
-Output along a track
+Output Along a Track
 ====================
 
 HISTORY collections can define a :literal:`track_file` that specifies a 1D timeseries of coordinates

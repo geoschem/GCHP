@@ -4,8 +4,8 @@ Quick Start
 ===========
 
 This quickstart guide assumes your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
-This means you should load a compute environment with programs like :program:`cmake` and :program:`mpirun` before continuing.
-You can find more detailed instructions in the user guide.
+This means you should load a compute environment such that programs like :program:`cmake` and :program:`mpirun`
+are available, before continuing. You can find more detailed instructions in the user guide.
 
 1. Clone GCHP
 -------------
@@ -23,7 +23,20 @@ Checkout the GEOS-Chem version that you want to use:
 
    gcuser:~/GCHP$ git checkout 13.0.0-beta.1
 
-Initialize and update all the submodules.
+.. note::
+   Version 13 is not officially released yet. Until then, the most recent
+   commit to :literal:`main` is the most stable version of GCHP. Therefore,
+   we recommend you checkout :literal:`main`, rather than a version
+   like :literal:`13.0.0-beta.1`. E.g.:
+
+   .. code-block:: console
+
+      $ git checkout main   # recommended until version 13 is officially released
+
+   Once version 13 is released, we will resume recommending users checkout
+   a specific version.
+
+Initialize and update all submodules:
 
 .. code-block:: console
 
@@ -33,7 +46,7 @@ Initialize and update all the submodules.
 -------------------------
 
 Navigate to the :file:`run/` subdirectory. 
-Create a run directory by running :file:`./createRunDir.sh` and following the prompts:
+Create a run directory by running :file:`./createRunDir.sh` and answering the prompts:
 
 .. code-block:: console
 
@@ -44,7 +57,7 @@ Create a run directory by running :file:`./createRunDir.sh` and following the pr
 -----------------------
 
 Create a build directory and :command:`cd` into it. 
-A good name for this directory is :file:`build/`, and a good place to put it is in the 
+A good name for this directory is :file:`build/`, and a good place for it is in the 
 top-level of the source code:
 
 .. code-block:: console

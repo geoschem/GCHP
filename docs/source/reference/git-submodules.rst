@@ -1,6 +1,6 @@
 
 
-Git submodules
+Git Submodules
 ==============
 
 

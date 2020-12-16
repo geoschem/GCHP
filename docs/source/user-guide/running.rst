@@ -4,6 +4,11 @@
 Running GCHP
 ============
 
+
+.. note::
+   Another useful resource for instructions on running GCHP is our `YouTube tutorial <https://www.youtube.com/watch?v=K6frcfCjpds>`_.
+
+
 This page presents the basic information needed to run GCHP as well as how to verify a successful run and reuse a run directory. 
 A pre-run checklist is included at the end to help prevent run errors. 
 The GCHP "standard" simulation run directory is configured for a 1-hr simulation at c24 resolution and is a good first test case to check that GCHP runs on your system.

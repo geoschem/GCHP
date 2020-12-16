@@ -1,4 +1,4 @@
-Stretched-grid simulation: Eastern US 
+Stretched-Grid Simulation: Eastern US 
 =====================================
 
 This tutorial walks you through setting up and running a stretched-grid simulation

@@ -1,6 +1,6 @@
 
 
-Plotting GCHP output
+Plotting GCHP Output
 ====================
 
 todo

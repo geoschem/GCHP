@@ -1,5 +1,5 @@
 
-Creating a run directory
+Creating a Run Directory
 ========================
 
 GCHP run directories are created from within the source code.

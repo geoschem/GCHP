@@ -1,4 +1,4 @@
-Using GCHP containers
+Using GCHP Containers
 =====================
 
 Containers are an effective method of packaging and delivering GCHP's source code and requisite libraries.

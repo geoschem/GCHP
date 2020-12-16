@@ -1,7 +1,11 @@
 
 
-Stretched-grid simulations
+Stretched-Grid Simulations
 ==========================
+
+.. note::
+   Stretched-grid simulations are described in :cite:`Bindle_et_al._2020`. The paper also discusses things
+   you should consider, and offers guidance for choosing appropriate stretching parameters.
 
 A stretched-grid is a cubed-sphere grid that is "stretched" to enhance its resolution in a region.
 To set up a stretched-grid simulation you need to do two things:
@@ -149,3 +153,4 @@ configuration files.
 .. code-block:: console
 
    $ ./runConfig.sh
+

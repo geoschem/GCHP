@@ -1,4 +1,4 @@
-Configuration files
+Configuration Files
 ===================
 
 GCHP is controlled using a set of resource configuration files that are included in the GCHP run directory, most of which are denoted by suffix :file:`.rc`. 

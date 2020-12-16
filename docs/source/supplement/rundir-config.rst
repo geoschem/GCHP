@@ -1,6 +1,6 @@
 
 
-Run directory configuration
+Run Directory Configuration
 ===========================
 
 All GCHP run directories have default simulation-specific run-time settings that are set when you create a run directory. 
