@@ -22,6 +22,8 @@ add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 target_compile_definitions(GEOSChemBuildProperties INTERFACE
   ESMF_ EXTERNAL_GRID NC_HAS_COMPRESSION MODEL_GCHPCTM MODEL_GCHP
   $<$<BOOL:${USE_REAL8}>:USE_REAL8> $<$<BOOL:${RRTMG}>:RRTMG>
+  $<$<BOOL:${ADJOINT}>:ADJOINT>
+  $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
