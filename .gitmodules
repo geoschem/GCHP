@@ -6,7 +6,7 @@
 	url = https://github.com/geoschem/GMAO_Shared
 [submodule "ESMA_cmake"]
 	path = ESMA_cmake
-	url = https://github.com/geoschem/ESMA_cmake
+	url = https://github.com/sdeastham/ESMA_cmake
 [submodule "src/gFTL-shared"]
 	path = src/gFTL-shared
 	url = https://github.com/geoschem/gFTL-shared.git
