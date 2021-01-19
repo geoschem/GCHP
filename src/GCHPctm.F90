@@ -12,7 +12,7 @@
 
 Program GCHPctm_Main
 
-   use MAPL_Mod
+   use MAPL
    use GCHP_GridCompMod, only:  ROOT_SetServices => SetServices
 
    implicit none
