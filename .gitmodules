@@ -24,10 +24,10 @@
 	url = https://github.com/geoschem/HEMCO.git
 [submodule "src/yaFyaml"]
 	path = src/yaFyaml
-	url = https://github.com/geoschem/yaFyaml.git
+	url = https://github.com/sdeastham/yaFyaml.git
 [submodule "src/pFlogger"]
 	path = src/pFlogger
-	url = https://github.com/geoschem/pFlogger.git
+	url = https://github.com/sdeastham/pFlogger.git
 [submodule "src/pFUnit"]
 	path = src/pFUnit
 	url = https://github.com/geoschem/pFUnit.git
