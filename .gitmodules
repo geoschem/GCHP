@@ -3,7 +3,7 @@
 	url = https://github.com/sdeastham/MAPL
 [submodule "src/GMAO_Shared"]
 	path = src/GMAO_Shared
-	url = https://github.com/geoschem/GMAO_Shared
+	url = https://github.com/sdeastham/GMAO_Shared
 [submodule "ESMA_cmake"]
 	path = ESMA_cmake
 	url = https://github.com/sdeastham/ESMA_cmake
@@ -12,7 +12,7 @@
 	url = https://github.com/geoschem/gFTL-shared.git
 [submodule "src/FMS"]
 	path = src/FMS
-	url = https://github.com/geoschem/FMS.git
+	url = https://github.com/sdeastham/FMS.git
 [submodule "src/GCHP_GridComp/FVdycoreCubed_GridComp"]
 	path = src/GCHP_GridComp/FVdycoreCubed_GridComp
 	url = https://github.com/sdeastham/FVdycoreCubed_GridComp.git
