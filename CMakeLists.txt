@@ -86,6 +86,11 @@ set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_F2PY         TRUE)
 
+# Build without GMAO's FLAP
+set(BUILD_WITH_FLAP OFF CACHE BOOL "Build with FLAP?") # Overwrite with -DBUILD_WITH_FLAP=ON
+# Build "monolithically" (i.e. build yaFyaml, pFlogger etc at the same time - don't look for them)
+set(MONOLITH        ON  CACHE BOOL "Build all GMAO components?") # Overwrite with -DMONOLITH=OFF
+
 # Add gchp_ctm's expected environment variables to CMAKE_PREFIX_PATH
 list(APPEND CMAKE_PREFIX_PATH 
   $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
