@@ -40,7 +40,7 @@ problems.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Supplement
+   :caption: Supplemental Guides
 
    supplement/rundir-config.rst
    supplement/config-files.rst

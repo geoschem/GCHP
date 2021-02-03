@@ -6,7 +6,7 @@ System Requirements
 Software requirements
 ---------------------
 
-To use GCHP you will need a compute environment with the following:
+To use GCHP you need a compute environment with the following software:
 
 * Git
 * Make (or GNUMake)
@@ -27,8 +27,30 @@ To use GCHP you will need a compute environment with the following:
 * NetCDF (with C, C++, and Fortran support)
 * ESMF version ≥ 8.0.0
 
-Your system administrator can tell you what software is available on your cluster and
-how you access it. If you need to install any of these software yourself, you can do that 
-manually (build from source), but a faster and easier way to do it is with Spack. See 
+Your system administrator can tell you what software is available and how to activate it. 
+
+If you need to install any of these software yourself, you can do that 
+manually (build from source), but it is faster and easier to do it with Spack. See 
 our guide on :ref:`installing GCHP's dependencies with Spack <installing_with_spack>`.
+
+.. _hardware_requirements:
+
+Hardware requirements
+---------------------
+
+Minimum requirements (C24):
+
+* 6 cores 
+* 32 GB of memory
+* 100 GB of storage for input and output data
+
+Recommended requirements:
+
+* A high-performance-computing cluster (or a cloud-HPC service like AWS)
+
+   * 1--50 nodes
+   * >24 cores per node (the more the better), preferably Intel Xeon
+   * High throughput and low-latency interconnect, preferably InfiniBand if using >500 cores
+
+* Lots of storage. Several TB is sufficient, but tens or hundreds of TB is better.
 

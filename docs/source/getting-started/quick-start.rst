@@ -4,7 +4,7 @@ Quick Start
 ===========
 
 This quickstart guide assumes your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
-This means you should load a compute environment such that programs like :program:`cmake` and :program:`mpirun`
+This means you should load a compute environment so that programs like :program:`cmake` and :program:`mpirun`
 are available, before continuing. You can find more detailed instructions in the user guide.
 
 1. Clone GCHP
@@ -36,7 +36,7 @@ Checkout the GEOS-Chem version that you want to use:
    Once version 13 is released, we will resume recommending users checkout
    a specific version.
 
-Initialize and update all submodules:
+Initialize and update all the submodules:
 
 .. code-block:: console
 
@@ -46,7 +46,7 @@ Initialize and update all submodules:
 -------------------------
 
 Navigate to the :file:`run/` subdirectory. 
-Create a run directory by running :file:`./createRunDir.sh` and answering the prompts:
+To create a run directory, run :file:`./createRunDir.sh` and answer the prompts:
 
 .. code-block:: console
 
@@ -57,7 +57,7 @@ Create a run directory by running :file:`./createRunDir.sh` and answering the pr
 -----------------------
 
 Create a build directory and :command:`cd` into it. 
-A good name for this directory is :file:`build/`, and a good place for it is in the 
+A good name for this directory is :file:`build/`, and a good place to put it is the
 top-level of the source code:
 
 .. code-block:: console
@@ -65,7 +65,7 @@ top-level of the source code:
    gcuser:~/GCHP$ mkdir ~/GCHP/build
    gcuser:~/GCHP$ cd ~/GCHP/build
 
-Initialize your build directory by running :program:`cmake` and passing it the path to your source code:
+Initialize your build directory by running :program:`cmake`, passing it the path to your source code:
 
 .. code-block:: console
 
@@ -122,8 +122,8 @@ Now, navigate to your run directory:
 
    $ cd path/to/your/run/directory
 
-Most simulation settings are configured in :file:`./runConfig.sh`. 
-You should review this file as it explains how to configure most simulation settings.
+Most simulation settings are set in :file:`./runConfig.sh`. 
+You should review this file as it explains most settings.
 Note that :file:`./runConfig.sh` is actually a helper script that updates other configuration files. 
 Therefore, you need to run it to actually apply the updates:
 
@@ -141,16 +141,16 @@ programs on your system, see :ref:`Running GCHP <running_gchp>` in the user guid
 system administrator.
 
 Your MPI library and scheduler will have a command for launching MPI programs---it's usually something like :program:`mpirun`, :program:`mpiexec`, or :program:`srun`. 
-This is the command you use to launch the :program:`gchp` executable that is in your run directory. 
-You'll need to refer to your system's documentation for specific instructions on running MPI programs,
+This is the command that you will use to launch the :program:`gchp` executable.
+You'll have to refer to your system's documentation for specific instructions on running MPI programs,
 but generally it looks something like this:
 
 .. code-block:: console
 
    $ mpirun -np 6 ./gchp   # example of running GCHP with 6 slots with OpenMPI 
 
-It's recommended you run GCHP as a batch job. This means that you will write a script that runs GCHP,
-and then you will submit that script to your scheduler.
+It's recommended you run GCHP as a batch job. This means that you write a (bash) script that runs your 
+GCHP simulation, and then you submit that script to your scheduler (SLURM, LSF, etc.).
 
 .. note::
    When GCHP runs, partially or to completion, it generates several files including
