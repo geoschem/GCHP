@@ -2,42 +2,42 @@
 Compiling GCHP
 ==============
 
-.. note::
-    This user guide assumes you have loaded a computing environment that satisfies
-    :ref:`GCHP's software requirements <software_requirements>`.
+There are two steps to building GCHP. The first is configuring your build, which is done with :program:`cmake`; 
+the second step is compiling, which is done with :program:`make`.
+
+In the first step (build configuration), :program:`cmake` finds where GCHP's :ref:`software dependencies <software_requirements>`
+are located on your system, and you can set :ref:`build options <gchp_build_options>` like
+enabling/disabling components, setting run directories for installing GCHP to, and whether to compile in
+Debug mode. The second step (running :program:`make`) compiles GCHP according your build configuration.
+
+The instructions for building GCHP are below.
 
 .. note::
-   Another useful resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_.
+   Another resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_.
 
-There are two steps to build GCHP. The first step is configuring your build. 
-To configure your build you use :program:`cmake` to configure build settings. 
-Build settings cover options like enabling or disabling components like 
-RRTMG, specifying run directories to install GCHP to, or whether GCHP should be compiled in Debug mode. 
-
-The second step is compiling. To compile GCHP you use :program:`make`. This
-compiles GCHP according to your configuration from the first step.
-
+.. important::
+   These instructions assume you have loaded a computing environment that satisfies
+   :ref:`GCHP's software requirements <software_requirements>`.
 
 Create a build directory
 ------------------------
 
-Create a build directory. This directory is going to be the working directory
+Create a build directory. This is going to be the working directory
 for your build. The configuration and compile steps generate a 
-bunch of build files, and this directory is going to store those. You can
+bunch of files, and this directory is going to house those. You can
 think of a build directory as representing a GCHP build. It stores configuration
 settings, information about your system, and intermediate files from the compiler.
 
-A build directory is self contained, so you can delete it at any point to erase 
-the build and its configuration. You can have as many build directories as you 
-would like. Most users only need one build directory, since they only build GCHP
-once; but, for example, if you were building GCHP with Intel and GNU compilers to
-compare performance, you would have two build directories: one for the Intel build,
-and one for the GNU build. You can name your build directories whatever you want, but a good choice is :file:`build/`.
+A build directory is self-contained, so you can delete it at any point (erasing its configuration and state) to start over.
+Most users will only have one build directory, but you can have multiple. 
+If, for example, you were building GCHP with Intel and GNU compilers to compare performance, you would need two build directories: one for the Intel build and one for the GNU build.
+You can choose the name and location of your build directories, but a good name is :file:`build/` and 
+a good place is the top-level of the source code (i.e., a subdirectory in the code called :file:`build/`).
 There is one rule for build directories: **a build directory should be a new directory**.
 
 Create a build directory and initialize it. You initialize a build directory by
-running :program:`cmake` with the path to the GCHP source code. Here is an example
-of creating a build directory in the top-level of the GCHP source code:
+running :program:`cmake`; the first time you run :program:`cmake`, you need to pass it the path to GCHP's source code. 
+Here is an example of creating a build directory:
 
 .. code-block:: console
    
@@ -55,6 +55,11 @@ of creating a build directory in the top-level of the GCHP source code:
    -- Generating done
    -- Build files have been written to: /src/build
    gcuser:~/Code.GCHP/build$ 
+
+.. note::
+   You can explicitly specify compilers by setting the :envvar:`CC`, :envvar:`CXX`, and :envvar:`FC` environment
+   variables. If autodetected compilers (see the output above) are the wrong compilers, create a new build directory
+   (delete the old one), and make sure these variables are set before you initialize the build directory.
 
 .. note:: 
    If you get a CMake error saying "Could not find XXXX" (where XXXX is a dependency like
@@ -75,7 +80,7 @@ of creating a build directory in the top-level of the GCHP source code:
 Configure your build
 --------------------
 
-Build settings are controlled by :program:`cmake` commands with the following
+Build settings are controlled by subsequent :program:`cmake` commands with the following
 form:
 
 .. code-block:: none
@@ -83,26 +88,25 @@ form:
     $ cmake . -D<NAME>="<VALUE>"
 
 where :literal:`<NAME>` is the name of the setting, and :literal:`<VALUE>` is the
-value that you are assigning it. These settings are persistent and saved in your build directory.
-You can set multiple variables in a single command, and you can run :program:`cmake` as many times
-as you need to configure your desired settings.
+value you are assigning it. These settings are persistent and saved in your build directory.
+You can set multiple variables in the same command, and you can run :program:`cmake` as many times
+as needed to configure your desired settings.
 
 .. note:: 
    The :literal:`.` argument is important. It is the path to your build directory which
    is :literal:`.` here.
 
-GCHP has no required build settings. You can find the complete list of :ref:`GCHP's build settings here <gchp_build_options>`.
-The most frequently used build setting is :literal:`RUNDIR` which lets you specify one or more run directories
+No build settings are required. You can find the complete list of :ref:`GCHP's build settings here <gchp_build_options>`.
+The most common setting is :literal:`RUNDIR`, which lets you specify one or more run directories
 to install GCHP to. Here, "install" refers to copying the compiled executable, and some supplemental files
-with build settings, to your run directories.
+with build settings, to your run directory/directories.
 
 .. note::
-    You can even update build settings after you compile GCHP. Simply rerun :program:`make` and
+    You can update build settings after you compile GCHP. Simply rerun :program:`make` and
     (optionally) :program:`make install`, and the build system will automatically figure out
     what needs to be recompiled.
 
-Since there are no required build settings, for this tutorial we will stick with the
-default settings. 
+Since there are no required build settings, so here, we will stick with the default settings. 
 
 You should notice that when you run :program:`cmake` it ends with:
 
@@ -113,7 +117,7 @@ You should notice that when you run :program:`cmake` it ends with:
    -- Generating done
    -- Build files have been written to: /src/build
 
-This tells you the configuration was successful, and that you are ready to compile. 
+This tells you that the configuration was successful, and that you are ready to compile. 
 
 Compile GCHP
 ------------
@@ -124,28 +128,29 @@ You compile GCHP with:
    
    gcuser:~/Code.GCHP/build$ make -j   # -j enables compiling in parallel
 
-Optionally, you can use the :literal:`VERBOSE=1` argument to see the compiler commands.
+.. note::
+   You can add :literal:`VERBOSE=1` to see all the compiler commands.
 
-This step creates :file:`./bin/gchp` which is the compiled executable. You can copy
-this executable to your run directory manually, or you can do
+Compiling GCHP creates :file:`./bin/gchp` (the GCHP executable). You can copy
+this executable to your run directory manually, or if you set the :ref:`RUNDIR <build_setting_rundir>` build option,
+you can do
 
 .. code-block:: console
    
-   gcuser:~/Code.GCHP/build$ make install
+   gcuser:~/Code.GCHP/build$ make install  # Requires that RUNDIR build option is set
 
-which copies :file:`./bin/gchp` (and some supplemental files) to 
-the run directories specified in :ref:`RUNDIR <build_setting_rundir>`.
+to copy the executable (and supplemental files) to your run directories.
 
-Now you have compiled GCHP, and you are ready to move on to creating a run directory!
+Now you have compiled GCHP! You can move on to creating a run directory!
 
 ------------
 
 Recompiling
 -----------
 
-You need to recompile GCHP if you update a build setting or make a modification to the source code.
-However, with CMake, you don't need to clean before recompiling. The build system automatically 
-figure out which files need to be recompiled based on your modification. This is known as incremental compiling.
+You need to recompile GCHP if you update a build setting or modify the source code.
+With CMake, you do not need to clean before recompiling. The build system automatically 
+figures out which files need to be recompiled (it's usually a small subset). This is known as incremental compiling.
 
 To recompile GCHP, simply do 
 
@@ -153,7 +158,7 @@ To recompile GCHP, simply do
    
    gcuser:~/Code.GCHP/build$ make -j   # -j enables compiling in parallel
 
-and optionally, do :command:`make install`.
+and then optionally, :command:`make install`.
 
 ------------
 
