@@ -2,21 +2,34 @@
 Creating a Run Directory
 ========================
 
-GCHP run directories are created from within the source code.
-A new run directory should be created for each different version of GEOS-Chem you use. 
-Git version information is logged to file :file:`rundir.version` within the run directory upon creation.
-
-To create a run directory, navigate to the :file:`run/` subdirectory of the source code and execute shell script :file:`createRunDir.sh`.
+Run directories are created with the :file:`createRunDir.sh` script in the :file:`run/` subdirectory of the source code.
+Run directories are version-specific, so you need to create new run directories for every GEOS-Chem version.
+The gist of creating a run directory is simple: navigate to the :file:`run/` subdirectory, run :file:`./createRunDir.sh`,
+and answer the prompts:
 
 .. code-block:: console
 
    gcuser:~$ cd Code.GCHP/run
-   gcuser:~/Code.GCHP/run$
+   gcuser:~/Code.GCHP/run$ ./createRunDir.sh
+   ... <answer the prompts> ...
+   
+.. important::
+   Use :term:`absolute paths <absolute path>` when responding to prompts.
 
-During the course of script execution you will be asked a series of questions:
+Create a run directory. If you are unsure what a prompt is asking, see their explanations below, or ask a question 
+on GitHub. After creating a run directory, you can move on to the next section.
+
+-------------------------------------------------------------------------------------------
+
+.. _create_rundir_prompts:
+
+Explanations of Prompts
+-----------------------
+
+Below are detailed explanations of the prompts in :file:`./createRunDir.sh`.
 
 Enter ExtData path
-------------------
+^^^^^^^^^^^^^^^^^^
 
 The first time you create a GCHP run directory on your system you will be prompted for a path to GEOS-Chem shared data directories. 
 The path should include the name of your :file:`ExtData/` directory and should not contain symbolic links. 
@@ -31,7 +44,7 @@ When creating additional run directories you will only be prompted again if the 
    -----------------------------------------------------------
 
 Choose a simulation type
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enter the integer number that is next to the simulation type you want to use.
 
@@ -60,7 +73,7 @@ If creating a full chemistry run directory you will be given additional options.
      8. RRTMG
 
 Choose meteorology source
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enter the integer number that is next to the input meteorology source you would like to use.
 
@@ -73,7 +86,7 @@ Enter the integer number that is next to the input meteorology source you would 
      2. GEOS-FP
 
 Enter run directory path
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enter the target path where the run directory will be stored. You will be prompted to enter a new path if the one you enter does not exist.
 
@@ -84,7 +97,7 @@ Enter the target path where the run directory will be stored. You will be prompt
    -----------------------------------------------------------
 
 Enter run directory name
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enter the run directory name, or accept the default. You will be prompted for a new name if a run directory of the same name already exists at the target path.
 
@@ -95,7 +108,7 @@ Enter the run directory name, or accept the default. You will be prompted for a 
    -----------------------------------------------------------
 
 Enable version control (optional)
----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Enter whether you would like your run directory tracked with git version control. 
 With version control you can keep track of exactly what you changed relative to the original settings. 
