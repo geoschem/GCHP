@@ -60,6 +60,7 @@ problems.
    :maxdepth: 1
    :caption: Help & Reference
 
+   reference/known-bugs.rst
    reference/SUPPORT.md
    reference/CONTRIBUTING.md
    geos-chem-shared-docs/editing_these_docs.rst
