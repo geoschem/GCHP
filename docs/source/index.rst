@@ -1,5 +1,16 @@
 GEOS-Chem High Performance
 ==========================
+.. raw:: html
+
+   <p>
+   <a href="http://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_versions"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Release"></a>
+   <a href="https://zenodo.org/badge/latestdoi/200900441"><img src="https://zenodo.org/badge/200900441.svg"></a>
+   <a href="https://gchp.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/gchp?label=ReadTheDocs"></a>
+   <a href="https://dev.azure.com/geoschem/GCHP/_build"><img src="https://img.shields.io/azure-devops/build/geoschem/GCHP/20/main?label=Build%20Matrix"></a>
+   <a href="https://hub.docker.com/r/geoschem/gchp"><img src="https://img.shields.io/docker/v/geoschem/gchp?color=blue&label=Docker%2FSingularity"></a>
+   <a href="https://spack.readthedocs.io/en/latest/package_list.html#gchp"><img src="https://img.shields.io/badge/Install%20with-Spack-ff69b4"></a>
+   <a href="https://github.com/geoschem/GCHP/releases"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?include_prereleases&label=Latest%20Pre-Release"></a>
+   </p>
 
 .. important:: This is a prerelease of the GEOS-Chem High Performance user guide.
    These pages are the most up-to-date and accurate instructions for GCHP, but they
