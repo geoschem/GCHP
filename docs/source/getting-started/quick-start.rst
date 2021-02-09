@@ -5,7 +5,9 @@ Quick Start
 
 This quickstart guide assumes your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
 This means you should load a compute environment so that programs like :program:`cmake` and :program:`mpirun`
-are available, before continuing. You can find more detailed instructions in the user guide.
+are available before continuing. If you do not have some of GCHP's software dependencies,
+you can find instructions for installing GCHP's external dependencies in our `Spack instructions <../supplement/spack.html>`__.
+More detailed instructions on downloading, compiling, and running GCHP can be found in the User Guide.
 
 1. Clone GCHP
 -------------

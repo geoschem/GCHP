@@ -17,7 +17,8 @@ The instructions for building GCHP are below.
 
 .. important::
    These instructions assume you have loaded a computing environment that satisfies
-   :ref:`GCHP's software requirements <software_requirements>`.
+   :ref:`GCHP's software requirements <software_requirements>` You can find instructions for installing GCHP's
+   external software dependencies in our `Spack instructions <../supplement/spack.html>`__.
 
 Create a build directory
 ------------------------

@@ -1,23 +1,32 @@
 
 .. _installing_with_spack:
 
-Installing Dependencies with Spack
-==================================
+Installing GCHP and Dependencies with Spack
+===========================================
 
 
-Downloading and Installing Software using Spack
------------------------------------------------
+The `Spack Package Manager <https://spack.io/>`__ may be used to download and build GCHP and all of its required external software depenencies, including
+CMake, MPI, ESMF, and NetCDF libraries. The only essential prerequisite for using Spack is a local C/C++/Fortran Compiler such as `GNU Compiler Collection <https://gcc.gnu.org/>`__.
+You can use this local compiler to later install a different compiler version through Spack.
 
-The `Spack Package Manager <https://spack.io/>`__ may be used to download and build CMake, MPI, and NetCDF libraries needed for GCHP. 
-You will need to have a C/C++/Fortran compiler such as `GNU Compiler Collection <https://gcc.gnu.org/>`__ available locally before you start. 
-You can use this local compiler to later install a different compiler version through Spack. 
-The following steps successfully create a GCHP environment using GCC 9.3.0 and OpenMPI 4.0.4 through Spack.
-To install different versions of GCC and OpenMPI, simply change the version numbers used in the commands. 
-Scroll down for additional info on using IntelMPI, Intel compilers, or MVAPICH2. IntelMPI and MVAPICH2 are free alternative MPI implementations,
-while Intel compilers are a paid product for compiling libraries and GCHP.
+There are three different ways to use Spack to setup GCHP and/or its dependencies:
+
+* `install individual software dependencies <#installing-individual-dependencies-with-spack>`__
+* `install all dependencies in one command <#one-line-install-of-gchp-dependencies-with-spack>`__
+* `install both GCHP and all of its dependencies in one command <#one-line-install-of-gchp-and-its-dependencies-with-spack>`__
+
+
+This page covers each of these options. For any of these options, first follow the instructions below about setting up Spack, configuring compilers in Spack,
+and specifying dependencies you already have installed which you would like Spack to use for building GCHP or other dependencies (such as ESMF or Slurm).
+
+
+Setting up Spack, installing new compilers, and specifying preinstalled dependencies
+------------------------------------------------------------------------------------
+
 
 To begin using Spack, clone the latest version by typing ``git clone https://github.com/spack/spack.git``.
-Execute the following commands to initialize Spack's environment (replacing ``/path/to/spack`` with the path of your `spack` directory). Add these commands to an environment initialization script for easy reuse.
+Execute the following commands to initialize Spack's environment (replacing ``/path/to/spack`` with the path of your `spack` directory). 
+Add these commands to an environment initialization script for easy reuse.
 
 .. code-block:: console
 
@@ -54,6 +63,9 @@ The installation of ``gcc`` may take a long time. Once it is complete, you'll ne
    $ spack compiler find $(spack location -i gcc@9.3.0)
 
 
+Make sure that spack recognizes your new compiler by typing ``spack compilers``, which should display a list of compilers including GCC 9.3.0.
+
+
 Setting up and using Intel compilers
 ####################################
 
@@ -63,10 +75,34 @@ or for `Intel compilers you want to install through Spack <https://spack.readthe
 In the instructions below, simply replace ``%gcc@9.3.0`` with ``%intel`` to use your Intel compilers to build libraries.
 
 
+Specifying preinstalled dependencies
+************************************
+
+Just as Spack can use an existing compiler on your system, it can also use your existing installations of dependencies for GCHP rather than building new copies.
+**This is essential for interfacing your cluster's Slurm with a Spack-built GCHP and its dependencies**. For any preinstalled dependency you want Spack to always use, 
+you must specify its path on your system and that you want Spack to always use this preinstalled package rather than building a new version.
+The code below shows how to do this by editing ``$HOME/.spack/packages.yaml`` (you may need to create this file):
+
+.. code-block:: yaml
+
+   packages:
+    slurm:
+     paths:
+      slurm: /path/to/slurm
+     buildable: False
+
+
+
+Installing individual dependencies with Spack
+---------------------------------------------
+
+This section describes how to use Spack to build GCHP's individual dependencies. While these dependencies can be used to then install GCHP directly using Spack,
+this section is mainly intended for those looking to manually download and compile GCHP as described in the User Guide.
+
+
 Installing basic dependencies
 *****************************
 
-Make sure that spack recognizes your new compiler by typing ``spack compilers``, which should display a list of compilers including GCC 9.3.0.
 
 You should now install Git and CMake using Spack:
 
@@ -80,7 +116,8 @@ You should now install Git and CMake using Spack:
 Installing without Slurm support
 ################################
 
-If you do not intend to use a job scheduler like Slurm to run GCHP, use the following commands to install MPI and NetCDF-Fortran. Otherwise, scroll down to see necessary modifications you must make to include Slurm support.
+If you do not intend to use a job scheduler like Slurm to run GCHP, use the following commands to install MPI and NetCDF-Fortran. 
+Otherwise, scroll down to see necessary modifications you must make to include Slurm support.
 
 
 **OpenMPI**
@@ -108,37 +145,9 @@ If you do not intend to use a job scheduler like Slurm to run GCHP, use the foll
    $ spack install netcdf-fortran%gcc@9.3.0 ^netcdf-c^hdf5^mvapich2
 
  
-Configuring libraries with Slurm support
-########################################
- 
-If you know the install location of Slurm, edit your spack packages settings at ``$HOME/.spack/packages.yaml`` (you may need to create this file) with the following:
 
-.. code-block:: yaml
-
-   packages:
-    slurm:
-     paths:
-      slurm: /path/to/slurm
-     buildable: False
-
-This will ensure that when your MPI library is built with Slurm support requested, Spack will correctly use your preinstalled Slurm rather than trying to install a new version.
-
-
-**OpenMPI**
-
-
-You may also run into issues building OpenMPI if your cluster has preexisting versions of PMIx that are newer than OpenMPI's internal version. 
-OpenMPI will search for and use the newest version of PMIx installed on your system, which will likely cause a crash during build because OpenMPI requires you to build with the same libevent library as was used to build PMIx. 
-This information may not be readily available to you, in which case you can tweak the build arguments for OpenMPI to always use OpenMPI's internal version of PMIx. 
-Open ``$SPACK_ROOT/var/spack/repos/builtin/packages/openmpi/package.py`` and navigate to the ``configure_args()`` function. In the body of this function, place the following line:
-
-.. code-block:: python
-
-      config_args.append('--with-pmix=internal')
-
-
-Building libraries with Slurm support
-#####################################
+Installing with Slurm support
+#############################
 
 
 **OpenMPI**
@@ -149,6 +158,19 @@ You need to tell Spack to build OpenMPI with Slurm support and to build NetCDF-F
 
    $ spack install openmpi@4.0.4%gcc@9.3.0 +pmi schedulers=slurm
    $ spack install netcdf-fortran%gcc@9.3.0  ^netcdf-c^hdf5^openmpi@4.0.4+pmi schedulers=slurm
+
+
+
+You may run into issues building OpenMPI if your cluster has preexisting versions of PMIx that are newer than OpenMPI's internal version. 
+OpenMPI will search for and use the newest version of PMIx installed on your system, which will likely cause a crash during build because OpenMPI requires you to build with the same libevent library as was used to build PMIx. 
+This information may not be readily available to you, in which case you can tweak the build arguments for OpenMPI to always use OpenMPI's internal version of PMIx. 
+Open ``$SPACK_ROOT/var/spack/repos/builtin/packages/openmpi/package.py`` and navigate to the ``configure_args()`` function. In the body of this function, place the following line:
+
+.. code-block:: python
+
+      config_args.append('--with-pmix=internal')
+
+
 
 
 **Intel MPI**
@@ -173,11 +195,73 @@ Like OpenMPI, you must specify that you want to build MVAPICH2 with Slurm suppor
    $ spack install netcdf-fortran%gcc@9.3.0 ^netcdf-c^hdf5^mvapich2
 
 
-Loading Spack libraries for use with GCHP and ESMF
-**************************************************
+
+Once you've installed all of your dependencies, you can follow the GCHP instructions for downloading, compiling, and setting up a run directory in the User Guide
+section of this Read The Docs site.
+
+One-line install of GCHP dependencies with Spack
+------------------------------------------------
+
+
+Rather than using Spack to install individual dependencies, you can use the ``spack install --only dependencies gchp`` command to install every
+dependency for GCHP in a single command. The ``--only dependencies`` option tells Spack to build GCHP's dependencies without building GCHP itself.
+
+
+Spack is smart about choosing compatible versions for all of GCHP's different dependencies. You can further specify which package versions or MPI
+implementations (OpenMPI, Intel MPI, or MVAPICH2) you wish to use by appending options to ``spack install --only dependencies gchp``, such as ``^openmpi@4.0.4`` or ``^intel-mpi``.
+If you wish to use Slurm with GCHP and want Spack to install a new version of OpenMPI or MVAPICH2, you need to specify ``+pmi schedulers=slurm`` (for OpenMPI) or ``process_managers=slurm``
+(for MVAPICH2). A full install line for all of GCHP's dependencies, including Slurm-enabled OpenMPI, would look like ``spack install --only dependencies gchp ^openmpi +pmi schedulers=slurm``.
+
+
+Once you've installed all of your dependencies, you can follow the GCHP instructions for downloading, compiling, and setting up a run directory in the User Guide
+section of this Read The Docs site.
+
+One-line install of GCHP and its dependencies with Spack
+--------------------------------------------------------
+
+
+You can use Spack to install all of GCHP's dependencies and GCHP itself in a single line: ``spack install gchp``. Just as when installing only GCHP's dependencies, you
+can modify this command with further options for GCHP's dependencies (and should do so if you intend to use a job scheduler like Slurm).
+
+Spack is smart about choosing compatible versions for all of GCHP's different dependencies. You can further specify which package versions or MPI
+implementations (OpenMPI, Intel MPI, or MVAPICH2) you wish to use by appending options to ``spack install gchp``, such as ``^openmpi@4.0.4`` or ``^intel-mpi``.
+If you wish to use Slurm with GCHP and want Spack to install a new version of OpenMPI or MVAPICH2, you need to specify ``+pmi schedulers=slurm`` (for OpenMPI) or ``process_managers=slurm``
+(for MVAPICH2). A full install line for GCHP and all of its dependencies, including Slurm-enabled OpenMPI, would look like ``spack install gchp ^openmpi +pmi schedulers=slurm``.
+
+In addition to specifying options for GCHP's dependencies, GCHP also has its own options you can specify in your ``spack install gchp`` command. The available options 
+(which you can view for yourself using ``spack info gchp``) include:
+
+
+* ``apm``          - APM Microphysics (Experimental) (Default: off)
+* ``build_type``   - Choose CMake build type (Default: RelWithDebInfo)
+* ``ipo``          - CMake interprocedural optimization (Default: off)
+* ``luo``          - Luo et al 2019 wet deposition scheme (Default: off)
+* ``omp``          - OpenMP parallelization (Default: off)
+* ``real8``        - REAL\*8 precision (Default: on)
+* ``rrtmg``        - RRTMG radiative transfer model (Default: off)
+* ``tomas``        - TOMAS Microphysics (Experimental) (Default: off)
+
+
+To specify any of these options, place it directly after ``gchp`` with a ``+`` to enable it or a ``~`` to disable it (e.g. ``spack install gchp ~real8 +rrtmg``).
+
+
+When you run ``spack install gchp``, Spack will build all of GCHP's dependencies and then download and build GCHP itself. The overall process may take a very long time if you
+are installing fresh copies of many dependencies, particularly MPI or ESMF. Once the install is completed, Spack will leave you with a built ``gchp`` executable and a copy of GCHP's
+source code at ``spack location -i gchp``. 
+
+
+You can use Spack's included copy of the source code to create a run directory. Navigate to the directory returned by ``spack location -i gchp``, and then ``cd`` to ``source_code/run``.
+Run ``./createRunDir.sh`` to generate a GCHP run directory. Once you've created a run directory, follow the `instructions on Running GCHP in the User Guide <../user-guide/running.html>`__.
+
+You can find information on loading your environment for running GCHP below.
+
+
+
+Loading Spack libraries for use with GCHP and/or ESMF
+-----------------------------------------------------
 
 After installing the necessary libraries, place the following in a script that you will run before building/running GCHP (such as ``$HOME/.bashrc`` or a separate environment script)
-to initialize Spack and load requisite packages for building ESMF and GCHP:
+to initialize Spack and load requisite packages for building ESMF and/or building/running GCHP.
 
 
 **OpenMPI**
@@ -193,19 +277,27 @@ to initialize Spack and load requisite packages for building ESMF and GCHP:
     %%%%% Load Spackages %%%%%
     #==============================================================================
     # List each Spack package that you want to load
+    # NOTE: Only needed if you did not install GCHP directly through Spack
     pkgs=(gcc@9.3.0            \
      git@2.17.0           \
      netcdf-fortran@4.5.2 \
      cmake@3.16.1         \
-     openmpi@4.0.4        )
+     openmpi@4.0.4        \
+     esmf@8.0.1           )
 
     # Load each Spack package
     for f in ${pkgs[@]}; do
       echo "Loading $f"
       spack load $f
     done
-	
+    
+    # If you installed GCHP directly through Spack,comment out the above code after "Load Spackages"
+    # and uncomment the following line
+    #spack load gchp
+    
     export MPI_ROOT=$(spack location -i openmpi)
+    
+    # These lines only needed for building ESMF outside of Spack
     export ESMF_COMPILER=gfortran #intel for intel compilers
     export ESMF_COMM=openmpi
 
@@ -222,6 +314,7 @@ to initialize Spack and load requisite packages for building ESMF and GCHP:
     %%%%% Load Spackages %%%%%
     #==============================================================================
     # List each Spack package that you want to load
+    # NOTE: Only needed if you did not install GCHP directly through Spack
     pkgs=(gcc@9.3.0            \
      git@2.17.0           \
      netcdf-fortran@4.5.2 \
@@ -233,20 +326,27 @@ to initialize Spack and load requisite packages for building ESMF and GCHP:
       echo "Loading $f"
       spack load $f
     done
-	
-    export MPI_ROOT=$(spack location -i intel-mpi)
-    export ESMF_COMPILER=gfortran #intel for intel compilers
-    export ESMF_COMM=intelmpi
-	
+    
+    # If you installed GCHP directly through Spack,comment out the above code after "Load Spackages"
+    # and uncomment the following line
+    #spack load gchp
+
     # Environment variables only needed for Intel MPI
     export I_MPI_CC=gcc #icc for intel compilers
     export I_MPI_CXX=g++ #icpc for intel compilers
     export I_MPI_FC=gfortran #ifort for intel compilers
     export I_MPI_F77=gfortran #ifort for intel compilers
     export I_MPI_F90=gfortran #ifort for intel compilers
+    export MPI_ROOT=$(spack location -i intel-mpi)
 
     export I_MPI_PMI_LIBRARY=/path/to/slurm/libpmi2.so #when using srun through Slurm
     #unset I_MPI_PMI_LIBRARY #when using mpirun
+
+    # These lines only needed for building ESMF outside of Spack
+    export ESMF_COMPILER=gfortran #intel for intel compilers
+    export ESMF_COMM=intelmpi
+    
+    
 
 
 **MVAPICH2**
@@ -262,6 +362,7 @@ to initialize Spack and load requisite packages for building ESMF and GCHP:
     %%%%% Load Spackages %%%%%
     #==============================================================================
     # List each Spack package that you want to load
+    # NOTE: Only needed if you did not install GCHP directly through Spack
     pkgs=(gcc@9.3.0            \
      git@2.17.0           \
      netcdf-fortran@4.5.2 \
@@ -273,16 +374,26 @@ to initialize Spack and load requisite packages for building ESMF and GCHP:
       echo "Loading $f"
       spack load $f
     done
-	
+    
+    # If you installed GCHP directly through Spack,comment out the above code after "Load Spackages"
+    # and uncomment the following line
+    #spack load gchp
+    
     export MPI_ROOT=$(spack location -i mvapich2)
+    
+    # These lines only needed for building ESMF outside of Spack
     export ESMF_COMPILER=gfortran #intel for intel compilers
     export ESMF_COMM=mvapich2
-	
+    
 
 You can also add other packages you've installed with Spack like ``emacs`` to the ``pkgs`` lists above.
 
+
 ESMF and your environment file
 ------------------------------
+
+The following gives some information on building ESMF separately from Spack and provides more environment file examples.
+
 
 You must load your environment file prior to building and running GCHP.
 
@@ -294,8 +405,9 @@ If you don't already have ESMF 8.0.0+, you will need to download and build it. Y
 build ESMF once per compiler and MPI configuration (this includes for ALL users on a cluster!). It
 is therefore worth downloading and building somewhere stable and permanent, as almost no users of
 GCHP would be expected to need to modify or rebuild ESMF except when adding a new compiler or MPI.
-Instructions for downloading and building ESMF are available at the GCHP wiki. ESMF may be installable
-through Spack in the future.
+ESMF is available through Spack, and will already be installed if you chose the
+``spack install gchp --only dependencies`` or ``spack install gchp`` routes above.
+Instructions for manually downloading and building ESMF are available at the GCHP wiki.
 
 It is good practice to store your environment setup in a text file for reuse. Below are a couple
 examples that load libraries and export the necessary environment variables for building and running

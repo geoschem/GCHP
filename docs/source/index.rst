@@ -19,6 +19,22 @@ problems.
 * `GEOS-Chem Overview <http://acmg.seas.harvard.edu/geos/geos_overview.html>`_
 * `Narrative description of GEOS-Chem <http://acmg.seas.harvard.edu/geos/geos_chem_narrative.html>`_
 
+This site provides instructions for GEOS-Chem High Performance, GEOS-Chem's multi-node variant. We provide two different
+instruction sets for downloading and compiling GCHP: from a clone of the source code, or using the Spack package manager. 
+
+
+Cloning and building from source code ensures you will have direct access to the latest available versions of GCHP, provides
+additional compile-time options, and allows you to make your own modifications to GCHP's source code. Spack automates 
+downloading and additional parts of the compiling process while providing you with some standard togglable compile-time options.
+
+
+Our `Quick Start Guide <getting-started/quick-start.html>`__ and the `downloading <user-guide/downloading.html>`__, `compiling <user-guide/compiling.html>`__, and
+`creating a run directory <user-guide/rundir-init.html>`__ sections of the User Guide give instructions specifically for using a clone
+of the source code. Our dedicated `Spack guide <supplement/spack.html>`__ describes how to install GCHP and create a run directory
+with Spack, as well as how to use Spack to install GCHP's dependencies if needed.
+
+
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting Started
@@ -60,6 +76,7 @@ problems.
    :maxdepth: 1
    :caption: Help & Reference
 
+   reference/known-bugs.rst
    reference/SUPPORT.md
    reference/CONTRIBUTING.md
    geos-chem-shared-docs/editing_these_docs.rst
