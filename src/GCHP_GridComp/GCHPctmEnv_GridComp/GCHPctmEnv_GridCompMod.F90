@@ -138,6 +138,38 @@
       _VERIFY(STATUS)
 
       call MAPL_AddImportSpec ( gc,                                  &
+           SHORT_NAME = 'MFXIN',                                     &
+           LONG_NAME  = 'x-direction_mass_flux',                     &
+           UNITS      = 'kg s-1',                                    &
+           DIMS       = MAPL_DimsHorzVert,                           &
+           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
+      _VERIFY(STATUS)
+
+      call MAPL_AddImportSpec ( gc,                                  &
+           SHORT_NAME = 'MFYIN',                                     &
+           LONG_NAME  = 'y-direction_mass_flux',                     &
+           UNITS      = 'kg s-1',                                    &
+           DIMS       = MAPL_DimsHorzVert,                           &
+           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
+      _VERIFY(STATUS)
+
+      call MAPL_AddImportSpec ( gc,                                  &
+           SHORT_NAME = 'CXIN',                                      &
+           LONG_NAME  = 'x-direction_courant_number',                &
+           UNITS      = '-',                                         &
+           DIMS       = MAPL_DimsHorzVert,                           &
+           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
+      _VERIFY(STATUS)
+
+      call MAPL_AddImportSpec ( gc,                                  &
+           SHORT_NAME = 'CYIN',                                      &
+           LONG_NAME  = 'y-direction_courant_number',                &
+           UNITS      = '-',                                         &
+           DIMS       = MAPL_DimsHorzVert,                           &
+           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
+      _VERIFY(STATUS)
+
+      call MAPL_AddImportSpec ( gc,                                  &
            SHORT_NAME = 'SPHU1',                                     &
            LONG_NAME  = 'specific_humidity_before_advection',        &
            UNITS      = 'kg kg-1',                                   &
@@ -446,11 +478,11 @@
       call MAPL_TimerOn(ggSTATE,"INITIALIZE")
 
       ! Read run options
-      !! Transport dry VMR rather than total?
-      !call ESMF_ConfigGetAttribute(CF,value=opt_int,&
-      !    label='RUN_DRY:',rc=status)
-      !VERIFY_(STATUS)
-      !run_dry=(opt_int>0)
+      ! Transport dry VMR rather than total?
+      call ESMF_ConfigGetAttribute(CF,value=opt_int,&
+          label='RUN_DRY:',rc=status)
+      VERIFY_(STATUS)
+      run_dry=(opt_int>0)
      
       !! Allow surface pressure to be free-running?
       !call ESMF_ConfigGetAttribute(CF,value=opt_int,&
@@ -458,11 +490,11 @@
       !VERIFY_(STATUS)
       !run_free=(opt_int>0)
      
-      !! Use fluxes and courant numbers directly?
-      !call ESMF_ConfigGetAttribute(CF,value=opt_int,&
-      !    label='USE_MFLUX:',rc=status)
-      !VERIFY_(STATUS)
-      !use_fluxes=(opt_int>0)
+      ! Use fluxes and courant numbers directly?
+      call ESMF_ConfigGetAttribute(CF,value=opt_int,&
+          label='USE_MFLUX:',rc=status)
+      VERIFY_(STATUS)
+      use_fluxes=(opt_int>0)
 
       ! Flip met fields vertically?
       call ESMF_ConfigGetAttribute(CF,value=opt_int,&
@@ -472,8 +504,8 @@
 
       if (mapl_am_I_root()) then
           !write(*,'(a,x,L1)') ' -- RUN FREE     --> ', run_free
-          !write(*,'(a,x,L1)') ' -- RUN DRY      --> ', run_dry
-          !write(*,'(a,x,L1)') ' -- USE FLUXES   --> ', use_fluxes
+          write(*,'(a,x,L1)') ' -- RUN DRY      --> ', run_dry
+          write(*,'(a,x,L1)') ' -- USE FLUXES   --> ', use_fluxes
           write(*,'(a,x,L1)') ' -- FLIP MET     --> ', flip_vertical
       end if
 
@@ -548,6 +580,10 @@
       real, pointer, dimension(:,:,:) ::       zle => null()
       real, pointer, dimension(:,:,:) ::      DELP => null()
       real, pointer, dimension(:,:)   ::  cellArea => null()
+      real, pointer, dimension(:,:,:) ::     iMFX  => null()
+      real, pointer, dimension(:,:,:) ::     iMFY  => null()
+      real, pointer, dimension(:,:,:) ::      iCX  => null()
+      real, pointer, dimension(:,:,:) ::      iCY  => null()
 
       ! Exports
       !--------
@@ -623,6 +659,14 @@
       _VERIFY(STATUS)
       call MAPL_GetPointer ( IMPORT,   SPHU1,  'SPHU2', RC=STATUS )
       _VERIFY(STATUS)
+      call MAPL_GetPointer ( IMPORT,     iCX,   'CXIN', RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( IMPORT,     iCY,   'CYIN', RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( IMPORT,    iMFX,  'MFXIN', RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( IMPORT,    iMFY,  'MFYIN', RC=STATUS )
+      _VERIFY(STATUS)
 
       ! Get to the exports...
       ! ---------------------
@@ -651,13 +695,15 @@
 
       ! Restagger A-grid winds to C-grid and rotate for CS - L.Bindle
       ! -------------------------------------------------------------
-      ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
-      _VERIFY(STATUS)
-      ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
-      _VERIFY(STATUS)
-      UC(:,:,:) = UA(:,:,:)
-      VC(:,:,:) = VA(:,:,:)
-      call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
+      if (.not. use_fluxes) then
+         ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
+         _VERIFY(STATUS)
+         ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
+         _VERIFY(STATUS)
+         UC(:,:,:) = UA(:,:,:)
+         VC(:,:,:) = VA(:,:,:)
+         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
+      end if
 
       ! Calcaulate PLE0/1 - M.Long
       ! ---------------------
@@ -715,8 +761,10 @@
          SPHU0r8 = 1.0d0 * SPHU0
       Else
          SPHU0r8  (:,:,:) =  1.0d0*SPHU0(:,:,LM:1:-1)
-         UC       (:,:,:) =  UC      (:,:,LM:1:-1)
-         VC       (:,:,:) =  VC      (:,:,LM:1:-1)
+         if (.not. use_fluxes) then
+            UC       (:,:,:) =  UC      (:,:,LM:1:-1)
+            VC       (:,:,:) =  VC      (:,:,LM:1:-1)
+         end if
       End If
 
       DEALLOCATE( AP, BP )
@@ -731,22 +779,48 @@
       _VERIFY(STATUS)
 
       ! Compute the courant numbers and mass fluxes
+      ! unless they are being read in directly
       !--------------------------------------------
-      ALLOCATE( UCr8(is:ie,js:je,lm),   STAT=STATUS); _VERIFY(STATUS)
-      ALLOCATE( VCr8(is:ie,js:je,lm),   STAT=STATUS); _VERIFY(STATUS)
-      ALLOCATE(PLEr8(is:ie,js:je,lm+1), STAT=STATUS); _VERIFY(STATUS)
+      if (use_fluxes) then
+         if (flip_vertical) then
+            MFXr8 = 1.00d0*iMFX
+            MFYr8 = 1.00d0*iMFY
+            CXr8  = 1.00d0*iCX
+            CYr8  = 1.00d0*iCY
+         else
+            MFXr8 = 1.00d0*iMFX(:,:,LM:1:-1) 
+            MFYr8 = 1.00d0*iMFY(:,:,LM:1:-1) 
+            CXr8  = 1.00d0*iCX( :,:,LM:1:-1) 
+            CYr8  = 1.00d0*iCY( :,:,LM:1:-1) 
+         endif
+         if (run_dry) then
+            ! Operation is expected to be something like:
+            !    dryMFX(i,j,k) = { MFX(i,j,k)*(1-SPHU(i,j,k))    where MFX(i,j,k) >= 0
+            !                    { MFX(i,j,k)*(1-SPHU(i-1,j,k)   where MFX(i,j,k) <  0
+            ! but not confirmed yet with Bill Putman.
+            _FAIL('Conversion of total to dry mass fluxes not ready')
+         end if
+      else
+         ALLOCATE(PLEr8(is:ie,js:je,lm+1), STAT=STATUS); _VERIFY(STATUS)
+         ALLOCATE( UCr8(is:ie,js:je,lm),   STAT=STATUS); _VERIFY(STATUS)
+         ALLOCATE( VCr8(is:ie,js:je,lm),   STAT=STATUS); _VERIFY(STATUS)
 
-      UCr8  = 1.00d0*(UC)
-      VCr8  = 1.00d0*(VC)
+         UCr8  = 1.00d0*(UC)
+         VCr8  = 1.00d0*(VC)
 
-      ! Use dry pressure at the start of the timestep to calculate mass
-      ! fluxes. GMAO method uses mid-step UC, VC and PLE?
-      PLEr8 = 1.00d0*(DryPLE0r8)
-      call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
-                                   MFXr8, MFYr8, CXr8, CYr8, dt)
+         ! Use dry pressure at the start of the timestep to calculate mass
+         ! fluxes. GMAO method uses mid-step UC, VC and PLE?
+         if (run_dry) then
+            PLEr8 = 1.00d0*(DryPLE0r8)
+         else
+            PLEr8 = 1.00d0*(PLE0r8)
+         end if
+         call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
+                                      MFXr8, MFYr8, CXr8, CYr8, dt)
 
-      !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
-      DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC)
+         !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
+         DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC)
+      end if
 
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
