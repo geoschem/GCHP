@@ -71,6 +71,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
 
    supplement/rundir-config.rst
    supplement/config-files.rst
+   supplement/job-script-examples.rst
    supplement/spack.rst
    supplement/containers.rst
    supplement/plotting-output.rst
