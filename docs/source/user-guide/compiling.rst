@@ -161,6 +161,11 @@ To recompile GCHP, simply do
 
 and then optionally, :command:`make install`.
 
+.. note::
+    GNU compilers can recompile GCHP faster than Intel compilers because of how :program:`gfortran`
+    formats Fortran modules files (:file:`*.mod` files). Therefore, if you recompile GCHP frequently, consider 
+    using GNU compilers.
+
 ------------
 
 .. _gchp_build_options:
