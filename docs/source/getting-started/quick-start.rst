@@ -1,7 +1,7 @@
 
 
-Quick Start
-===========
+Quickstart Guide
+================
 
 This quickstart guide assumes your environment satisfies :ref:`GCHP's requirements <software_requirements>`. 
 This means you should load a compute environment so that programs like :program:`cmake` and :program:`mpirun`

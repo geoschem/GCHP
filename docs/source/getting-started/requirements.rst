@@ -24,6 +24,7 @@ To use GCHP you need a compute environment with the following software:
    * MPICH, or
    * other MPI libraries might work too
 
+* HDF5
 * NetCDF (with C, C++, and Fortran support)
 * ESMF version ≥ 8.0.0
 
