@@ -62,6 +62,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    user-guide/downloading.rst
    user-guide/compiling.rst
    user-guide/rundir-init.rst
+   user-guide/getting-input-data.rst
    user-guide/running.rst
 
 
