@@ -133,6 +133,8 @@ Run GCHP:
    $ ./gchp.local.run
 
 
+.. _sg_plotting_example:
+
 Plot the output
 ---------------
 
