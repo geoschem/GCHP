@@ -6,7 +6,8 @@ Building Dependencies with Spack
 
 The `Spack Package Manager <https://spack.io/>`__ may be used to download and build GCHP and all of its required external software depenencies, including
 CMake, MPI, ESMF, and NetCDF libraries. The only essential prerequisite for using Spack is a local C/C++/Fortran Compiler such as `GNU Compiler Collection <https://gcc.gnu.org/>`__.
-You can use this local compiler to later install a different compiler version through Spack.
+You can use this local compiler to later install a different compiler version through Spack. **GCHP requires GNU Compilers version ≥ 8.3 or Intel compilers version ≥ 18.0.5**.
+You must install a newer compiler through Spack if your pre-installed compiler does not meet these requirements.
 
 There are three different ways to use Spack to setup GCHP and/or its dependencies:
 
