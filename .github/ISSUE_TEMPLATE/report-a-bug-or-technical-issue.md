@@ -1,3 +1,11 @@
+---
+name: Report a bug or technical issue
+about: Use this template to report bugs and technical issues encountered while using GCHP.
+title: "[BUG/ISSUE] Your title"
+labels: bug
+assignees: ''
+
+---
 
 ### Description of the problem
 Describe your problem problem here.
