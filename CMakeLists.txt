@@ -4,16 +4,9 @@ project (gchp_ctm
   LANGUAGES Fortran CXX C
 )
 
-# Disable OMP by default if using gfortran to avoid a performance hit.
-# Enable OMP if using ifort to avoid a run-time seg fault. Both of these issues
-# are bugs under investigation.
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
-  set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
-elseif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-  set(OMP ON CACHE BOOL "Switch to enable/disable OpenMP")
-else()
-    message(FATAL_ERROR "Unknown Fortran compiler: ${CMAKE_Fortran_COMPILER_ID}")
-endif()
+cmake_policy(SET CMP0079 NEW)
+
+set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
 
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
@@ -81,6 +74,7 @@ set(CMAKE_DISABLE_FIND_PACKAGE_YAFYAML      TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_PFLOGGER     TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_F2PY         TRUE)
 
 # Add gchp_ctm's expected environment variables to CMAKE_PREFIX_PATH
 list(APPEND CMAKE_PREFIX_PATH 
