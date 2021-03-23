@@ -12,7 +12,7 @@
 
 Program GCHPctm_Main
 
-   use MAPL_Mod
+   use MAPL
    use GCHP_GridCompMod, only:  ROOT_SetServices => SetServices
 
    implicit none
@@ -25,6 +25,7 @@ Program GCHPctm_Main
    integer                :: status
 
    cap_options = MAPL_CapOptions(cap_rc_file='CAP.rc')
+   cap_options%logging_config = 'logging.yaml'
    cap = MAPL_CAP('GCHP', ROOT_SetServices, cap_options=cap_options)
    call cap%run(_RC)
    _VERIFY(status)
