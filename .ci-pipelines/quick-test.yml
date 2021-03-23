@@ -10,8 +10,8 @@
 trigger:
   branches:
     include:
-      - dev/*
-      - bugfix/*
+      - dev*
+      - bugfix*
 pr:
   branches:
     include:
