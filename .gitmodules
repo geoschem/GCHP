@@ -1,6 +1,6 @@
 [submodule "src/MAPL"]
 	path = src/MAPL
-	url = https://github.com/geoschem/MAPL
+	url = https://github.com/TerribleNews/MAPL
 [submodule "src/GMAO_Shared"]
 	path = src/GMAO_Shared
 	url = https://github.com/geoschem/GMAO_Shared
@@ -15,13 +15,13 @@
 	url = https://github.com/geoschem/FMS.git
 [submodule "src/GCHP_GridComp/FVdycoreCubed_GridComp"]
 	path = src/GCHP_GridComp/FVdycoreCubed_GridComp
-	url = https://github.com/geoschem/FVdycoreCubed_GridComp.git
+	url = https://github.com/TerribleNews/FVdycoreCubed_GridComp.git
 [submodule "src/GCHP_GridComp/GEOSChem_GridComp/geos-chem"]
 	path = src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
 	url = https://github.com/TerribleNews/geos-chem.git
 [submodule "src/GCHP_GridComp/HEMCO_GridComp/HEMCO"]
 	path = src/GCHP_GridComp/HEMCO_GridComp/HEMCO
-	url = https://github.com/geoschem/HEMCO.git
+	url = https://github.com/TerribleNews/HEMCO.git
 [submodule "src/yaFyaml"]
 	path = src/yaFyaml
 	url = https://github.com/geoschem/yaFyaml.git
