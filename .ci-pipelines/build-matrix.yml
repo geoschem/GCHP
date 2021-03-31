@@ -83,6 +83,7 @@ container: $[ variables['containerImage'] ]
 steps:
 - script: |
     source /init.rc
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./build/src/MAPL/shared:./build/src/MAPL/gridcomps:./build/src/MAPL/profiler
     module load gcc/${GCC_VERSION}
     export CC=gcc
     export CXX=g++

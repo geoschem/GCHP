@@ -45,6 +45,7 @@ steps:
     make -j install
   displayName: 'Build GCHP'
 - script: |
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./build/src/MAPL/shared:./build/src/MAPL/gridcomps:./build/src/MAPL/profiler
     source /init.rc
     module load gcc/8
     spack load openmpi
