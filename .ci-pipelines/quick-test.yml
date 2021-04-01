@@ -43,9 +43,6 @@ steps:
     cd build
     cmake $(Build.Repository.LocalPath) -DCMAKE_COLOR_MAKEFILE=FALSE -DRUNDIR=$(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
     make -j install
-    cp ./src/MAPL/shared/libMAPL.shared.so $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransport
-    cp ./src/MAPL/gridcomps/libMAPL.gridcomps.so $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransport
-    cp ./src/MAPL/profiler/libMAPL.profiler.so $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransport
   displayName: 'Build GCHP'
 - script: |
     source /init.rc
@@ -57,7 +54,9 @@ steps:
     spack load esmf
     cd $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
     export OMPI_MCA_btl_vader_single_copy_mechanism=none
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Build.Repository.LocalPath)/build/src/MAPL/profiler
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Build.Repository.LocalPath)/build/src/MAPL/shared
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Build.Repository.LocalPath)/build/src/MAPL/gridcomps
     mpirun --oversubscribe -np 6 ./gchp
     test -f OutputDir/GCHP.SpeciesConc.*.nc4
   displayName: 'Run GCHP'
