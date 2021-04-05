@@ -318,9 +318,11 @@ contains
     call MAPL_GridCreate( GC, rc=status )
     _VERIFY(STATUS)
 
+#ifdef ADJOINT
     if (MAPL_Am_I_Root()) THEN
        WRITE(*,*) 'Before Generic Init'
     endif
+#endif
 
     ! Try to locate a grid cell. This should only ever work on one PET
 
@@ -331,9 +333,11 @@ contains
     call MAPL_GenericInitialize ( GC, IMPORT, EXPORT, CLOCK, __RC__ )
     _VERIFY(STATUS)
 
+#ifdef ADJOINT
     if (MAPL_Am_I_Root()) THEN
        WRITE(*,*) 'After Generic Init'
     endif
+#endif 
 
     call MAPL_TimerOn(STATE,"TOTAL")
     !    call MAPL_TimerOn(STATE,"INITIALIZE")
