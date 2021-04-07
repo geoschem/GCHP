@@ -109,3 +109,9 @@ set_target_properties(
   
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
+
+target_compile_definitions(Baselibs INTERFACE 
+    $<$<BOOL:${ADJOINT}>:ADJOINT>
+    $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
+    ""
+)
