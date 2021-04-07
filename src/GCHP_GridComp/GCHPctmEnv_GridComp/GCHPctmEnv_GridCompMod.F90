@@ -541,9 +541,8 @@
       integer               :: i, j
       real(r8)              :: PSDry0, PSDry1, PEdge_Bot, PEdge_Top
 
-      logical, save         :: firstRun = .true.
-
 #ifdef ADJOINT
+      logical, save         :: firstRun = .true.
       integer               :: reverseTime
 #endif
 
@@ -694,11 +693,15 @@
       ! Use dry pressure at the start of the timestep to calculate mass
       ! fluxes. GMAO method uses mid-step UC, VC and PLE?
       PLEr8 = 1.00d0*(DryPLE0r8)
+#ifdef ADJOINT
       if (.not. firstRun) THEN
+#endif
       call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
                                    MFXr8, MFYr8, CXr8, CYr8, dt)
+#ifdef ADJOINT
       endif
       firstRun = .false.
+#endif
 
       !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
       DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC)
