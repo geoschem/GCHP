@@ -25,7 +25,7 @@ Program GCHPctm_Main
    integer                :: status
 
    cap_options = MAPL_CapOptions(cap_rc_file='CAP.rc')
-   cap_options%logging_config = 'logging.yaml'
+   cap_options%logging_config = 'logging.yml'
    cap = MAPL_CAP('GCHP', ROOT_SetServices, cap_options=cap_options)
    call cap%run(_RC)
    _VERIFY(status)
