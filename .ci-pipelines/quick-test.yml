@@ -1,20 +1,23 @@
 # Quick test pipeline:
 # 
-# This pipeline checks that commits and pull requests don't introduce build errors or runtime
-# errors. This is meant to be a quick and simple check that runs frequently.
+# This pipeline checks that commits and pull requests don't
+# introduce compiler and run-time errors. This is meant to be a
+# quick and simple check that runs frequently.
 
-
-# This pipeline triggers on commits to development and bug-fix branches. Commits to the main branch
-# do not trigger this pipeline because those are tested by the build matrix. Commits to feature
-# branches do not trigger this pipeline, but pull requests and commits to pull requests do.
+# This pipeline is currently not executed for any branches pending
+# additional work on the quick test run directory setup. However,
+# this pipeline will eventually be triggered on commits to development
+# and bug-fix branches. Commits to the main branch will not trigger
+# this pipeline because those are tested by the build matrix. Commits
+# to feature branches will not trigger this pipeline, but open pull
+# requests and commits to pull requests will.
 trigger:
   branches:
-    include:
-      - dev*
-      - bugfix*
+    exclude:
+      - '*'
 pr:
   branches:
-    include:
+    exclude:
       - '*'
 
 
@@ -23,8 +26,7 @@ pool:
   vmImage: 'ubuntu-latest'
 container: liambindle/penelope:2019.12-centos7-openmpi3.1.4-esmf8.0.0
 
-
-# Pipeline definition
+# Pipeline definition for build and run
 steps:
 - checkout: self
   submodules: recursive
@@ -54,9 +56,6 @@ steps:
     spack load esmf
     cd $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
     export OMPI_MCA_btl_vader_single_copy_mechanism=none
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Build.Repository.LocalPath)/build/src/MAPL/profiler
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Build.Repository.LocalPath)/build/src/MAPL/shared
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(Build.Repository.LocalPath)/build/src/MAPL/gridcomps
     mpirun --oversubscribe -np 6 ./gchp
     test -f OutputDir/GCHP.SpeciesConc.*.nc4
   displayName: 'Run GCHP'
