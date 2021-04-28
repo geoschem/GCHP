@@ -45,5 +45,5 @@ steps:
     mkdir build
     cd build
     cmake -DCMAKE_COLOR_MAKEFILE=FALSE $(Build.Repository.LocalPath)
-    make -j geos
+    make -j gchp
   displayName: 'Building GCHP'
