@@ -25,6 +25,7 @@ GCHP is controlled using a set of configuration files that are included in the G
 6. :file:`HEMCO_Diagn.rc`
 7. :file:`input.nml`
 8. :file:`HISTORY.rc`
+9. :file:`logging.yml`
 
 Several run-time settings must be set consistently across multiple files. 
 Inconsistencies may result in your program crashing or yielding unexpected results. 
@@ -50,7 +51,7 @@ If you manually edit a config file setting that is also set in :file:`runConfig.
 Please get very familiar with the options in :file:`runConfig.sh` and be conscientious about not updating the same setting elsewhere.
 
 You generally will not need to know more about the GCHP configuration files beyond what is listed on this page. 
-However, for a comprehensive description of all configuration files used by GCHP see the last section of this user manual.
+However, for a comprehensive description of all configuration files used by GCHP see the Configuration Files section of this user manual.
 
 ---------------------------------------------------------------------------------------------------
 
@@ -79,34 +80,6 @@ For example, if running at C24 with six cores each face is handled by one core (
 Each core therefore processes 576 cells. Since each core handles one face, each core communicates with four other cores (four surrounding faces). Maximizing squareness of grid cells per core is done automatically within :file:`runConfig.sh` if variable :samp:`NXNY_AUTO` is set to :samp:`ON`.
 
 Further discussion about domain decomposition is in :file:`runConfig.sh` section :literal:`Domain Decomposition`.
-
-Split a simulation into multiple jobs
-"""""""""""""""""""""""""""""""""""""
-
-There is an option to split up a single simulation into separate serial jobs. To use this option, do the following:
-
-1. Update :file:`runConfig.sh` with your full simulation (all runs) start and end dates, and the duration per segment (single run). 
-   Also update the number of runs options to reflect to total number of jobs that will be submitted (:literal:`NUM_RUNS`). 
-   Carefully read the comments in :file:`runConfig.sh` to ensure you understand how it works.
-2. Optionally turn on monthly diagnostic (:literal:`Monthly_Diag`). 
-   Only turn on monthly diagnostics if your run duration is monthly.
-3. Use :file:`gchp.multirun.run` as your run script, or adapt it if your cluster does not use SLURM. 
-   It is located in the runScriptSamples subdirectory of your run directory. 
-   As with the regular :file:`gchp.run`, you will need to update the file with compute resources consistent with :file:`runConfig.sh`. 
-   **Note that you should not submit the run script directly**. 
-   It will be done automatically by the file described in the next step.
-4. Use :file:`gchp.multirun.sh` to submit your job, or adapt it if your cluster does not use SLURM. 
-   It is located in the :file:`runScriptSamples/` subdirectory of your run directory. 
-   For example, to submit your series of jobs, type: :literal:`./gchp.multirun.sh`
-
-There is much documentation in the headers of both :file:`gchp.multirun.run` and :file:`gchp.multirun.sh` that is worth reading and getting familiar with, although not entirely necessary to get the multi-run option working. 
-If you have not done so already, it is worth trying out a simple multi-segmented run of short duration to demonstrate that the multi-segmented run configuration and scripts work on your system. 
-For example, you could do a 3-hour simulation with 1-hour duration and number of runs equal to 3.
-
-The multi-run script assumes use of SLURM, and a separate SLURM log file is created for each run. 
-There is also log file called :file:`multirun.log` with high-level information such as the start, end, duration, and job ids for all jobs submitted. 
-If a run fails then all scheduled jobs are cancelled and a message about this is sent to that log file. 
-Inspect this and your other log files, as well as output in the :file:`OutputDir/` directory prior to using for longer duration runs.
 
 Change domain stack size
 """"""""""""""""""""""""
@@ -142,9 +115,9 @@ Turn on/off model components
 """"""""""""""""""""""""""""
 
 You can toggle all primary GEOS-Chem components, including type of mixing, from within :file:`runConfig.sh`. 
-The settings in that file will update :file:`input.geos` automatically. 
-Look for section :literal:`Turn Components On/Off`, and other settings in :file:`input.geos`. 
-Other settings in this section beyond component on/off toggles using CH4 emissions in UCX, and initializing stratospheric H2O in UCX.
+The settings in that file will update :file:`input.geos` and :file:`HEMCO_Config.rc` automatically. 
+Look for section :literal:`Turn Components On/Off`. 
+Please note that you can turn on/off all base emissions from :file:`runConfig.sh` but you cannot toggle HEMCO extensions or individual base emissions. For this you must manually edit :file:`HEMCO_Config.rc`.
 
 Change model timestep
 """""""""""""""""""""
@@ -184,7 +157,7 @@ Turn on/off emissions inventories
 """""""""""""""""""""""""""""""""
 
 Because file I/O impacts GCHP performance it is a good idea to turn off file read of emissions that you do not need. 
-You can turn emissions inventories on or off the same way you would in GEOS-Chem Classic, by setting the inventories to true or false at the top of configuration file :file:`HEMCO_Config.rc`. 
+You can turn individual emissions inventories on or off the same way you would in GEOS-Chem Classic, by setting the inventories to true or false at the top of configuration file :file:`HEMCO_Config.rc`. 
 All emissions that are turned off in this way will be ignored when GCHP uses :file:`ExtData.rc` to read files, thereby speeding up the model.
 
 For emissions that do not have an on/off toggle at the top of the file, you can prevent GCHP from reading them by commenting them out in :file:`HEMCO_Config.rc`.
@@ -224,7 +197,8 @@ A few common errors encountered when adding new input emissions files to GCHP ar
    See files :file:`Includes_Before_Run.H` and setting :literal:`State_Chm%Species` in :file:`Chem_GridCompMod.F90` for examples.
 4. You have a typo in either :file:`HEMCO_Config.rc` or :file:`ExtData.rc`. Error in :file:`HEMCO_Config.rc` typically result in the model crashing right away. 
    Errors in :file:`ExtData.rc` typically result in a problem later on during ExtData read. 
-   Always try running with the MAPL debug flags on :file:`runConfig.sh` (maximizes output to :file:`gchp.log`) and Warnings and Verbose set to 3 in :file:`HEMCO_Config.rc` (maximizes output to :file:`HEMCO.log`) when encountering errors such as this. 
+   Always try running with all debug prints on in your first test with new emissions. 
+   See separate section on this page about turning on debug prints, or check the debug print section of :file:`runConfig.sh` for instructions. 
    Another useful strategy is to find config file entries for similar input files and compare them against the entry for your new file. 
    Directly comparing the file metadata may also lead to insights into the problem.
 
@@ -236,7 +210,7 @@ Outputs
 Output diagnostics data on a lat-lon grid
 """""""""""""""""""""""""""""""""""""""""
 
-See documentation in the :file:`HISTORY.rc` config file for instructions on how to output diagnostic collection on lat-lon grids.
+See documentation in the :file:`HISTORY.rc` config file for instructions on how to output diagnostic collection on lat-lon grids. If outputting on a lat-lon grid you may also output regional data instead of global.
 
 Output restart files at regular or irregular frequency
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -249,7 +223,8 @@ Enabling this feature is a good idea if you plan on doing a long simulation and 
 If the run crashes unexpectedly then you can restart mid-run rather than start over from the beginning.
 
 Update settings for checkpoint restart outputs in :file:`runConfig.sh` section :literal:`Output Restarts`. 
-Instructions for configuring both regular and irregular frequency restart files are included in the file.
+Instructions for configuring both regular and irregular frequency restart files are included in the file. 
+Note that because months have an irregular number of days, outputting monthly checkpoint files requires using the irregular checkpoint option.
 
 Turn on/off diagnostics
 """""""""""""""""""""""
@@ -260,11 +235,10 @@ Collections cannot be turned on/off from :file:`runConfig.sh`.
 Set diagnostic frequency, duration, and mode
 """"""""""""""""""""""""""""""""""""""""""""
 
-All diagnostic collections that come with the run directory have frequency, duration, and mode auto-set within :file:`runConfig.sh`. 
-The file contains a list of time-averaged collections and instantaneous collections, and allows setting a frequency and duration to apply to all collections listed for each.
-See section :literal:`Output Diagnostics` within :file:`runConfig.sh`. 
-To avoid auto-update of a certain collection, remove it from the list in :file:`runConfig.sh`. 
-If adding a new collection, you can add it to the file to enable auto-update of frequency, duration, and mode.
+All diagnostic collections that come with the run directory have frequency and duration auto-set within :file:`runConfig.sh`. 
+The file contains a list of time-averaged collections and instantaneous collections, and allows setting a frequency and duration to apply to all collections listed for each. Time-avraged collections also have a monthly mean option (see separate section on this page about monthly mean). 
+To avoid auto-update of a certain collection, remove it from the list in :file:`runConfig.sh`, or set :literal:`AutUpdate_Diagnostics` to :literal:`OFF`. 
+See section :literal:`Diagnostics` within :file:`runConfig.sh` for examples. 
 
 Add a new diagnostics collection
 """"""""""""""""""""""""""""""""
@@ -273,21 +247,20 @@ Adding a new diagnostics collection in GCHP is the same as for GEOS-Chem Classic
 You must add your collection to the collection list in :file:`HISTORY.rc` and then define it further down in the file. 
 Any 2D or 3D arrays that are stored within GEOS-Chem objects :literal:`State_Met`, :literal:`State_Chm`, or :literal:`State_Diag`, may be included as fields in a collection. 
 :literal:`State_Met` variables must be preceded by "Met\_", :literal:`State_Chm` variables must be preceded by "Chem\_", and :literal:`State_Diag` variables should not have a prefix. 
+Collections may have a combination of 2D and 3D variables, but all 3D variables must have the same number of levels.
 See the :file:`HISTORY.rc` file for examples.
 
 Once implemented, you can either incorporate the new collection settings into :file:`runConfig.sh` for auto-update, or you can manually configure all settings in :file:`HISTORY.rc`.
-See the :literal:`Output Diagnostics` section of :file:`runConfig.sh` for more information.
+See the :literal:`Diagnostics` section of :file:`runConfig.sh` for more information.
 
 Generate monthly mean diagnostics
 """""""""""""""""""""""""""""""""
 
-There is an option to automatically generate monthly diagnostics by submitting month-long simulations as separate jobs. 
-Splitting up the simulation into separate jobs is a requirement for monthly diagnostics because MAPL History requires a fixed number of hours set for diagnostic frequency and file duration. 
-The monthly mean diagnostic option automatically updates :file:`HISTORY.rc` diagnostic settings each month to reflect the number of days in that month taking into account leap years.
-
-To use the monthly diagnostics option, first read and follow instructions for splitting a simulation into multiple jobs (see separate section on this page). 
-Prior to submitting your run, enable monthly diagnostics in :file:`runConfig.sh` by searching for variable "Monthly_Diag" and changing its value from 0 to 1. 
-Be sure to always start your monthly diagnostic runs on the first day of the month.
+You can toggle monthly mean diagnostics on/off from within :file:`runConfig.sh` in the diagnostics configurations section. 
+If you do this then ALL time-averaged diagnostic collections listed in :file:`runConfig.sh` will have monthly diagnostics enabled. 
+As for collection frequency and duration, you can remove collections from the list in :file:`runConfig.sh` to prevent auto-update, or set :literal:`AutoUpdate_Diagnostics` to :literal:`OFF`, and then manually update settings for those collections in :file:`HISTORY.rc` prior to your run. 
+This would allow you to have some time-averaged diagnostics be monthly mean and some not. 
+If using monthly diagnostics, be sure to always start and end your run on the first day and time of the month.
 
 ---------------------------------------------------------------------------------------------------
 
@@ -301,8 +274,9 @@ Besides compiling with :literal:`CMAKE_BUILD_TYPE=Debug`, there are a few settin
 All of them involve sending additional print statements to the log files.
 
 1. Set Turn on debug printout? in input.geos to T to turn on extra GEOS-Chem print statements in the main log file.
-2. Set :literal:`MAPL_EXTDATA_DEBUG_LEVEL` in :file:`runConfig.sh` to 1 to turn on extra MAPL print statements in ExtData, the component that handles input.
-3. Set the Verbose and Warnings settings in :file:`HEMCO_Config.rc` to maximum values of 3 to send the maximum number of prints to :file:`HEMCO.log`.
+2. Set the Verbose and Warnings settings in :file:`HEMCO_Config.rc` to maximum values of 3 to send the maximum number of prints to :file:`HEMCO.log`.
+3. Set :literal:`CAP.EXTDATA` option :literal:`root_level` in :file:`logging.yml` to :literal:`DEBUG` for root thread MAPL ExtData (input) prints. 
+4. Set :literal:`CAP.EXTDATA` option :literal:`level` in :file:`logging.yml` to :literal:`DEBUG` for all thread MAPL ExtData (input) prints. 
 
 None of these options require recompiling. 
 Be aware that all of them will slow down your simulation. 
