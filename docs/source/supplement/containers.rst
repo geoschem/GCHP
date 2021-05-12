@@ -33,11 +33,11 @@ Setting up and running GCHP using Singularity
 ---------------------------------------------
 
 Available GCHP images are listed `on Docker Hub <https://hub.docker.com/r/geoschem/gchp/tags?page=1&ordering=last_updated>`__.
-The following command pulls the image of GCHP 13.0.0-beta1 and converts it to a Singularity image named `gchp.sif` in your current directory.
+The following command pulls the image of GCHP 13.0.2 and converts it to a Singularity image named `gchp.sif` in your current directory.
 
 .. code-block:: console
 
-   $ singularity pull gchp.sif docker://geoschem/gchp:13.0.0-beta.1-8-gcbcd8e4
+   $ singularity pull gchp.sif docker://geoschem/gchp:13.0.2
 
 
 If you do not already have GCHP data directories, create a directory where you will later store data files.
