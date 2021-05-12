@@ -29,21 +29,8 @@ Checkout the version that you want to work with, and update the submodules:
 
 .. code-block:: console
 
-   gcuser:~/Code.GCHP$ git checkout 13.0.0-beta.1
+   gcuser:~/Code.GCHP$ git checkout 13.0.2
    gcuser:~/Code.GCHP$ git submodule update --init --recursive
-
-.. note::
-   Version 13 is not officially released yet. Until then, the most recent
-   commit to :literal:`main` is the most stable version of GCHP. Therefore,
-   we recommend you checkout :literal:`main`, rather than a version
-   like :literal:`13.0.0-beta.1`, until 13.0.0 is officially released. E.g.:
-
-   .. code-block:: console
-
-      $ git checkout main   # recommended until version 13 is officially released
-
-   Once version 13 is released, we will resume recommending users checkout
-   a specific version.
 
 --------------------------------------------------------------------------------------
 
@@ -53,7 +40,7 @@ Run :command:`git status` to check that there are no differences:
 .. code-block:: console
 
    gcuser:~/Code.GCHP$ git status
-   HEAD detached at 13.0.0-beta.1
+   HEAD detached at 13.0.2
    nothing to commit, working tree clean
    gcuser:~/Code.GCHP$
 

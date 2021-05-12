@@ -1,7 +1,7 @@
 .. note::
    Compiling GCHP and creating a run directory are independent steps, and their order doesn't matter. A small exception
    is the :ref:`RUNDIR <build_setting_rundir>` build option, which controls the behaviour of :command:`make install`;
-   however, this setting can be reconfigure at any time (e.g., after compiling and creating a run directory). 
+   however, this setting can be reconfigured at any time (e.g., after compiling and creating a run directory). 
    
    Here in the User Guide, we describe compiling GCHP before we describe creating a run directory. This is
    so that conceptually the instructions have a linear flow. The Quickstart Guide uses the opposite ordering
