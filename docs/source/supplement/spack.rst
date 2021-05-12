@@ -9,15 +9,29 @@ CMake, MPI, ESMF, and NetCDF libraries. The only essential prerequisite for usin
 You can use this local compiler to later install a different compiler version through Spack. **GCHP requires GNU Compilers version ≥ 8.3 or Intel compilers version ≥ 18.0.5**.
 You must install a newer compiler through Spack if your pre-installed compiler does not meet these requirements.
 
-There are three different ways to use Spack to setup GCHP and/or its dependencies:
+There are 3 stages to setting up GCHP and/or its dependencies with Spack: setting up Spack and configuring existing libraries, installing GCHP and/or its dependencies,
+and setting up an environment file for loading installed Spack packages.
 
-* `install individual software dependencies <#installing-individual-dependencies-with-spack>`__
-* `install all dependencies in one command <#one-line-install-of-gchp-dependencies-with-spack>`__
-* `install both GCHP and all of its dependencies in one command <#one-line-install-of-gchp-and-its-dependencies-with-spack>`__
+All Spack users should first read the section on setting up Spack and configuring Spack to recognize existing dependencies on your system that you would like Spack to use
+for building GCHP or other dependencies (such as ESMF or Slurm):
+
+* `Setting up Spack and existing dependencies <#setting-up-spack-installing-new-compilers-and-specifying-preinstalled-dependencies>`__
+
+You can optionally read about the most important Spack commands and tips on how they work:
+
+* `Spack syntax and handy commands <#spack-syntax-and-handy-commands>`__
+
+Read one of the following sections depending on which portions of the GCHP software stack you want to install using Spack:
+
+* `Install individual software dependencies <#installing-individual-dependencies-with-spack>`__
+* `Install all dependencies in one command <#one-line-install-of-gchp-dependencies-with-spack>`__
+* `Install both GCHP and all of its dependencies in one command <#one-line-install-of-gchp-and-its-dependencies-with-spack>`__
 
 
-This page covers each of these options. For any of these options, first follow the instructions below about setting up Spack, configuring compilers in Spack,
-and specifying dependencies you already have installed which you would like Spack to use for building GCHP or other dependencies (such as ESMF or Slurm).
+Read how to load Spack libraries in an environment file for running or building GCHP or ESMF:
+
+* `Loading Spack libraries for use with GCHP and/or ESMF <#loading-spack-libraries-for-use-with-gchp-and-or-esmf>`__
+
 
 
 Setting up Spack, installing new compilers, and specifying preinstalled dependencies
@@ -52,8 +66,6 @@ GNU compilers are free, open source, and easily installable through Spack. Execu
 
    $ spack install gcc@9.3.0
    
-
-The ``package@VERSION`` notation is common to all packages in Spack and can be customized to choose different versions. 
 
 The installation of ``gcc`` may take a long time. Once it is complete, you'll need to add it to Spack's list of compilers using the following command:
 
@@ -91,6 +103,115 @@ The code below shows how to do this by editing ``$HOME/.spack/packages.yaml`` (y
       slurm: /path/to/slurm
      buildable: False
 
+
+Finding and specifying your system's Slurm installation
+*******************************************************
+
+If you plan on submitting jobs through the Slurm job scheduler, you'll need to specify the location of Slurm on your system for Spack.
+Spack expects a specific directory format for your external Slurm installation path: it must contain both an ``include/`` directory and a ``lib64/`` directory.
+Depending on your cluster's Slurm configuration, these directories may or may not already be in the same parent directory. Additionally, finding these individual directories can
+prove challenging. Each of the following commands can help lead you to the correct ``include/`` and ``lib64/`` directories on your cluster:
+
+.. code-block:: console
+
+   $ whereis slurm
+   $ whereis libpmi
+   $ whereis libpmi2
+   $ whereis srun
+   $ whereis sinfo
+   
+You may or may not receive any output from each of these commands, but hopefully at least one of these commands reveals a high level Slurm directory (e.g. ``opt/slurm``),
+an ``include/`` directory, and/or a ``lib64/`` directory.  You may encounter multiple directories with the name ``include`` or ``lib64``; the correct ``include/`` directory should contain
+``.h`` files like ``pmi.h`` and ``slurm.h``, while the ``lib64/`` directory should contain ``libpmi.so``, ``libpmi2.so``, and/or ``libpmix.so``. 
+
+If you have a high level Slurm directory that contains correct ``include/`` and ``lib64/`` directories, then you
+can use the path to that high level directory in your ``$HOME/.spack/packages.yaml`` file.
+
+
+If your revealed ``include/`` and ``lib64/`` directories are not located in the same parent directory, you'll need to create a new directory (called ``slurm_hub`` in this example,
+though you can name it anything and put it anywhere) with symlinks to your ``include/`` and ``lib64/`` directories:
+
+.. code-block:: console
+
+   $ mkdir slurm_hub
+   $ cd slurm_hub
+   $ ln -s /path/to/include include
+   $ ln -s /path/to/lib64 lib64
+   
+Put the path to ``slurm_hub`` in the correct location of your ``$HOME/.spack/packages.yaml`` file, and Spack will consider this directory to be your Slurm directory.
+
+
+Spack syntax and handy commands
+-------------------------------
+
+This section describes the most important parts of Spack's syntax as well as various useful Spack commands.
+
+
+When describing a Spack package, the ``@version`` syntax specifies the package version (e.g. ``gchp@13.0.2``). If you do not specify a specific version of a package
+during installation, Spack will either install the latest available version of that package or Spack will choose a version that it knows to be compatible with other
+dependencies in your software stack.
+
+
+The ``package1 ^package2`` syntax tells Spack that ``package2`` is a dependency of ``package1``. Packages will often have locked dependency requirements such that you cannot
+add totally new packages as dependencies or avoid using specific packages, but you can still use this syntax to specify information on how to build certain dependencies 
+(e.g. ``spack install gchp ^netcdf-fortran@4.5.2%gcc@9.3.0``).
+Other dependency requirements can be fulfilled by multiple packages (e.g. you can specify an MPI implementation to use through ``spack install gchp ^openmpi`` or ``spack install gchp ^intel-mpi``).
+If you want to specify build options for a package, make sure that option immediately follows the package's name in a Spack command (e.g. ``spack install gchp +ofi ^openmpi +pmi``
+is correct because ``+ofi`` is an option for ``gchp`` and ``+pmi`` is an option for ``openmpi``, but ``spack install gchp ^openmpi +pmi +ofi`` will fail because ``+ofi`` is not an option
+for ``openmpi``).
+
+
+The ``%compiler`` syntax specifies which compiler to use to build a package. You can specify the compiler version as well (e.g. ``gchp%gcc@9.3.0``). Spack should build all child
+dependencies of a package with the same compiler you specify for the parent package, but compiler versions may or may not be consistent if you first specify a compiler version
+further down the dependency tree (e.g. ``spack install gchp%gcc@9.3.0 ^openmpi`` will build all dependencies of GCHP with ``gcc@9.3.0`` including OpenMPI, 
+but ``spack install gchp ^openmpi%gcc@9.3.0`` only requires Spack to build OpenMPI and its dependencies with ``gcc@9.3.0`` so other dependencies of GCHP may be built with another 
+compiler version).
+
+
+Every build of a package through Spack receives its own unique hash identifier. This hash can be useful when you install multiple copies of the same package that are not readily
+distinguishable (e.g. they only differ by one dependency version). You can use the ``-l`` option in ``spack find`` to see the beginning of the hash ID for each package. You only need
+this short code (rather than the full 32 character hash) to identify a package for Spack. Use ``/hash_id`` to specify a package build based on its hash (you don't need to
+include the package's name, e.g. a GCHP installation with the hash ``2qmcc6kq3hwm3vasey63y6h4l77pzw2o`` can be loaded using ``spack load /2qmcc6``).
+
+
+All of the above syntax examples can be added to any of the commands below for any ``package_name``.
+
+
+
+``spack info package_name`` will return information on package ``package_name``, including available versions and build variant options, if this package is available through Spack.
+This info is pulled from data in your clone of the Spack Git repository. You can get the latest information (as well as any updates to packages) 
+by updating your Spack repo using ``git pull``.
+
+
+``spack spec package_name`` will return a list of all dependencies (including package versions, compilers, and build variants) that would be installed if you were to
+use ``spack install package_name``. 
+
+
+``spack install package_name`` is the core Spack installation command. Many examples of ``install`` commands are found in other sections on this page. One important option for
+``spack install`` is ``--only dependencies``, which installs all dependencies for a package without installing the package itself. Note that if you use ``spack install --only dependencies package_name``
+you will not be able to later load all dependencies for ``package_name`` using ``spack load package_name``; you will have to load dependencies individually.
+
+
+``spack uninstall package_name`` lets you uninstall specific packages. You'll be prompted with additional options to append after ``uninstall`` if the package you're attempting to remove
+has dependents remaining on your system. ``spack uninstall -a pattern`` can be used to uninstall all packages matching a certain spec pattern (e.g. ``spack uninstall %gcc@9.3.0`` will uninstall
+all packages that were compiled with ``gcc@9.3.0``).
+
+
+``spack compiler remove compiler_name`` will remove a compiler from Spack's list of available compilers. 
+
+
+``spack find package_name`` will show you all installed versions of ``package_name``. ``spack find`` will show you all installed packages, and ``spack find --loaded`` will show you all loaded
+packages. 
+
+
+``spack location -i package_name`` will return the installation path of ``package_name``.
+
+
+``spack load package_name`` will load a package and all of its runtime dependencies.
+
+
+``spack unload package_name`` will unload a specific package. Note that some environment variable changes will not be undone, and dependencies will not be unloaded.
+``spack unload`` (without specifying a package) will unload all loaded packages, similar to ``module purge``. 
 
 
 Installing individual dependencies with Spack
@@ -137,7 +258,7 @@ Otherwise, scroll down to see necessary modifications you must make to include S
 
 
 
- **MVAPICH2**
+**MVAPICH2**
 
 .. code-block:: console
 
@@ -278,7 +399,7 @@ to initialize Spack and load requisite packages for building ESMF and/or buildin
     #==============================================================================
     # List each Spack package that you want to load
     # NOTE: Only needed if you did not install GCHP directly through Spack
-    pkgs=(gcc@9.3.0            \
+    pkgs=(gcc@9.3.0       \
      git@2.17.0           \
      netcdf-fortran@4.5.2 \
      cmake@3.16.1         \
@@ -301,7 +422,7 @@ to initialize Spack and load requisite packages for building ESMF and/or buildin
     export ESMF_COMPILER=gfortran #intel for intel compilers
     export ESMF_COMM=openmpi
 
-**IntelMPI**
+**Intel MPI**
 
 .. code-block:: bash
 
@@ -315,11 +436,12 @@ to initialize Spack and load requisite packages for building ESMF and/or buildin
     #==============================================================================
     # List each Spack package that you want to load
     # NOTE: Only needed if you did not install GCHP directly through Spack
-    pkgs=(gcc@9.3.0            \
+    pkgs=(gcc@9.3.0       \
      git@2.17.0           \
      netcdf-fortran@4.5.2 \
      cmake@3.16.1         \
-     intel-mpi        )
+     intel-mpi            \
+     esmf                 )
 
     # Load each Spack package
     for f in ${pkgs[@]}; do
@@ -363,11 +485,12 @@ to initialize Spack and load requisite packages for building ESMF and/or buildin
     #==============================================================================
     # List each Spack package that you want to load
     # NOTE: Only needed if you did not install GCHP directly through Spack
-    pkgs=(gcc@9.3.0            \
+    pkgs=(gcc@9.3.0       \
      git@2.17.0           \
      netcdf-fortran@4.5.2 \
      cmake@3.16.1         \
-     mvapich2        )
+     mvapich2             \
+     esmf                 )
 
     # Load each Spack package
     for f in ${pkgs[@]}; do
