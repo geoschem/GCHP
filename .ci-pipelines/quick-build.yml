@@ -23,27 +23,42 @@ pr:
 # Basic agent and container set up
 pool:
   vmImage: 'ubuntu-latest'
-container: liambindle/penelope:2019.12-centos7-openmpi3.1.4-esmf8.0.0
+container: geoschem/buildmatrix:esmf_slim-openmpi3.1.4-ubuntu
 
 
 # Pipeline definition for building GCHP
 steps:
 - checkout: self
-  submodules: true
+  submodules: recursive
 - script: |
-    source /init.rc
-    module load gcc/8
+    . /opt/spack/share/spack/setup-env.sh
     export CC=gcc
     export CXX=g++
     export FC=gfortran
-    spack load openmpi
+    set -x
+    spack load cmake
+    spack load m4
+    spack load mpi
     spack load hdf5 
     spack load netcdf-c
     spack load netcdf-fortran
     spack load esmf
-    git -c $(Build.Repository.LocalPath) submodule update --init --recursive
     mkdir build
     cd build
-    cmake -DCMAKE_COLOR_MAKEFILE=FALSE $(Build.Repository.LocalPath)
-    make -j gchp
+    cmake $(Build.Repository.LocalPath) -DCMAKE_COLOR_MAKEFILE=FALSE -DRUNDIR=$(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
+    make -j install
   displayName: 'Building GCHP'
+# - script: |
+#     . /opt/spack/share/spack/setup-env.sh
+#     spack load cmake
+#     spack load m4
+#     spack load mpi
+#     spack load hdf5 
+#     spack load netcdf-c
+#     spack load netcdf-fortran
+#     spack load esmf
+#     cd $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
+#     export OMPI_MCA_btl_vader_single_copy_mechanism=none
+#     mpirun --oversubscribe -np 6 ./gchp
+#     test -f OutputDir/GCHP.SpeciesConc.*.nc4
+#   displayName: 'Run GCHP'
