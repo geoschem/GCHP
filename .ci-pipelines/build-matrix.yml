@@ -28,73 +28,56 @@ pool:
 # Define the "matrix" of build images to try building GCHP in
 strategy:
   matrix:
-    #-----------
-    # GCC majors
-    #-----------
-    ubuntu_openmpi314_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-openmpi3.1.4-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: openmpi
-    centos_openmpi314_gcc831:
-      containerImage: liambindle/penelope:2019.12-centos7-openmpi3.1.4-esmf8.0.0
-      GCC_VERSION: 8
-      MPI_PACKAGE_NAME: openmpi
-    #---------
-    # OpenMPI (note: 3.1.4 is covered by other tests)
-    #---------
-    ubuntu_openmpi304_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-openmpi3.0.4-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: openmpi
-    ubuntu_openmpi401_gcc921:
-      containerImage:  liambindle/penelope:2019.12-ubuntu16.04-openmpi4.0.1-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: openmpi
-    #----------
-    # MVAPICH2
-    #---------- 
-    ubuntu_mvapich22_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mvapich2.2-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: mvapich2
-    ubuntu_mvapich231_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mvapich2.3.1-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: mvapich2
-    #-------
-    # MPICH
-    #-------
-    ubuntu_mpich314_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mpich3.1.4-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: mpich
-    ubuntu_mpich321_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mpich3.2.1-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: mpich
-    ubuntu_mpich331_gcc921:
-      containerImage: liambindle/penelope:2019.12-ubuntu16.04-mpich3.3.1-esmf8.0.0
-      GCC_VERSION: 9
-      MPI_PACKAGE_NAME: mpich
+    ubuntu_basic:
+      containerImage: geoschem/buildmatrix:esmf-ubuntu
+    gcc8:
+      containerImage: geoschem/buildmatrix:esmf-gcc8
+    gcc9:
+      containerImage: geoschem/buildmatrix:esmf-gcc9
+    #gcc10:
+    #  containerImage: geoschem/buildmatrix:esmf-gcc10
+    openmpi401:
+      containerImage: geoschem/buildmatrix:esmf_slim-openmpi4.0.1-ubuntu
+    openmpi304:
+      containerImage: geoschem/buildmatrix:esmf_slim-openmpi3.0.4-ubuntu
+    openmpi314:
+      containerImage: geoschem/buildmatrix:esmf_slim-openmpi3.1.4-ubuntu
 container: $[ variables['containerImage'] ]
 
 
 # Try building GCHP (this is run for each "matrix" entry above)
 steps:
+- checkout: self
+  submodules: recursive
 - script: |
-    source /init.rc
-    module load gcc/${GCC_VERSION}
+    . /opt/spack/share/spack/setup-env.sh
     export CC=gcc
     export CXX=g++
     export FC=gfortran
-    spack load ${MPI_PACKAGE_NAME}
+    set -x
+    spack load cmake
+    spack load m4
+    spack load mpi
     spack load hdf5 
     spack load netcdf-c
     spack load netcdf-fortran
     spack load esmf
-    git -c $(Build.Repository.LocalPath) submodule update --init --recursive
     mkdir build
     cd build
-    cmake -DCMAKE_COLOR_MAKEFILE=FALSE $(Build.Repository.LocalPath)
-    make -j gchp
-  displayName: 'Building GEOS-Chem'
+    cmake $(Build.Repository.LocalPath) -DCMAKE_COLOR_MAKEFILE=FALSE -DRUNDIR=$(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
+    make -j install
+  displayName: 'Building GCHP'
+# - script: |
+#     . /opt/spack/share/spack/setup-env.sh
+#     spack load cmake
+#     spack load m4
+#     spack load mpi
+#     spack load hdf5 
+#     spack load netcdf-c
+#     spack load netcdf-fortran
+#     spack load esmf
+#     cd $(Build.Repository.LocalPath)/.ci-pipelines/MinimumStandaloneTransportTracer
+#     export OMPI_MCA_btl_vader_single_copy_mechanism=none
+#     mpirun --oversubscribe -np 6 ./gchp
+#     test -f OutputDir/GCHP.SpeciesConc.*.nc4
+#   displayName: 'Run GCHP'
