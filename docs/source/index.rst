@@ -96,3 +96,4 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    reference/git-submodules.rst
    reference/glossary.rst
    reference/versioning.rst
+   reference/uploading_to_spack.rst
