@@ -275,8 +275,8 @@ All of them involve sending additional print statements to the log files.
 
 1. Set Turn on debug printout? in input.geos to T to turn on extra GEOS-Chem print statements in the main log file.
 2. Set the Verbose and Warnings settings in :file:`HEMCO_Config.rc` to maximum values of 3 to send the maximum number of prints to :file:`HEMCO.log`.
-3. Set :literal:`CAP.EXTDATA` option :literal:`root_level` in :file:`logging.yml` to :literal:`DEBUG` for root thread MAPL ExtData (input) prints. 
-4. Set :literal:`CAP.EXTDATA` option :literal:`level` in :file:`logging.yml` to :literal:`DEBUG` for all thread MAPL ExtData (input) prints. 
+3. Set :literal:`CAP.EXTDATA` option :literal:`root_level` in :file:`logging.yml` to :literal:`DEBUG` to send root thread MAPL ExtData (input) prints to :file:`allPEs.log`.
+4. Set :literal:`CAP.EXTDATA` option :literal:`level` in :file:`logging.yml` to :literal:`DEBUG` to send all thread MAPL ExtData (input) prints to :file:`allPEs.log`.
 
 None of these options require recompiling. 
 Be aware that all of them will slow down your simulation. 
