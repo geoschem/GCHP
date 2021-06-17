@@ -1,4 +1,4 @@
-FROM liambindle/penelope:2019.12-ubuntu16.04-openmpi4.0.1-esmf8.0.0
+FROM geoschem/buildmatrix:esmf_slim-openmpi3.1.4-ubuntu
 
 # Make a directory to install GEOS-Chem to
 RUN mkdir -p /opt/geos-chem/bin
@@ -11,9 +11,14 @@ RUN cd /gc-src \
 &&  mkdir build
 
 # Commands to properly set up the environment inside the container
-RUN echo "module load gcc/9" >> /init.rc \
-&&  echo "spack load openmpi" >> /init.rc \
-&&  echo "spack load hdf5" >> /init.rc \
+RUN echo ". /opt/spack/share/spack/setup-env.sh" >> /init.rc \
+&&  echo "export CC=gcc" >> /init.rc \
+&&  echo "export CXX=g++" >> /init.rc \
+&&  echo "export FC=gfortran" >> /init.rc \
+&&  echo "spack load cmake" >> /init.rc \
+&&  echo "spack load m4" >> /init.rc \
+&&  echo "spack load mpi" >> /init.rc \
+&&  echo "spack load hdf5 " >> /init.rc \
 &&  echo "spack load netcdf-c" >> /init.rc \
 &&  echo "spack load netcdf-fortran" >> /init.rc \
 &&  echo "spack load esmf" >> /init.rc \
