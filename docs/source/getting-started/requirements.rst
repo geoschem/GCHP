@@ -14,7 +14,7 @@ To use GCHP you need a compute environment with the following software:
 * Compilers (C, C++, and Fortran):
 
    * Intel compilers version ≥ 18.0.5, or
-   * GNU compilers version ≥ 8.3 and < 10.0
+   * GNU compilers version ≥ 8.3
 
 * MPI (Message Passing Interface)
 
