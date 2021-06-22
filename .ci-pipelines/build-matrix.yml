@@ -34,8 +34,8 @@ strategy:
       containerImage: geoschem/buildmatrix:esmf-gcc8
     gcc9:
       containerImage: geoschem/buildmatrix:esmf-gcc9
-    #gcc10:
-    #  containerImage: geoschem/buildmatrix:esmf-gcc10
+    gcc10:
+      containerImage: geoschem/buildmatrix:esmf-gcc10
     openmpi401:
       containerImage: geoschem/buildmatrix:esmf_slim-openmpi4.0.1-ubuntu
     openmpi304:
