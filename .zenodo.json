@@ -1,0 +1,22 @@
+{
+    "access_right": "open",
+    "creators": [
+	{
+	    "name": "The International GEOS-Chem User Community"
+	}
+    ],
+    "description": "GEOS-Chem as GCHP (multi-node, MPI parallelization)",
+    "keywords": [
+	"atmospheric-chemistry",
+	"atmospheric-composition",
+	"atmospheric-modeling",
+	"aws",
+	"climate-modeling",
+	"cloud-computing",
+	"geos-chem",
+	"atmospheric-computing",
+	"scientific-computing"
+    ],
+    "license": "mit-license",
+    "upload_type": "software"
+}
