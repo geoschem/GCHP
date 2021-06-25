@@ -70,6 +70,7 @@ Big Compute Recommendations
 These hardware recommendations are for users that are interested in tackling large bleeding-edge
 computational problems:
 
+* Hyper-threading can improve simulation throughput (reportedly up to 50%)
 * A high-performance-computing cluster (or a cloud-HPC service like AWS)
 
    * 1--50 nodes
