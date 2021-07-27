@@ -80,10 +80,14 @@ target_compile_options(GEOSChemBuildProperties
    >
 )
 
+#---------------------------------------------------------------------
+# Assign preprocessor definitions
+#---------------------------------------------------------------------
 target_compile_definitions(GEOSChemBuildProperties
     INTERFACE
     $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},Intel>:LINUX_IFORT>
     $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},GNU>:LINUX_GFORTRAN>
+    $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
 )
 
 # Print the options that are turned on in GEOS-Chem
