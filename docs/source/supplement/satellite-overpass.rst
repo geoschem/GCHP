@@ -1,4 +1,4 @@
-
+.. _output-along-a-track:
 
 Output Along a Track
 ====================
