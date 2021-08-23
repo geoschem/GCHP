@@ -4,7 +4,8 @@ Downloading Input Data
 
 Input data for GEOS-Chem is available from the following FTP servers:
 
-* http://geoschemdata.computecanada.ca/ExtData/ (preferred)
+* http://geoschemdata.wustl.edu/ExtData/ (preferred)
+* http://geoschemdata.computecanada.ca/ExtData/
 * http://ftp.as.harvard.edu/gcgrid/data/ExtData/
 
 Notably, you will need four types of input data to run GCHP:
