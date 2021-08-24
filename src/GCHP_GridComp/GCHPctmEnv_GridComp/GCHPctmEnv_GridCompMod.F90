@@ -13,7 +13,7 @@
 ! !USES:
       use ESMF
       use MAPL_Mod
-      use FV_StateMod, only : fv_computeMassFluxes
+      use FV_StateMod, only : fv_computeMassFluxes, fv_getVerticalMassFlux
       use GEOS_FV3_UtilitiesMod, only : A2D2C
       use m_set_eta,  only : set_eta
 
@@ -322,6 +322,15 @@
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
 
+      call MAPL_AddExportSpec ( gc,                                  &
+           SHORT_NAME = 'UpwardsMassFlux',                           &
+           LONG_NAME  = 'upward_mass_flux_of_air',                   &
+           UNITS      = 'kg m-2 s-1',                                &
+           PRECISION  = ESMF_KIND_R8,                                &
+           DIMS       = MAPL_DimsHorzVert,                           &
+           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
+      _VERIFY(STATUS)
+
       ! Internal State - MSL
       !-------------------------
       ! Store internal state with Config object in the gridded component
@@ -532,6 +541,9 @@
       real,     pointer, dimension(:,:,:) ::   DryPLE0 => null()
       real,     pointer, dimension(:,:,:) ::   DryPLE1 => null()
 
+      ! Vertical motion diagnostics
+      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
+
       integer               :: km, k, is, ie, js, je, lm, l, ik
       integer               :: ndt, isd, ied, jsd, jed
       real(r8), allocatable :: AP(:), BP(:)
@@ -707,6 +719,23 @@
 
       !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
       DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC)
+
+      ! Vertical motion diagnostics
+      call MAPL_GetPointer ( EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', ALLOC=.TRUE., RC=STATUS )
+      _VERIFY(STATUS)
+
+      ! Get vertical mass flux
+      call fv_getVerticalMassFlux(MFXr8, MFYr8, UpwardsMassFlux, dt)
+
+      ! Flip vertical so that GCHP diagnostic is positive="up"
+      UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)
+
+      ! LRB Note: 
+      ! The upward_air_velocity could be calculated by
+      !   upward_air_velocity = upward_mass_flux_of_air / air_density(edge)
+      ! but calculating air_density(edge) is lossy because it requires 
+      ! temperature be interpolated to the level edge. Therefore, I've 
+      ! excluded it.
 
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
