@@ -8,10 +8,14 @@
 <a href="https://spack.readthedocs.io/en/latest/package_list.html#gchp"><img src="https://img.shields.io/badge/Install%20with-Spack-ff69b4"></a>
 <a href="https://github.com/geoschem/GCHP/releases"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?include_prereleases&label=Latest%20Pre-Release"></a>
 
-This is the GEOS-Chem High Performance (GCHP) source code. You can find the documentation here:
-- **https://gchp.readthedocs.io/en/latest/**
+This is the GEOS-Chem High Performance (GCHP) source code.
 
-If you aren't sure where to start, try starting with the [Quickstart Guide](https://gchp.readthedocs.io/en/latest/getting-started/quick-start.html).
+:bulb: Documentation: https://gchp.readthedocs.io/en/latest/
+
+:book: Publications: [GEOS-Chem on Google Scholar](https://scholar.google.com/citations?user=ho-sNj4AAAAJ)
+
+:fast_forward: Quickstart guide: [here](https://gchp.readthedocs.io/en/latest/getting-started/quick-start.html)
+
 
 ### About GEOS-Chem
 
