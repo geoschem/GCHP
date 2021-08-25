@@ -208,7 +208,11 @@ A collection is
 
    Fields from multiple gridded components can be included in the same collection. However, a collection
    must not mix fields that are defined at the center of vertical levels and the edges of vertical levels 
-   (e.g., `Met_PMID` and `Met_PEDGE` cannot be included in the same collection.)
+   (e.g., `Met_PMID` and `Met_PEDGE` cannot be included in the same collection).
+
+   Variables can be renamed in the output by adding :code:`'your_custom_name',` at the end. For example,
+   :code:`'SpeciesConc_O3', 'GCHPchem', 'ozone_concentration',` would rename the SpeciesConc_O3 field to
+   "ozone_concentration" in the output file.
 
 **Output grid configuration**
 
@@ -216,6 +220,11 @@ A collection is
    Defines the grid that this collection should be output on. The lable must match on of the grid labels defined
    in :ref:`\<DEFINE GRID LABELS\> <defining-grid-labels>`. If :code:`grid_label` isn't set then the collection
    uses the simulation's horizontal grid.
+
+:conservative: *[optional]*
+   Defines whether or not regridding to the output grid should use ESMF's first-order conservative method. Valid 
+   values are :code:`0` or :code:`1`. It is recommended you set this to :code:`1` if you are using :code:`grid_label`.
+   The default value is :code:`0`.
 
 :levels: *[optional]*
    Defines the model levels that this collection should use (i.e., a subset of the simulation levels).
