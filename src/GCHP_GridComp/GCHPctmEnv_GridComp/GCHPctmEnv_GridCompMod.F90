@@ -16,6 +16,7 @@
       use FV_StateMod, only : fv_computeMassFluxes
       use GEOS_FV3_UtilitiesMod, only : A2D2C
       use m_set_eta,  only : set_eta
+      use pFlogger, only: logging, Logger
 
       implicit none
       private
@@ -58,6 +59,8 @@
       real(r8), parameter :: D1_0   = 1.0_r8
       real(r8), parameter :: GPKG   = 1000.0d0
       real(r8), parameter :: MWTAIR =   28.96d0
+      LOGICAL             :: meteorology_vertical_index_is_top_down
+      CLASS(Logger),          POINTER  :: lgr => null()
 
 !-------------------------------------------------------------------------
       CONTAINS
@@ -438,6 +441,16 @@
       call MAPL_GridGet ( esmfGrid, globalCellCountPerDim=dims, RC=STATUS)
       _VERIFY(STATUS)
 
+      lgr => logging%get_logger('GCHPctmEnv')
+
+      call ESMF_ConfigGetAttribute(CF,value=meteorology_vertical_index_is_top_down, &
+      label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:', Default=.false., __RC__ )
+      if (meteorology_vertical_index_is_top_down) then
+         call lgr%info('Configured to expect ''top-down'' meteorological data from ''ExtData''')
+      else
+         call lgr%info('Configured to expect ''bottom-up'' meteorological data from ''ExtData''')
+      end if
+
       im = dims(1)
       jm = dims(2)
       km = dims(3)
@@ -494,6 +507,8 @@
       real, pointer, dimension(:,:)   ::       PS1 => null()
       real, pointer, dimension(:,:,:) ::       UA  => null()
       real, pointer, dimension(:,:,:) ::       VA  => null()
+      real, pointer, dimension(:,:,:) ::     SPHU0_IMPORT => null()
+      real, pointer, dimension(:,:,:) ::     SPHU1_IMPORT => null()
       real, pointer, dimension(:,:,:) ::     SPHU0 => null()
       real, pointer, dimension(:,:,:) ::     SPHU1 => null()
       real, pointer, dimension(:,:,:) ::        th => null()
@@ -536,6 +551,8 @@
       integer               :: ndt, isd, ied, jsd, jed
       real(r8), allocatable :: AP(:), BP(:)
       real(r8)              :: dt
+
+
 
       ! Dry pressure calculations
       integer               :: i, j
@@ -589,10 +606,29 @@
       _VERIFY(STATUS)
       call MAPL_GetPointer ( IMPORT,      VA,    'VA',  RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,   SPHU0,  'SPHU1', RC=STATUS )
+      call MAPL_GetPointer ( IMPORT,   SPHU0_IMPORT,  'SPHU1', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,   SPHU1,  'SPHU2', RC=STATUS )
+      call MAPL_GetPointer ( IMPORT,   SPHU1_IMPORT,  'SPHU2', RC=STATUS )
       _VERIFY(STATUS)
+
+      ! Get local dimensions
+      is = lbound(UA,1); ie = ubound(UA,1)
+      js = lbound(UA,2); je = ubound(UA,2)
+      lm = size  (UA,3)
+
+      ALLOCATE(SPHU0(is:ie,js:je,lm), STAT=STATUS); 
+      _VERIFY(STATUS);
+      ALLOCATE(SPHU1(is:ie,js:je,lm), STAT=STATUS); 
+      _VERIFY(STATUS);
+      
+      ! Copy SPHU0 and SPHU1 imports to handle top-down vs. bottom-up meteorological data
+      if (meteorology_vertical_index_is_top_down) then
+         SPHU0(:,:,:) = SPHU0_IMPORT(:,:,LM:1:-1)
+         SPHU1(:,:,:) = SPHU1_IMPORT(:,:,LM:1:-1)
+      else
+         SPHU0(:,:,:) = SPHU0_IMPORT(:,:,:)
+         SPHU1(:,:,:) = SPHU1_IMPORT(:,:,:)
+      end if
 
       ! Get to the exports...
       ! ---------------------
@@ -611,19 +647,21 @@
       DryPLE0r8(:,:,:) = 0.0d0
       DryPLE1r8(:,:,:) = 0.0d0
 
-      ! Get local dimensions
-      is = lbound(UA,1); ie = ubound(UA,1)
-      js = lbound(UA,2); je = ubound(UA,2)
-      lm = size  (UA,3)
-
       ! Restagger A-grid winds to C-grid and rotate for CS - L.Bindle
       ! -------------------------------------------------------------
       ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
       _VERIFY(STATUS)
       ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
       _VERIFY(STATUS)
-      UC(:,:,:) = UA(:,:,:)
-      VC(:,:,:) = VA(:,:,:)
+
+      ! Copy UA,VA to UC,VC while handling top-down vs. bottom-up meteorological data
+      if (meteorology_vertical_index_is_top_down) then
+         UC(:,:,:) = UA(:,:,LM:1:-1)
+         VC(:,:,:) = VA(:,:,LM:1:-1)
+      else
+         UC(:,:,:) = UA(:,:,:)
+         VC(:,:,:) = VA(:,:,:)
+      end if
       call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
 
       ! Calcaulate PLE0/1 - M.Long
@@ -706,7 +744,7 @@
 #endif
 
       !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
-      DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC)
+      DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC, SPHU0, SPHU1)
 
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
