@@ -3,3 +3,4 @@ sphinx
 sphinx_rtd_theme
 sphinxcontrib-bibtex 
 recommonmark
+docutils==0.16   # temporary fix for unordered lists not rendering properly

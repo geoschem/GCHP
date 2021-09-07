@@ -7,6 +7,9 @@ set(USE_REAL8 ON CACHE BOOL
 set(RRTMG OFF CACHE BOOL
   "Switch to build RRTMG as a component of GEOS-Chem"
 )
+set(LUO_WETDEP OFF CACHE BOOL
+  "Switch to build the Luo et al (2020) wetdep scheme into GEOS-Chem"
+)
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -24,6 +27,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<BOOL:${USE_REAL8}>:USE_REAL8> $<$<BOOL:${RRTMG}>:RRTMG>
   $<$<BOOL:${ADJOINT}>:ADJOINT>
   $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
+  $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
