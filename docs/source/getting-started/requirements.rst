@@ -78,3 +78,11 @@ computational problems:
 
 * Lots of storage. Several TB is sufficient, but tens or hundreds of TB is better.
 
+Other Recommendations
+^^^^^^^^^^^^^^^^^^^^^
+
+* Hyper-threading may improve simulation throughput, particularly at low core counts
+* MPI process should be bound sequentially across cores and nodes (e.g., a simulation with 48-processes with 24 processes per node 
+  should bind rank 0 to CPU L#0, rank 1 to CPU L#1, etc. on the first node, and rank 24 to CPU L#0, rank 1 to CPU L#1, etc. on the 
+  second node). This should be the default, but it's worth checking if your performance is lower than expected. With OpenMPI the
+  `--report-bindings` argument will show you how processes are ranked and binded.
