@@ -13,6 +13,7 @@ trigger:
   branches:
     include:
       - dev*
+      - patch*
       - bugfix*
 pr:
   branches:
