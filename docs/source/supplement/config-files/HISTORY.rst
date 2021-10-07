@@ -170,6 +170,12 @@ A collection is
    Defines the frequency at which files are generated. The format is :code:`HHMMSS`. For example,
    :code:`1680000` means that a file is generated every 168 hours (7 days).
 
+:monthly: *[optional]*
+   Set to :code:`1` for monthly output. One file per month is generated. If :code:`mode` is 
+   :code:`time-averaged`, the variables in the collection are 1-month time averages.
+
+   :code:`duration` and :code:`frequency` are not required if :code:`monthly: 1`.    
+
 :timeStampStart: *[optional]*
    Only used if :code:`mode` is :code:`'time-averaged'`. If :code:`.true.`
    the file is timestamped according to the start of the accumulation interval (which depends on
