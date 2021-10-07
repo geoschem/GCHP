@@ -22,22 +22,55 @@ Some suggestions
 
 .. note::
     
-    To get rid of the missing value bands along face edges, turn interpolation off in the :guilabel:`Array(s)` tab of your plot settings.
+    To get rid of the missing value bands along face edges, **uncheck 'Interpolate'** (turn interpolation off) in the :guilabel:`Array(s)` tab.
 
 Python
 ------
 
-Todo: see the :ref:`stretched-grid tutorial's plotting section <sg_plotting_example>` in the meantime.
+To plot GCHP data with Python you will need the following libraries:
 
-Some notes:
+* cartopy >= 0.19 (0.18 won't work -- see `cartopy#1622 <https://github.com/SciTools/cartopy/pull/1622>`_)
+* xarray 
+* netcdf4
 
-* `xarray <http://xarray.pydata.org/en/stable/>`_ and `cartopy <https://scitools.org.uk/cartopy/docs/latest/>`_ are the fundamental tools
-* cartopy > 0.18 fixes the "streaking" of grid-boxes crossing the antimeridian with :code:`pcolormesh()`. As of writing, cartopy 0.19 is not yet released. In the
-  meatime you can install it from GitHub with
-  
-  .. code-block:: console 
-     
-     $ pip install git+https://github.com/SciTools/cartopy.git
+If you use `conda <https://docs.conda.io/en/latest/>`_ you can install these packages like so 
 
-* The cubed-sphere grid is a curvilinear grid, so you need grid-box corners to plot cubed-sphere data with :code:`pcolormesh()`. 
-  See the stretched-grid tutorial for an example.
+.. code-block:: console
+
+    $ conda activate your-environment-name
+    $ conda install cartopy>=0.19 xarray netcdf4 -c conda-forge
+
+Here is a basic example of plotting cubed-sphere data:
+
+* Sample data: :download:`GCHP.SpeciesConc.20210508_0000z.nc4 <http://geoschemdata.wustl.edu/ExternalShare/GCST/GCHP-SampleOutput/13.2.1/GCHP.SpeciesConc.20210508_0000z.nc4>`
+
+.. code-block:: python
+
+    import matplotlib.pyplot as plt
+    import cartopy.crs as ccrs  # cartopy must be >=0.19
+    import xarray as xr
+    
+    ds = xr.open_dataset('GCHP.SpeciesConc.20210508_0000z.nc4')  # see note below for download instructions
+
+    plt.figure()
+    ax = plt.axes(projection=ccrs.EqualEarth())
+    ax.coastlines()
+    ax.set_global()
+
+    norm = plt.Normalize(1e-8, 7e-8)
+    
+    for face in range(6):
+        x = ds.corner_lons.isel(nf=face)
+        y = ds.corner_lats.isel(nf=face)
+        v = ds.SpeciesConc_O3.isel(time=0, lev=23, nf=face)
+        ax.pcolormesh(x, y, v, norm=norm, transform=ccrs.PlateCarree())
+    
+    plt.show()
+
+.. image:: /_static/sample_gchp_output.png
+   :width: 100%
+
+.. note:: 
+   
+   The grid-box corners should be used with :code:`pcolormesh()` because the grid-boxes are not regular (it's a curvilinear grid).
+   This is why we use :code:`corner_lats` and :code:`corner_lons` in the example above.
