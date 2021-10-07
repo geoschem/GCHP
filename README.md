@@ -1,4 +1,4 @@
-![GEOS-Chem Logo](http://acmg.seas.harvard.edu/geos/img/GEOS-Chem_Logo_Light_Background.svg)
+![GEOS-Chem Logo](https://github.com/geoschem/GCHP/raw/main/docs/source/_static/geos-chem-logo-wide.svg)
 
 <a href="http://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_versions"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Release"></a>
 [![DOI](https://zenodo.org/badge/200900441.svg)](https://zenodo.org/badge/latestdoi/200900441)
