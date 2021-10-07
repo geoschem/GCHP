@@ -14,7 +14,7 @@ The is the official repository for GEOS-Chem High Performance (GCHP).
 
 :book: Publications: [GEOS-Chem on Google Scholar](https://scholar.google.com/citations?user=ho-sNj4AAAAJ)
 
-:fast_forward: Quickstart guide: [here](https://gchp.readthedocs.io/en/latest/getting-started/quick-start.html)
+:fast_forward: Quickstart Guide: [GCHP Quickstart Guide](https://gchp.readthedocs.io/en/latest/getting-started/quick-start.html)
 
 ### About GEOS-Chem
 
