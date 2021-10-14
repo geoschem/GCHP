@@ -211,22 +211,16 @@ contains
                                   __RC__  )
 
       CALL MAPL_AddConnectivity ( GC, &
-                                  SRC_NAME  = (/ 'CXr8     ',    &
-                                                 'CYr8     ',    &
-                                                 'MFXr8    ',    &
-                                                 'MFYr8    ',    &
-                                                 'PLE0r8   ',    &
+                                  SRC_NAME  = (/ 'PLE0r8   ',    &
                                                  'PLE1r8   ',    &
                                                  'DryPLE0r8',    &
-                                                 'DryPLE1r8' /), &
-                                  DST_NAME  = (/ 'CX     ',      &
-                                                 'CY     ',      &
-                                                 'MFX    ',      &
-                                                 'MFY    ',      &
-                                                 'PLE0   ',      &
+                                                 'DryPLE1r8' ,   &
+                                                 'SPHU0r8  ' /), &
+                                  DST_NAME  = (/ 'PLE0   ',      &
                                                  'PLE1   ',      &
                                                  'DryPLE0',      &
-                                                 'DryPLE1'   /), &
+                                                 'DryPLE1',      &
+                                                 'SPHU0  ' /), &
                                   DST_ID = ADV,                  &
                                   SRC_ID = ECTM,                 &
                                   __RC__  )
