@@ -30,9 +30,11 @@ module GCHP_GridCompMod
 
   use ESMF
   use MAPL_Mod
+  use pFlogger, only: logging, Logger
   use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
   use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
   use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
+  use GCHPctmEnv_GridComp, only : import_mass_flux_from_extdata
 
   implicit none
   private
@@ -55,6 +57,8 @@ module GCHP_GridCompMod
 !EOP
 
   integer ::  ADV, CHEM, ECTM, MemDebugLevel
+  class(Logger), pointer  :: lgr => null()
+  
 
 contains
 
@@ -106,6 +110,8 @@ contains
     call ESMF_GridCompGet( GC, NAME=COMP_NAME, CONFIG=CF, RC=STATUS )
     _VERIFY(STATUS)
     Iam = trim(COMP_NAME) // "::" // Iam
+
+    lgr => logging%get_logger('GCHP')
 
 ! Register services for this component
 ! ------------------------------------
@@ -224,6 +230,24 @@ contains
                                   DST_ID = ADV,                  &
                                   SRC_ID = ECTM,                 &
                                   __RC__  )
+      
+      ! If IMPORT_MASS_FLUX_FROM_EXTDATA, then ADV mass flux and courant number 
+      ! imports come from ExtData.
+      call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
+         label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__ )
+      if (.not. import_mass_flux_from_extdata) then
+         call lgr%info('Connecting ''AdvCore_GridComp'' mass flux and courant numbers imports to ''GCHPctmEnv_GridComp'' exports')
+         CALL MAPL_AddConnectivity ( GC, &
+            SHORT_NAME=(/ 'MFXC',        &
+                          'MFYC',        &
+                          'CXC ',        &
+                          'CYC ', /),    &
+            DST_ID=ADV,                  &
+            SRC_ID=ECTM,                 &
+            __RC__  )
+      else
+         call lgr%info('Connecting ''AdvCore_GridComp'' mass flux and courant numbers imports to ''ExtData'' exports')
+      end if
 
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME = (/ 'AREA  ',    &

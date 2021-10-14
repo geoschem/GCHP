@@ -60,7 +60,7 @@
       real(r8), parameter :: GPKG   = 1000.0d0
       real(r8), parameter :: MWTAIR =   28.96d0
       LOGICAL             :: meteorology_vertical_index_is_top_down
-      LOGICAL             :: import_mass_flux_from_extdata
+      LOGICAL             :: import_mass_flux_from_extdata = .false.
       CLASS(Logger),          POINTER  :: lgr => null()
 
 !-------------------------------------------------------------------------
@@ -107,8 +107,6 @@
 
       lgr => logging%get_logger('GCHPctmEnv')
 
-      call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
-      label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__ )
       if (import_mass_flux_from_extdata) then
          call lgr%info('Skipping mass flux exports (configured to import mass fluxes directly from ''ExtData'')')
       else
