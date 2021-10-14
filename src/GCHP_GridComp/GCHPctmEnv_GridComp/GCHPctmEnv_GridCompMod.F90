@@ -63,6 +63,8 @@
       LOGICAL             :: import_mass_flux_from_extdata = .false.
       CLASS(Logger),          POINTER  :: lgr => null()
 
+      public import_mass_flux_from_extdata
+
 !-------------------------------------------------------------------------
       CONTAINS
 !-------------------------------------------------------------------------
