@@ -210,6 +210,14 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
+      call MAPL_AddExportSpec ( gc,                                  &
+           SHORT_NAME = 'SPHU0r8',                                   &
+           LONG_NAME  = 'specific_humidity_before_advection',        &
+           UNITS      = 'kg kg-1',                                   &
+           PRECISION  = ESMF_KIND_R8,                                &
+           DIMS       = MAPL_DimsHorzVert,                           &
+           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
+      _VERIFY(STATUS)
       if (.not. import_mass_flux_from_extdata) then
          call MAPL_AddExportSpec ( gc,                                  &
             SHORT_NAME = 'CXC',                                      &
@@ -436,6 +444,7 @@
       real(r8), pointer, dimension(:,:,:) :: DryPLE0r8 => null()
       real(r8), pointer, dimension(:,:,:) :: MFXC => null()
       real(r8), pointer, dimension(:,:,:) :: MFYC => null() 
+      real(r8), pointer, dimension(:,:,:) :: SPHU0r8 => null()
 
       ! Locals
       real, pointer, dimension(:,:,:) :: SPHU0 => null()
@@ -515,6 +524,8 @@
       _VERIFY(STATUS)
       call MAPL_GetPointer ( EXPORT, DryPLE1r8, 'DryPLE1r8',  RC=STATUS )
       _VERIFY(STATUS)
+      call MAPL_GetPointer ( EXPORT, SPHU0r8, 'SPHU0r8', RC=STATUS )
+      _VERIFY(STATUS)
 
       ! Get local dimensions
       is = lbound(SPHU0_IMPORT,1); ie = ubound(SPHU0_IMPORT,1)
@@ -541,6 +552,7 @@
       PLE1r8   (:,:,:) = 0.0d0
       DryPLE0r8(:,:,:) = 0.0d0
       DryPLE1r8(:,:,:) = 0.0d0
+      SPHU0r8  (:,:,:) = 0.0d0
 
       ! Calcaulate PLE0/1 - M.Long
       ! ---------------------
@@ -584,6 +596,8 @@
       DryPLE1r8(:,:,:) = DryPLE1r8(:,:,LM:0:-1)
       PLE0r8   (:,:,:) = PLE0r8   (:,:,LM:0:-1)
       PLE1r8   (:,:,:) = PLE1r8   (:,:,LM:0:-1)
+      SPHU0r8  (:,:,:) = 1.0d0*SPHU0(:,:,LM:1:-1)
+      
 
       ! if IMPORT_MASS_FLUX_FROM_EXTDATA then MF[XY]C and C[XY]C are imported from ExtData 
       if (.not. import_mass_flux_from_extdata) then
