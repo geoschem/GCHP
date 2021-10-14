@@ -204,12 +204,6 @@ contains
                                   SRC_ID = ADV,             &
                                   __RC__ )
 
-      CALL MAPL_AddConnectivity ( GC,                          &
-                                  SHORT_NAME  = (/'AIRDENS'/), &
-                                  DST_ID = CHEM,               &
-                                  SRC_ID = ECTM,               &
-                                  __RC__  )
-
       CALL MAPL_AddConnectivity ( GC, &
                                   SRC_NAME  = (/ 'PLE0r8   ',    &
                                                  'PLE1r8   ',    &
