@@ -60,6 +60,7 @@
       real(r8), parameter :: GPKG   = 1000.0d0
       real(r8), parameter :: MWTAIR =   28.96d0
       LOGICAL             :: meteorology_vertical_index_is_top_down
+      LOGICAL             :: import_mass_flux_from_extdata
       CLASS(Logger),          POINTER  :: lgr => null()
 
 !-------------------------------------------------------------------------
@@ -104,13 +105,22 @@
       _VERIFY(STATUS)
       Iam = trim(COMP_NAME) // TRIM(Iam)
 
+      lgr => logging%get_logger('GCHPctmEnv')
+
+      call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
+      label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__ )
+      if (import_mass_flux_from_extdata) then
+         call lgr%info('Skipping mass flux exports (configured to import mass fluxes directly from ''ExtData'')')
+      else
+         call lgr%info('Configured to export mass flux and courant numbers (calculated online from A-grid winds)')
+      end if
+
      ! Register services for this component
      ! ------------------------------------
       call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_INITIALIZE, Initialize, __RC__ )
       call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN,  Run,        __RC__ )
 
-! !IMPORT STATE:
-
+      ! Imports
       call MAPL_AddImportSpec(GC,                              &
            SHORT_NAME        = 'AREA',                         &
            LONG_NAME         = 'agrid_cell_area',              &
@@ -118,7 +128,6 @@
            DIMS              = MAPL_DimsHorzOnly,              &
            VLOCATION         = MAPL_VLocationNone,    RC=STATUS)
       _VERIFY(STATUS)
-
       call MAPL_AddImportSpec ( gc,                                  &
            SHORT_NAME = 'PS1',                                       &
            LONG_NAME  = 'pressure_at_surface_before_advection',      &
@@ -126,7 +135,6 @@
            DIMS       = MAPL_DimsHorzOnly,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
-
       call MAPL_AddImportSpec ( gc,                                  &
            SHORT_NAME = 'PS2',                                       &
            LONG_NAME  = 'pressure_at_surface_after_advection',       &
@@ -134,7 +142,6 @@
            DIMS       = MAPL_DimsHorzOnly,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
-
       call MAPL_AddImportSpec ( gc,                                  &
            SHORT_NAME = 'SPHU1',                                     &
            LONG_NAME  = 'specific_humidity_before_advection',        &
@@ -142,7 +149,6 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
       _VERIFY(STATUS)
-
       call MAPL_AddImportSpec ( gc,                                  &
            SHORT_NAME = 'SPHU2',                                     &
            LONG_NAME  = 'specific_humidity_after_advection',         &
@@ -150,145 +156,28 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
       _VERIFY(STATUS)
+      if (.not. import_mass_flux_from_extdata) then
+         call MAPL_AddImportSpec ( gc,                                  &
+            SHORT_NAME = 'UA',                                        &
+            LONG_NAME  = 'eastward_wind_on_A-Grid',                   &
+            UNITS      = 'm s-1',                                     &
+            STAGGERING = MAPL_AGrid,                                  &
+            ROTATION   = MAPL_RotateLL,                               & 
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         _VERIFY(STATUS)
+         call MAPL_AddImportSpec ( gc,                                  &
+            SHORT_NAME = 'VA',                                        &
+            LONG_NAME  = 'northward_wind_on_A-Grid',                  &
+            UNITS      = 'm s-1',                                     &
+            STAGGERING = MAPL_AGrid,                                  &
+            ROTATION   = MAPL_RotateLL,                               &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         _VERIFY(STATUS)
+      end if
 
-!      call MAPL_AddImportSpec(GC,                                    &
-!           SHORT_NAME = 'TH',                                        &
-!           LONG_NAME  = 'potential_temperature',                     &
-!           UNITS      = 'K',                                         &
-!           DIMS       =  MAPL_DimsHorzVert,                          &
-!           VLOCATION  =  MAPL_VLocationCenter,            RC=STATUS  )
-!      _VERIFY(STATUS)
-!
-!      call MAPL_AddImportSpec(GC,                                    &
-!           SHORT_NAME = 'Q',                                         &
-!           LONG_NAME  = 'specific_humidity',                         &
-!           UNITS      = 'kg kg-1',                                   &
-!          DIMS       = MAPL_DimsHorzVert,                            &
-!          VLOCATION  = MAPL_VLocationCenter,              RC=STATUS  )
-!      _VERIFY(STATUS)
-!
-!     call MAPL_AddImportSpec(GC,                                    &
-!          SHORT_NAME         = 'ZLE',                               &
-!          LONG_NAME          = 'geopotential_height',               &
-!          UNITS              = 'm',                                 &
-!          DIMS               = MAPL_DimsHorzVert,                   &
-!          VLOCATION          = MAPL_VLocationEdge,       RC=STATUS  )
-!      _VERIFY(STATUS)
-!
-!      call MAPL_AddImportSpec ( gc,                                  &
-!           SHORT_NAME = 'DELP',                                      &
-!           LONG_NAME  = 'pressure_thickness',                        &
-!           UNITS      = 'Pa',                                        &
-!           DIMS       = MAPL_DimsHorzVert,                           &
-!           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-!      _VERIFY(STATUS)
-
-      call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'UA',                                        &
-           LONG_NAME  = 'eastward_wind_on_A-Grid',                   &
-           UNITS      = 'm s-1',                                     &
-           STAGGERING = MAPL_AGrid,                                  &
-           ROTATION   = MAPL_RotateLL,                               & 
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-      call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'VA',                                        &
-           LONG_NAME  = 'northward_wind_on_A-Grid',                  &
-           UNITS      = 'm s-1',                                     &
-           STAGGERING = MAPL_AGrid,                                  &
-           ROTATION   = MAPL_RotateLL,                               &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-! Export State
-      call MAPL_AddExportSpec(GC,                            &
-        SHORT_NAME         = 'AIRDENS',                      &
-        LONG_NAME          = 'air_density',                  &
-        UNITS              = 'kg m-3',                       &
-        DIMS               = MAPL_DimsHorzVert,              &
-        VLOCATION          = MAPL_VLocationCenter,  RC=STATUS)
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec(GC,                            &
-        SHORT_NAME         = 'MASS',                         &
-        LONG_NAME          = 'total_mass',                   &
-        UNITS              = 'kg',                           &
-        DIMS               = MAPL_DimsHorzVert,              &
-        VLOCATION          = MAPL_VLocationCenter,  RC=STATUS)
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'CXr8',                                      &
-           LONG_NAME  = 'eastward_accumulated_courant_number',       &
-           UNITS      = '',                                          &
-           PRECISION  = ESMF_KIND_R8,                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'CYr8',                                      &
-           LONG_NAME  = 'northward_accumulated_courant_number',      &
-           UNITS      = '',                                          &
-           PRECISION  = ESMF_KIND_R8,                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'MFXr8',                                     &
-           LONG_NAME  = 'pressure_weighted_accumulated_eastward_mass_flux', &
-           UNITS      = 'Pa m+2 s-1',                                &
-           PRECISION  = ESMF_KIND_R8,                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'MFYr8',                                     &
-           LONG_NAME  = 'pressure_weighted_accumulated_northward_mass_flux', &
-           UNITS      = 'Pa m+2 s-1',                                &
-           PRECISION  = ESMF_KIND_R8,                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-!---------------------------------------------------------------------
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'CX',                                      &
-           LONG_NAME  = 'eastward_accumulated_courant_number',       &
-           UNITS      = '',                                          &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'CY',                                      &
-           LONG_NAME  = 'northward_accumulated_courant_number',      &
-           UNITS      = '',                                          &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'MFX',                                     &
-           LONG_NAME  = 'pressure_weighted_accumulated_eastward_mass_flux', &
-           UNITS      = 'Pa m+2 s-1',                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'MFY',                                     &
-           LONG_NAME  = 'pressure_weighted_accumulated_northward_mass_flux', &
-           UNITS      = 'Pa m+2 s-1',                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-      _VERIFY(STATUS)
-!---------------------------------------------------------------------
-
+      ! Exports
       call MAPL_AddExportSpec ( gc,                                  &
            SHORT_NAME = 'DryPLE1r8',                                 &
            LONG_NAME  = 'dry_pressure_at_layer_edges_after_advection',&
@@ -297,7 +186,6 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
-
       call MAPL_AddExportSpec ( gc,                                  &
            SHORT_NAME = 'DryPLE0r8',                                 &
            LONG_NAME  = 'dry_pressure_at_layer_edges_before_advection',&
@@ -306,7 +194,6 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
-
       call MAPL_AddExportSpec ( gc,                                  &
            SHORT_NAME = 'PLE1r8',                                    &
            LONG_NAME  = 'pressure_at_layer_edges_after_advection',   &
@@ -315,7 +202,6 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
-
       call MAPL_AddExportSpec ( gc,                                  &
            SHORT_NAME = 'PLE0r8',                                    &
            LONG_NAME  = 'pressure_at_layer_edges_before_advection',  &
@@ -324,6 +210,40 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
+      if (.not. import_mass_flux_from_extdata) then
+         call MAPL_AddExportSpec ( gc,                                  &
+            SHORT_NAME = 'CXC',                                      &
+            LONG_NAME  = 'eastward_accumulated_courant_number',       &
+            UNITS      = '',                                          &
+            PRECISION  = ESMF_KIND_R8,                                &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         _VERIFY(STATUS)
+         call MAPL_AddExportSpec ( gc,                                  &
+            SHORT_NAME = 'CYC',                                      &
+            LONG_NAME  = 'northward_accumulated_courant_number',      &
+            UNITS      = '',                                          &
+            PRECISION  = ESMF_KIND_R8,                                &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         _VERIFY(STATUS)
+         call MAPL_AddExportSpec ( gc,                                  &
+            SHORT_NAME = 'MFXC',                                     &
+            LONG_NAME  = 'pressure_weighted_accumulated_eastward_mass_flux', &
+            UNITS      = 'Pa m+2 s-1',                                &
+            PRECISION  = ESMF_KIND_R8,                                &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         _VERIFY(STATUS)
+         call MAPL_AddExportSpec ( gc,                                  &
+            SHORT_NAME = 'MFYC',                                     &
+            LONG_NAME  = 'pressure_weighted_accumulated_northward_mass_flux', &
+            UNITS      = 'Pa m+2 s-1',                                &
+            PRECISION  = ESMF_KIND_R8,                                &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         _VERIFY(STATUS)
+      end if
 
       ! Internal State - MSL
       !-------------------------
@@ -441,8 +361,6 @@
       call MAPL_GridGet ( esmfGrid, globalCellCountPerDim=dims, RC=STATUS)
       _VERIFY(STATUS)
 
-      lgr => logging%get_logger('GCHPctmEnv')
-
       call ESMF_ConfigGetAttribute(CF,value=meteorology_vertical_index_is_top_down, &
       label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:', Default=.false., __RC__ )
       if (meteorology_vertical_index_is_top_down) then
@@ -500,59 +418,38 @@
       type (MAPL_MetaComp), pointer   :: ggState
       type (ESMF_Grid)                :: esmfGrid
       type (ESMF_State)               :: INTERNAL
-
+      
       ! Imports
-      !--------
-      real, pointer, dimension(:,:)   ::       PS0 => null()
-      real, pointer, dimension(:,:)   ::       PS1 => null()
-      real, pointer, dimension(:,:,:) ::       UA  => null()
-      real, pointer, dimension(:,:,:) ::       VA  => null()
-      real, pointer, dimension(:,:,:) ::     SPHU0_IMPORT => null()
-      real, pointer, dimension(:,:,:) ::     SPHU1_IMPORT => null()
-      real, pointer, dimension(:,:,:) ::     SPHU0 => null()
-      real, pointer, dimension(:,:,:) ::     SPHU1 => null()
-      real, pointer, dimension(:,:,:) ::        th => null()
-      real, pointer, dimension(:,:,:) ::         q => null()
-      real, pointer, dimension(:,:,:) ::       zle => null()
-      real, pointer, dimension(:,:,:) ::      DELP => null()
-      real, pointer, dimension(:,:)   ::  cellArea => null()
-
+      real, pointer, dimension(:,:)   :: PS0 => null()
+      real, pointer, dimension(:,:)   :: PS1 => null()
+      real, pointer, dimension(:,:,:) :: SPHU0_IMPORT => null()
+      real, pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
+      real, pointer, dimension(:,:,:) :: UA  => null()
+      real, pointer, dimension(:,:,:) :: VA  => null()
+      
       ! Exports
-      !--------
-      real,     pointer, dimension(:,:,:) ::       rho => null()
-      real,     pointer, dimension(:,:,:) ::      mass => null()
-      real(r8), pointer, dimension(:,:,:) ::      CXr8 => null()
-      real(r8), pointer, dimension(:,:,:) ::      CYr8 => null()
-      real(r8), pointer, dimension(:,:,:) ::    PLE1r8 => null()
-      real(r8), pointer, dimension(:,:,:) ::    PLE0r8 => null()
+      real(r8), pointer, dimension(:,:,:) :: CXC => null()
+      real(r8), pointer, dimension(:,:,:) :: CYC => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE1r8 => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE0r8 => null()
       real(r8), pointer, dimension(:,:,:) :: DryPLE1r8 => null()
       real(r8), pointer, dimension(:,:,:) :: DryPLE0r8 => null()
-      real(r8), pointer, dimension(:,:,:) ::     MFXr8 => null()
-      real(r8), pointer, dimension(:,:,:) ::     MFYr8 => null()
+      real(r8), pointer, dimension(:,:,:) :: MFXC => null()
+      real(r8), pointer, dimension(:,:,:) :: MFYC => null() 
 
-!-MSL
-      real, pointer, dimension(:,:,:) ::     MFX => null()
-      real, pointer, dimension(:,:,:) ::     MFY => null()
-      real, pointer, dimension(:,:,:) ::     CX => null()
-      real, pointer, dimension(:,:,:) ::     CY => null()
-!--
-      real,     pointer, dimension(:,:,:) ::      UC => null()
-      real,     pointer, dimension(:,:,:) ::      VC => null()
-      real(r8), pointer, dimension(:,:,:) ::      UCr8 => null()
-      real(r8), pointer, dimension(:,:,:) ::      VCr8 => null()
-      real(r8), pointer, dimension(:,:,:) ::     PLEr8 => null()
-
-      real,     pointer, dimension(:,:,:) ::      PLE0 => null()
-      real,     pointer, dimension(:,:,:) ::      PLE1 => null()
-      real,     pointer, dimension(:,:,:) ::   DryPLE0 => null()
-      real,     pointer, dimension(:,:,:) ::   DryPLE1 => null()
-
+      ! Locals
+      real, pointer, dimension(:,:,:) :: SPHU0 => null()
+      real, pointer, dimension(:,:,:) :: SPHU1 => null()
+      real, pointer, dimension(:,:,:) :: UC => null()
+      real, pointer, dimension(:,:,:) :: VC => null()
+      real(r8), pointer, dimension(:,:,:) :: PLEr8 => null()
+      real(r8), pointer, dimension(:,:,:) :: UCr8 => null()
+      real(r8), pointer, dimension(:,:,:) :: VCr8 => null()
+      
       integer               :: km, k, is, ie, js, je, lm, l, ik
       integer               :: ndt, isd, ied, jsd, jed
       real(r8), allocatable :: AP(:), BP(:)
       real(r8)              :: dt
-
-
 
       ! Dry pressure calculations
       integer               :: i, j
@@ -596,26 +493,35 @@
       ENDIF
 #endif
 
-      ! Get to the imports...
-      ! ---------------------
-      call MAPL_GetPointer ( IMPORT,     PS0,    'PS1', RC=STATUS )
+      !! Calculate PLE0r8, PLE1r8, DryPLE0r8, and DryPLE1r8 exports
+      call lgr%debug('Calculating PLE[01]r8 and DryPLE[01]r8 exports.')
+
+      ! Imports 
+      call MAPL_GetPointer( IMPORT, PS0, 'PS1', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,     PS1,    'PS2', RC=STATUS )
+      call MAPL_GetPointer( IMPORT, PS1, 'PS2', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,      UA,    'UA',  RC=STATUS )
+      call MAPL_GetPointer( IMPORT, SPHU0_IMPORT, 'SPHU1', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,      VA,    'VA',  RC=STATUS )
+      call MAPL_GetPointer( IMPORT, SPHU1_IMPORT,'SPHU2', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,   SPHU0_IMPORT,  'SPHU1', RC=STATUS )
+
+      ! Exports
+      call MAPL_GetPointer ( EXPORT, PLE0r8, 'PLE0r8',  RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( IMPORT,   SPHU1_IMPORT,  'SPHU2', RC=STATUS )
+      call MAPL_GetPointer ( EXPORT, PLE1r8, 'PLE1r8',  RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( EXPORT, DryPLE0r8, 'DryPLE0r8',  RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( EXPORT, DryPLE1r8, 'DryPLE1r8',  RC=STATUS )
       _VERIFY(STATUS)
 
       ! Get local dimensions
-      is = lbound(UA,1); ie = ubound(UA,1)
-      js = lbound(UA,2); je = ubound(UA,2)
-      lm = size  (UA,3)
+      is = lbound(SPHU0_IMPORT,1); ie = ubound(SPHU0_IMPORT,1)
+      js = lbound(SPHU0_IMPORT,2); je = ubound(SPHU0_IMPORT,2)
+      lm = size  (SPHU0_IMPORT,3)
 
+      ! Temporaries
       ALLOCATE(SPHU0(is:ie,js:je,lm), STAT=STATUS); 
       _VERIFY(STATUS);
       ALLOCATE(SPHU1(is:ie,js:je,lm), STAT=STATUS); 
@@ -630,39 +536,11 @@
          SPHU1(:,:,:) = SPHU1_IMPORT(:,:,:)
       end if
 
-      ! Get to the exports...
-      ! ---------------------
-      call MAPL_GetPointer ( EXPORT, PLE0r8, 'PLE0r8',  RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, PLE1r8, 'PLE1r8',  RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, DryPLE0r8, 'DryPLE0r8',  RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, DryPLE1r8, 'DryPLE1r8',  RC=STATUS )
-      _VERIFY(STATUS)
-
       ! Reset the exports
       PLE0r8   (:,:,:) = 0.0d0
       PLE1r8   (:,:,:) = 0.0d0
       DryPLE0r8(:,:,:) = 0.0d0
       DryPLE1r8(:,:,:) = 0.0d0
-
-      ! Restagger A-grid winds to C-grid and rotate for CS - L.Bindle
-      ! -------------------------------------------------------------
-      ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
-      _VERIFY(STATUS)
-      ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
-      _VERIFY(STATUS)
-
-      ! Copy UA,VA to UC,VC while handling top-down vs. bottom-up meteorological data
-      if (meteorology_vertical_index_is_top_down) then
-         UC(:,:,:) = UA(:,:,LM:1:-1)
-         VC(:,:,:) = VA(:,:,LM:1:-1)
-      else
-         UC(:,:,:) = UA(:,:,:)
-         VC(:,:,:) = VA(:,:,:)
-      end if
-      call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
 
       ! Calcaulate PLE0/1 - M.Long
       ! ---------------------
@@ -698,53 +576,85 @@
       End Do
       End Do
 
+      ! Deallocate temporaries
+      DEALLOCATE( AP, BP, SPHU0, SPHU1 )
 
-      ! Arrays were calculated so that 1 = Surface
-      ! FV3 wants 1 = TOA, LM+1 = Surface
-      ! Vertically flip all the arrays to accomplish this      
+      ! Flip vertically so that exports have top-down indexing (as per AdvCore_GridComp imports)      
       DryPLE0r8(:,:,:) = DryPLE0r8(:,:,LM:0:-1)
       DryPLE1r8(:,:,:) = DryPLE1r8(:,:,LM:0:-1)
       PLE0r8   (:,:,:) = PLE0r8   (:,:,LM:0:-1)
       PLE1r8   (:,:,:) = PLE1r8   (:,:,LM:0:-1)
-      UC       (:,:,:) =  UC      (:,:,LM:1:-1)
-      VC       (:,:,:) =  VC      (:,:,LM:1:-1)
 
-      DEALLOCATE( AP, BP )
+      ! if IMPORT_MASS_FLUX_FROM_EXTDATA then MF[XY]C and C[XY]C are imported from ExtData 
+      if (.not. import_mass_flux_from_extdata) then
+         !! Calculate MFXC, MFYC, CXC, and CYC exports (with top-down indexing)
+         call lgr%debug('Calculating MF[XY]C and C[XY]C exports.')
 
-      call MAPL_GetPointer ( EXPORT, MFXr8, 'MFXr8', RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, MFYr8, 'MFYr8', RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT,  CXr8,  'CXr8', RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT,  CYr8,  'CYr8', RC=STATUS )
-      _VERIFY(STATUS)
+         ! Imports
+         call MAPL_GetPointer ( IMPORT,      UA,    'UA',  RC=STATUS )
+         _VERIFY(STATUS)
+         call MAPL_GetPointer ( IMPORT,      VA,    'VA',  RC=STATUS )
+         _VERIFY(STATUS)
 
-      ! Compute the courant numbers and mass fluxes
-      !--------------------------------------------
-      ALLOCATE( UCr8(is:ie,js:je,lm),   STAT=STATUS); _VERIFY(STATUS)
-      ALLOCATE( VCr8(is:ie,js:je,lm),   STAT=STATUS); _VERIFY(STATUS)
-      ALLOCATE(PLEr8(is:ie,js:je,lm+1), STAT=STATUS); _VERIFY(STATUS)
+         ! Exports
+         call MAPL_GetPointer ( EXPORT, MFXC, 'MFXC', RC=STATUS )
+         _VERIFY(STATUS)
+         call MAPL_GetPointer ( EXPORT, MFYC, 'MFYC', RC=STATUS )
+         _VERIFY(STATUS)
+         call MAPL_GetPointer ( EXPORT,  CXC,  'CXC', RC=STATUS )
+         _VERIFY(STATUS)
+         call MAPL_GetPointer ( EXPORT,  CYC,  'CYC', RC=STATUS )
+         _VERIFY(STATUS)
 
-      UCr8  = 1.00d0*(UC)
-      VCr8  = 1.00d0*(VC)
+         ! Temporaries
+         ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
+         _VERIFY(STATUS)
+         ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
+         _VERIFY(STATUS)
+         ALLOCATE(UCr8(is:ie,js:je,lm), STAT=STATUS); 
+         _VERIFY(STATUS)
+         ALLOCATE(VCr8(is:ie,js:je,lm), STAT=STATUS); 
+         _VERIFY(STATUS)
+         ALLOCATE(PLEr8(is:ie,js:je,lm+1), STAT=STATUS); 
+         _VERIFY(STATUS)
 
-      ! Use dry pressure at the start of the timestep to calculate mass
-      ! fluxes. GMAO method uses mid-step UC, VC and PLE?
-      PLEr8 = 1.00d0*(DryPLE0r8)
+         ! Prepare inputs to fv_computeMassFluxes
+
+         ! Copy UA,VA to UC,VC while handling top-down vs. bottom-up meteorological data
+         if (meteorology_vertical_index_is_top_down) then
+            UC(:,:,:) = UA(:,:,LM:1:-1)
+            VC(:,:,:) = VA(:,:,LM:1:-1)
+         else
+            UC(:,:,:) = UA(:,:,:)
+            VC(:,:,:) = VA(:,:,:)
+         end if
+         ! Restagger winds (A-grid to C-grid)
+         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
+
+         ! fv_computeMassFluxes expects top-down indexing
+         UC(:,:,:) =  UC(:,:,LM:1:-1)
+         VC(:,:,:) =  VC(:,:,LM:1:-1)
+         ! Convert real4->real8 for fv_computeMassFluxes 
+         UCr8  = 1.00d0*(UC)
+         VCr8  = 1.00d0*(VC)
+         ! Use dry pressure at the start of the timestep to calculate mass
+         ! fluxes. GMAO method uses mid-step UC, VC and PLE?
+         PLEr8 = 1.00d0*(DryPLE0r8)
 
 #ifdef ADJOINT
-      if (.not. firstRun) THEN
+         if (.not. firstRun) THEN
 #endif
-      call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
-                                   MFXr8, MFYr8, CXr8, CYr8, dt)
+         ! Calculate mass fluxes and courant numbers
+         call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
+                                   MFXC, MFYC, CXC, CYC, dt)
 #ifdef ADJOINT
-      endif
-      firstRun = .false.
+         endif
+         firstRun = .false.
 #endif
 
-      !DEALLOCATE( UCr8, VCr8, PLEr8, PLE0, PLE1, DryPLE0, DryPLE1 )
-      DEALLOCATE( UCr8, VCr8, PLEr8, UC, VC, SPHU0, SPHU1)
+         ! Deallocate temporaries
+         DEALLOCATE(UC, VC, UCr8, VCr8, PLEr8)
+      end if
 
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
