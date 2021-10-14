@@ -238,10 +238,14 @@ contains
       if (.not. import_mass_flux_from_extdata) then
          call lgr%info('Connecting ''AdvCore_GridComp'' mass flux and courant numbers imports to ''GCHPctmEnv_GridComp'' exports')
          CALL MAPL_AddConnectivity ( GC, &
-            SHORT_NAME=(/ 'MFXC',        &
-                          'MFYC',        &
-                          'CXC ',        &
-                          'CYC ', /),    &
+            SRC_NAME = (/ 'CXC ',        &
+                          'CYC ',        &
+                          'MFXC',        &
+                          'MFYC' /),     &
+            DST_NAME = (/ 'CX ',         &
+                          'CY ',         &
+                          'MFX',         &
+                          'MFY'   /),    &
             DST_ID=ADV,                  &
             SRC_ID=ECTM,                 &
             __RC__  )
