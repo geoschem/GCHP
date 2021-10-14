@@ -221,8 +221,6 @@ contains
       
       ! If IMPORT_MASS_FLUX_FROM_EXTDATA, then ADV mass flux and courant number 
       ! imports come from ExtData.
-      call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
-         label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__ )
       if (.not. import_mass_flux_from_extdata) then
          call lgr%info('Connecting ''AdvCore_GridComp'' mass flux and courant numbers imports to ''GCHPctmEnv_GridComp'' exports')
          CALL MAPL_AddConnectivity ( GC, &

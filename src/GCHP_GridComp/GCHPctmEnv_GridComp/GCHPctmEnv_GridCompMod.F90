@@ -109,6 +109,8 @@
 
       lgr => logging%get_logger('GCHPctmEnv')
 
+      call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
+         label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__ )
       if (import_mass_flux_from_extdata) then
          call lgr%info('Skipping mass flux exports (configured to import mass fluxes directly from ''ExtData'')')
       else
