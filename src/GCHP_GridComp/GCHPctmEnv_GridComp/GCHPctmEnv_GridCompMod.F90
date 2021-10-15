@@ -112,9 +112,9 @@
       call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
          label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__ )
       if (import_mass_flux_from_extdata) then
-         call lgr%info('Skipping mass flux exports (configured to import mass fluxes directly from ''ExtData'')')
+         call lgr%info('Configured to import mass fluxes from ''ExtData''')
       else
-         call lgr%info('Configured to export mass flux and courant numbers (calculated online from A-grid winds)')
+         call lgr%info('Configured to calculate and export mass flux and courant numbers')
       end if
 
      ! Register services for this component
@@ -177,6 +177,35 @@
             DIMS       = MAPL_DimsHorzVert,                           &
             VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
          _VERIFY(STATUS)
+      else
+         call MAPL_AddImportSpec ( gc,                                &
+            SHORT_NAME = 'MFXC',                                      &
+            LONG_NAME  = 'pressure_weighted_xward_mass_flux',         &
+            UNITS      = 'Pa m+2 s-1',                                &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+        VERIFY_(STATUS)
+       call MAPL_AddImportSpec ( gc,                                  &
+            SHORT_NAME = 'MFYC',                                      &
+            LONG_NAME  = 'pressure_weighted_yward_mass_flux',         &
+            UNITS      = 'Pa m+2 s-1',                                &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+        VERIFY_(STATUS)
+        call MAPL_AddImportSpec ( gc,                                 &
+            SHORT_NAME = 'CXC',                                       &
+            LONG_NAME  = 'xward_accumulated_courant_number',          &
+            UNITS      = '',                                          &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         VERIFY_(STATUS)
+         call MAPL_AddImportSpec ( gc,                                &
+            SHORT_NAME = 'CYC',                                       &
+            LONG_NAME  = 'yward_accumulated_courant_number',          &
+            UNITS      = '',                                          &
+            DIMS       = MAPL_DimsHorzVert,                           &
+            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+         VERIFY_(STATUS)
       end if
 
       ! Exports
@@ -227,40 +256,38 @@
         DIMS               = MAPL_DimsHorzVert,              &
         VLOCATION          = MAPL_VLocationCenter,  RC=STATUS)
       _VERIFY(STATUS)
-      if (.not. import_mass_flux_from_extdata) then
-         call MAPL_AddExportSpec ( gc,                                  &
-            SHORT_NAME = 'CXC',                                      &
-            LONG_NAME  = 'eastward_accumulated_courant_number',       &
-            UNITS      = '',                                          &
-            PRECISION  = ESMF_KIND_R8,                                &
-            DIMS       = MAPL_DimsHorzVert,                           &
-            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-         _VERIFY(STATUS)
-         call MAPL_AddExportSpec ( gc,                                  &
-            SHORT_NAME = 'CYC',                                      &
-            LONG_NAME  = 'northward_accumulated_courant_number',      &
-            UNITS      = '',                                          &
-            PRECISION  = ESMF_KIND_R8,                                &
-            DIMS       = MAPL_DimsHorzVert,                           &
-            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-         _VERIFY(STATUS)
-         call MAPL_AddExportSpec ( gc,                                  &
-            SHORT_NAME = 'MFXC',                                     &
-            LONG_NAME  = 'pressure_weighted_accumulated_eastward_mass_flux', &
-            UNITS      = 'Pa m+2 s-1',                                &
-            PRECISION  = ESMF_KIND_R8,                                &
-            DIMS       = MAPL_DimsHorzVert,                           &
-            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-         _VERIFY(STATUS)
-         call MAPL_AddExportSpec ( gc,                                  &
-            SHORT_NAME = 'MFYC',                                     &
-            LONG_NAME  = 'pressure_weighted_accumulated_northward_mass_flux', &
-            UNITS      = 'Pa m+2 s-1',                                &
-            PRECISION  = ESMF_KIND_R8,                                &
-            DIMS       = MAPL_DimsHorzVert,                           &
-            VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
-         _VERIFY(STATUS)
-      end if
+      call MAPL_AddExportSpec ( gc,                                  &
+         SHORT_NAME = 'CX',                                      &
+         LONG_NAME  = 'xward_accumulated_courant_number',       &
+         UNITS      = '',                                          &
+         PRECISION  = ESMF_KIND_R8,                                &
+         DIMS       = MAPL_DimsHorzVert,                           &
+         VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec ( gc,                                  &
+         SHORT_NAME = 'CY',                                      &
+         LONG_NAME  = 'yward_accumulated_courant_number',      &
+         UNITS      = '',                                          &
+         PRECISION  = ESMF_KIND_R8,                                &
+         DIMS       = MAPL_DimsHorzVert,                           &
+         VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec ( gc,                                  &
+         SHORT_NAME = 'MFX',                                     &
+         LONG_NAME  = 'pressure_weighted_accumulated_xward_mass_flux', &
+         UNITS      = 'Pa m+2 s-1',                                &
+         PRECISION  = ESMF_KIND_R8,                                &
+         DIMS       = MAPL_DimsHorzVert,                           &
+         VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec ( gc,                                  &
+         SHORT_NAME = 'MFY',                                     &
+         LONG_NAME  = 'pressure_weighted_accumulated_yward_mass_flux', &
+         UNITS      = 'Pa m+2 s-1',                                &
+         PRECISION  = ESMF_KIND_R8,                                &
+         DIMS       = MAPL_DimsHorzVert,                           &
+         VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
+      _VERIFY(STATUS)
 
       ! Internal State - MSL
       !-------------------------
@@ -443,16 +470,17 @@
       real, pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
       real, pointer, dimension(:,:,:) :: UA  => null()
       real, pointer, dimension(:,:,:) :: VA  => null()
+      real, pointer, dimension(:,:,:) :: temp3_r4  => null()
       
       ! Exports
-      real(r8), pointer, dimension(:,:,:) :: CXC => null()
-      real(r8), pointer, dimension(:,:,:) :: CYC => null()
+      real(r8), pointer, dimension(:,:,:) :: CX => null()
+      real(r8), pointer, dimension(:,:,:) :: CY => null()
       real(r8), pointer, dimension(:,:,:) :: PLE1r8 => null()
       real(r8), pointer, dimension(:,:,:) :: PLE0r8 => null()
       real(r8), pointer, dimension(:,:,:) :: DryPLE1r8 => null()
       real(r8), pointer, dimension(:,:,:) :: DryPLE0r8 => null()
-      real(r8), pointer, dimension(:,:,:) :: MFXC => null()
-      real(r8), pointer, dimension(:,:,:) :: MFYC => null() 
+      real(r8), pointer, dimension(:,:,:) :: MFX => null()
+      real(r8), pointer, dimension(:,:,:) :: MFY => null() 
       real(r8), pointer, dimension(:,:,:) :: SPHU0r8 => null()
 
       ! Locals
@@ -607,25 +635,23 @@
       ! Deallocate temporaries
       DEALLOCATE( AP, BP, SPHU0, SPHU1 )
 
-      ! if IMPORT_MASS_FLUX_FROM_EXTDATA then MF[XY]C and C[XY]C are imported from ExtData 
+      !! Calculate MF[XY] and C[XY] exports
+      ! Exports
+      call MAPL_GetPointer ( EXPORT, MFX, 'MFX', RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( EXPORT, MFY, 'MFY', RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( EXPORT,  CX,  'CX', RC=STATUS )
+      _VERIFY(STATUS)
+      call MAPL_GetPointer ( EXPORT,  CY,  'CY', RC=STATUS )
+      _VERIFY(STATUS)
       if (.not. import_mass_flux_from_extdata) then
-         !! Calculate MFXC, MFYC, CXC, and CYC exports (with top-down indexing)
-         call lgr%debug('Calculating MF[XY]C and C[XY]C exports.')
+         !! Calculate MFX, MFY, CX, and CY exports (with top-down indexing)
 
          ! Imports
          call MAPL_GetPointer ( IMPORT,      UA,    'UA',  RC=STATUS )
          _VERIFY(STATUS)
          call MAPL_GetPointer ( IMPORT,      VA,    'VA',  RC=STATUS )
-         _VERIFY(STATUS)
-
-         ! Exports
-         call MAPL_GetPointer ( EXPORT, MFXC, 'MFXC', RC=STATUS )
-         _VERIFY(STATUS)
-         call MAPL_GetPointer ( EXPORT, MFYC, 'MFYC', RC=STATUS )
-         _VERIFY(STATUS)
-         call MAPL_GetPointer ( EXPORT,  CXC,  'CXC', RC=STATUS )
-         _VERIFY(STATUS)
-         call MAPL_GetPointer ( EXPORT,  CYC,  'CYC', RC=STATUS )
          _VERIFY(STATUS)
 
          ! Temporaries
@@ -668,7 +694,7 @@
 #endif
          ! Calculate mass fluxes and courant numbers
          call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
-                                   MFXC, MFYC, CXC, CYC, dt)
+                                   MFX, MFY, CX, CY, dt)
 #ifdef ADJOINT
          endif
          firstRun = .false.
@@ -676,6 +702,20 @@
 
          ! Deallocate temporaries
          DEALLOCATE(UC, VC, UCr8, VCr8, PLEr8)
+      else
+         ! Convert MF[XY]C and C[XY]C imports to real8 exports
+         call MAPL_GetPointer ( IMPORT, temp3_r4, 'MFXC',  RC=STATUS )
+         _VERIFY(STATUS)
+         MFX = 1.0d0*temp3_r4
+         call MAPL_GetPointer ( IMPORT, temp3_r4, 'MFYC',  RC=STATUS )
+         _VERIFY(STATUS)
+         MFY = 1.0d0*temp3_r4
+         call MAPL_GetPointer ( IMPORT, temp3_r4, 'CXC',  RC=STATUS )
+         _VERIFY(STATUS)
+         CX = 1.0d0*temp3_r4
+         call MAPL_GetPointer ( IMPORT, temp3_r4, 'CYC',  RC=STATUS )
+         _VERIFY(STATUS)
+         CY = 1.0d0*temp3_r4
       end if
 
       call MAPL_TimerOff(ggState,"RUN")
