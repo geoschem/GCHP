@@ -218,6 +218,11 @@ contains
                                   DST_ID = ADV,                  &
                                   SRC_ID = ECTM,                 &
                                   __RC__  )
+      CALL MAPL_AddConnectivity ( GC,                          &
+                                  SHORT_NAME  = (/'AIRDENS'/), &
+                                  DST_ID = CHEM,               &
+                                  SRC_ID = ECTM,               &
+                                  __RC__  )
       
       ! If IMPORT_MASS_FLUX_FROM_EXTDATA, then ADV mass flux and courant number 
       ! imports come from ExtData.

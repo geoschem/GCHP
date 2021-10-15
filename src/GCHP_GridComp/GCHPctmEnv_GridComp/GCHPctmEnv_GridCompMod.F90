@@ -220,6 +220,13 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
       _VERIFY(STATUS)
+      call MAPL_AddExportSpec(GC,                            &
+        SHORT_NAME         = 'AIRDENS',                      &
+        LONG_NAME          = 'air_density',                  &
+        UNITS              = 'kg m-3',                       &
+        DIMS               = MAPL_DimsHorzVert,              &
+        VLOCATION          = MAPL_VLocationCenter,  RC=STATUS)
+      _VERIFY(STATUS)
       if (.not. import_mass_flux_from_extdata) then
          call MAPL_AddExportSpec ( gc,                                  &
             SHORT_NAME = 'CXC',                                      &
@@ -590,9 +597,6 @@
       End Do
       End Do
 
-      ! Deallocate temporaries
-      DEALLOCATE( AP, BP, SPHU0, SPHU1 )
-
       ! Flip vertically so that exports have top-down indexing (as per AdvCore_GridComp imports)      
       DryPLE0r8(:,:,:) = DryPLE0r8(:,:,LM:0:-1)
       DryPLE1r8(:,:,:) = DryPLE1r8(:,:,LM:0:-1)
@@ -600,6 +604,8 @@
       PLE1r8   (:,:,:) = PLE1r8   (:,:,LM:0:-1)
       SPHU0r8  (:,:,:) = 1.0d0*SPHU0(:,:,LM:1:-1)
       
+      ! Deallocate temporaries
+      DEALLOCATE( AP, BP, SPHU0, SPHU1 )
 
       ! if IMPORT_MASS_FLUX_FROM_EXTDATA then MF[XY]C and C[XY]C are imported from ExtData 
       if (.not. import_mass_flux_from_extdata) then
