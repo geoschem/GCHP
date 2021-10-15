@@ -13,7 +13,7 @@
 ! !USES:
       use ESMF
       use MAPL_Mod
-      use FV_StateMod, only : fv_computeMassFluxes
+      use FV_StateMod, only : fv_computeMassFluxes, fv_getVerticalMassFlux
       use GEOS_FV3_UtilitiesMod, only : A2D2C
       use m_set_eta,  only : set_eta
       use pFlogger, only: logging, Logger
@@ -288,6 +288,14 @@
          DIMS       = MAPL_DimsHorzVert,                           &
          VLOCATION  = MAPL_VLocationCenter,             RC=STATUS  )
       _VERIFY(STATUS)
+      call MAPL_AddExportSpec ( gc,                                  &
+         SHORT_NAME = 'UpwardsMassFlux',                           &
+         LONG_NAME  = 'upward_mass_flux_of_air',                   &
+         UNITS      = 'kg m-2 s-1',                                &
+         PRECISION  = ESMF_KIND_R8,                                &
+         DIMS       = MAPL_DimsHorzVert,                           &
+         VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
+      _VERIFY(STATUS)
 
       ! Internal State - MSL
       !-------------------------
@@ -482,6 +490,7 @@
       real(r8), pointer, dimension(:,:,:) :: MFX => null()
       real(r8), pointer, dimension(:,:,:) :: MFY => null() 
       real(r8), pointer, dimension(:,:,:) :: SPHU0r8 => null()
+      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
 
       ! Locals
       real, pointer, dimension(:,:,:) :: SPHU0 => null()
@@ -716,6 +725,17 @@
          call MAPL_GetPointer ( IMPORT, temp3_r4, 'CYC',  RC=STATUS )
          _VERIFY(STATUS)
          CY = 1.0d0*temp3_r4
+      end if
+
+      ! Vertical motion diagnostics
+      call MAPL_GetPointer ( EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', RC=STATUS )
+      _VERIFY(STATUS)
+
+      if (associated(UpwardsMassFlux)) then
+         ! Get vertical mass flux
+         call fv_getVerticalMassFlux(MFX, MFY, UpwardsMassFlux, dt)
+         ! Flip vertical so that GCHP diagnostic is positive="up"
+         UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)
       end if
 
       call MAPL_TimerOff(ggState,"RUN")
