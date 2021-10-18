@@ -30,6 +30,7 @@ module GCHP_GridCompMod
 
   use ESMF
   use MAPL_Mod
+  use pFlogger, only: logging, Logger
   use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
   use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
   use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
@@ -55,6 +56,8 @@ module GCHP_GridCompMod
 !EOP
 
   integer ::  ADV, CHEM, ECTM, MemDebugLevel
+  class(Logger), pointer  :: lgr => null()
+  
 
 contains
 
@@ -106,6 +109,8 @@ contains
     call ESMF_GridCompGet( GC, NAME=COMP_NAME, CONFIG=CF, RC=STATUS )
     _VERIFY(STATUS)
     Iam = trim(COMP_NAME) // "::" // Iam
+
+    lgr => logging%get_logger('GCHP')
 
 ! Register services for this component
 ! ------------------------------------
@@ -198,32 +203,34 @@ contains
                                   SRC_ID = ADV,             &
                                   __RC__ )
 
+      CALL MAPL_AddConnectivity ( GC, &
+                                  SRC_NAME  = (/ 'PLE0r8   ',    &
+                                                 'PLE1r8   ',    &
+                                                 'DryPLE0r8',    &
+                                                 'DryPLE1r8' ,   &
+                                                 'SPHU0r8  ' /), &
+                                  DST_NAME  = (/ 'PLE0   ',      &
+                                                 'PLE1   ',      &
+                                                 'DryPLE0',      &
+                                                 'DryPLE1',      &
+                                                 'SPHU0  ' /), &
+                                  DST_ID = ADV,                  &
+                                  SRC_ID = ECTM,                 &
+                                  __RC__  )
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME  = (/'AIRDENS'/), &
                                   DST_ID = CHEM,               &
                                   SRC_ID = ECTM,               &
                                   __RC__  )
 
-      CALL MAPL_AddConnectivity ( GC, &
-                                  SRC_NAME  = (/ 'CXr8     ',    &
-                                                 'CYr8     ',    &
-                                                 'MFXr8    ',    &
-                                                 'MFYr8    ',    &
-                                                 'PLE0r8   ',    &
-                                                 'PLE1r8   ',    &
-                                                 'DryPLE0r8',    &
-                                                 'DryPLE1r8' /), &
-                                  DST_NAME  = (/ 'CX     ',      &
-                                                 'CY     ',      &
-                                                 'MFX    ',      &
-                                                 'MFY    ',      &
-                                                 'PLE0   ',      &
-                                                 'PLE1   ',      &
-                                                 'DryPLE0',      &
-                                                 'DryPLE1'   /), &
-                                  DST_ID = ADV,                  &
-                                  SRC_ID = ECTM,                 &
-                                  __RC__  )
+      CALL MAPL_AddConnectivity ( GC,                          &
+                                  SHORT_NAME = (/ 'CX ',    &
+                                                  'CY ',    &
+                                                  'MFX',    &
+                                                  'MFY' /), &
+                                  DST_ID = ADV,             &
+                                  SRC_ID = ECTM,                &
+                                  __RC__ )
 
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME = (/ 'AREA  ',    &
