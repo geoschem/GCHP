@@ -21,7 +21,7 @@ trigger:
       - '*-rc*'
 pr: none
 jobs:
-# - job: docker-deployment
+# - job: docker_deployment
 #   # Basic agent set up
 #   pool:
 #     vmImage: 'ubuntu-latest'
@@ -53,7 +53,7 @@ jobs:
 #         repository: geoschem/gchp                     # Docker Hub repository
 #         command: push
 #         tags: $(VERSION_TAG)
-- job: spack-deployment
+- job: spack_deployment
   pool:
     vmImage: 'ubuntu-latest'
   steps:
