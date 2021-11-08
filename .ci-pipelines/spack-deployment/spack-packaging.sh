@@ -1,10 +1,10 @@
+#!/bin/sh -x
 # this script is intended to update the GCHP package on spack 
 # with the release of a new GCHP version
 # Note: this will only modify updating the source code
 # updating additional dependencies will require manual editting
 
-echo $GH_ACCESS_TOKEN > token.txt
-
+echo $GH_ACCESS_TOKEN 
 cd GCHP
 # first we get the commit hash
 git fetch --all --tags
@@ -19,7 +19,7 @@ BRANCH="gchp-$VERSION_TAG"
 
 cd ../home/spack
 git pull
-gh auth login < /token.txt
+gh auth login --with-token $GH_ACCESS_TOKEN
 gh repo fork --remote=true --org=geoschem --clone=false
 git checkout -b $BRANCH
 
