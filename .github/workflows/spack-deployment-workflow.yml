@@ -1,16 +1,19 @@
 # Release pipeline:
 # 
-# This pipeline performs deployment actions upon a GEOS-Chem release.
-# Currently, the only deployment action is to build and push a docker 
-# container with GCHP for the newly released version.
+# This pipeline performs the deployment of a new gchp spack
+# package upon the release of a new version
 
 # This pipeline is triggered by tagged versions excluding 
 # pre-releases.
 name: spack_deployment
 on:
   push:
-    branches:
-    - feature/spack-pipeline
+    tags:
+      - '*' 
+    tags-ignore:
+      - '*-alpha*'
+      - '*-beta*'
+      - '*-rc*'
 jobs:
   spack_deployment:
     runs-on: ubuntu-latest
@@ -25,11 +28,12 @@ jobs:
         run: |
           echo $RELEASE_VERSION
           echo ${{ steps.vars.outputs.tag }}
-          echo ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@v1
         id: buildx
         with:
           install: true
       - name: Build
+        env:
+          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
         run: |
-          docker build -f ./.github/workflows/spack-deployment/spack-deployment.dockerfile --build-arg gh_access_token=${{ secrets.GH_ACCESS_TOKEN }} ./.github/workflows/spack-deployment/
+          docker build -f ./.github/workflows/spack-deployment/spack-deployment.dockerfile --build-arg gh_access_token=${{ secrets.GH_ACCESS_TOKEN }} --build-arg version_tag=$RELEASE_VERSION ./.github/workflows/spack-deployment/

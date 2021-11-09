@@ -4,7 +4,7 @@
 # Note: this will only modify updating the source code
 # updating additional dependencies will require manual editting
 
-# configure git authentication
+# configure git authentication -- Note: there may be a better way to do this
 git config --global user.email "lestrada00@gmail.com"
 git config --global user.name "laestrada"
 git config --global credential.helper store
@@ -39,7 +39,8 @@ sed -i "s|https://github.com/geoschem/GCHP/archive/.*.gz|$TAR_URL|" var/spack/re
 # add new line to version history
 sed -i "1,/version(.*/s//$VERSION_STRING\n    &/" var/spack/repos/builtin/packages/gchp/package.py
 
-# spack style
+# test that style is correct
+spack style
 git add .
 git commit -m "gchp: added version $VERSION_TAG"
 git push -u origin $BRANCH
