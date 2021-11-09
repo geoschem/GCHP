@@ -31,4 +31,4 @@ jobs:
           install: true
       - name: Build
         run: |
-          docker build -f spack-deployment.dockerfile --build-arg gh-access-token=${{ secrets.GITHUB_TOKEN }} ./.github/workflows/spack-deployment/
+          docker build -f ./.github/workflows/spack-deployment/spack-deployment.dockerfile --build-arg gh-access-token=${{ secrets.GITHUB_TOKEN }} ./.github/workflows/spack-deployment/
