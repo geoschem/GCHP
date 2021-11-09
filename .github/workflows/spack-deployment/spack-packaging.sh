@@ -39,8 +39,10 @@ sed -i "s|https://github.com/geoschem/GCHP/archive/.*.gz|$TAR_URL|" var/spack/re
 # add new line to version history
 sed -i "1,/version(.*/s//$VERSION_STRING\n    &/" var/spack/repos/builtin/packages/gchp/package.py
 
-# test that style is correct
+# test that style is up to snuff
 spack style
+
+# commit and create pull request from forked repo
 git add .
 git commit -m "gchp: added version $VERSION_TAG"
 git push -u origin $BRANCH

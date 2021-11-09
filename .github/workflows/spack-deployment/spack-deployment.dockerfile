@@ -3,15 +3,15 @@
 FROM laestrada/conda-spack-environment:1.0.0
 ARG version_tag
 ARG gh_access_token
+
+# set env variables with args
 ENV TOKEN=$gh_access_token
 ENV VERSION_TAG=$version_tag
-# set env variables
-ENV VERSION_TAG=13.2.1
 
 # Make RUN commands use conda environment
 SHELL ["conda", "run", "-n", "spackenv", "/bin/bash", "-c"]
 
-# clone needed repos
+# clone needed repo
 RUN git clone https://github.com/geoschem/GCHP.git
 
 COPY spack-packaging.sh ./spack-packaging.sh

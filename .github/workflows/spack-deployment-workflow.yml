@@ -4,7 +4,9 @@
 # package upon the release of a new version
 
 # This pipeline is triggered by tagged versions excluding 
-# pre-releases.
+# pre-releases. 
+# Note: The dockerfile handles all the deployment when it is built
+
 name: spack_deployment
 on:
   push:
