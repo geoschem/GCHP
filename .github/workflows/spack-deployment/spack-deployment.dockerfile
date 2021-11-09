@@ -3,7 +3,7 @@
 FROM laestrada/conda-spack-environment:1.0.0
 ARG version-tag
 ARG gh-access-token
-ENV GH_ACCESS_TOKEN=$gh-access-token
+ENV GITHUB_TOKEN=$gh-access-token
 ENV VERSION_TAG=$version-tag
 # set env variables
 ENV VERSION_TAG=13.2.1
@@ -15,7 +15,7 @@ SHELL ["conda", "run", "-n", "spackenv", "/bin/bash", "-c"]
 RUN git clone https://github.com/geoschem/GCHP.git
 
 # COPY spack-packaging.sh ./spack-packaging.sh
-COPY ./.ci-pipelines/spack-deployment/spack-packaging.sh ./spack-packaging.sh
+COPY spack-packaging.sh ./spack-packaging.sh
 RUN chmod +x spack-packaging.sh
 RUN ./spack-packaging.sh
 
