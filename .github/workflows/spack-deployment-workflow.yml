@@ -10,10 +10,9 @@ on:
   push:
     tags:
       - '*' 
-    tags-ignore:
-      - '*-alpha*'
-      - '*-beta*'
-      - '*-rc*'
+      - '!*-alpha*'
+      - '!*-beta*'
+      - '!*-rc*'
 jobs:
   spack_deployment:
     runs-on: ubuntu-latest
