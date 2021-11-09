@@ -1,10 +1,17 @@
-#!/bin/sh -x
+#!/bin/sh
 # this script is intended to update the GCHP package on spack 
 # with the release of a new GCHP version
 # Note: this will only modify updating the source code
 # updating additional dependencies will require manual editting
 
-echo $GH_ACCESS_TOKEN 
+# configure git authentication
+git config --global user.email "lestrada00@gmail.com"
+git config --global user.name "laestrada"
+git config --global credential.helper store
+echo "https://laestrada:$TOKEN@github.com/laestrada/spack.git" > ~/.git-credentials
+echo $TOKEN > token.txt 
+gh auth login --with-token < /token.txt
+
 cd GCHP
 # first we get the commit hash
 git fetch --all --tags
@@ -16,11 +23,15 @@ echo "gchp spack package will fetch package from: $TAR_URL"
 VERSION_STRING="version('$VERSION_TAG', commit='$COMMIT_HASH',  submodules=True)"
 BRANCH="gchp-$VERSION_TAG"
 
-
 cd ../home/spack
-git pull
-gh auth login --with-token $GH_ACCESS_TOKEN
-gh repo fork --remote=true --org=geoschem --clone=false
+# update to latest develop
+git remote add upstream https://github.com/spack/spack.git
+git fetch upstream
+git checkout develop
+git merge upstream/develop
+git push -u origin develop
+
+# checkout new branch
 git checkout -b $BRANCH
 
 # replace the tarball link to new version
@@ -28,9 +39,10 @@ sed -i "s|https://github.com/geoschem/GCHP/archive/.*.gz|$TAR_URL|" var/spack/re
 # add new line to version history
 sed -i "1,/version(.*/s//$VERSION_STRING\n    &/" var/spack/repos/builtin/packages/gchp/package.py
 
-spack style
+# spack style
+git add .
 git commit -m "gchp: added version $VERSION_TAG"
 git push -u origin $BRANCH
-# gh pr create --title "gchp: added version $VERSION_TAG" --base spack:develop --repo spack/spack
+gh pr create --title "gchp: added version $VERSION_TAG" --base develop --body "Pull request for $VERSION_TAG" --repo spack/spack
 
 

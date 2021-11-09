@@ -30,6 +30,6 @@ RUN conda env create -f environment.yml
 
 # Install spack
 RUN cd home && \
-    git clone https://github.com/spack/spack.git
+    git clone https://github.com/laestrada/spack.git
 # install the dependencies for spack style.
 RUN cd /home/spack && spack style
