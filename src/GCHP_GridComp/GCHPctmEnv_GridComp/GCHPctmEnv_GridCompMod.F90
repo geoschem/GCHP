@@ -694,9 +694,8 @@
          ! Convert real4->real8 for fv_computeMassFluxes 
          UCr8  = 1.00d0*(UC)
          VCr8  = 1.00d0*(VC)
-         ! Use dry pressure at the start of the timestep to calculate mass
-         ! fluxes. GMAO method uses mid-step UC, VC and PLE?
-         PLEr8 = 1.00d0*(DryPLE0r8)
+
+         PLEr8 = 1.00d0*(PLE0r8)
 
 #ifdef ADJOINT
          if (.not. firstRun) THEN
