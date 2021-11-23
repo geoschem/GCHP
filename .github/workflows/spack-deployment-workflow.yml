@@ -15,10 +15,8 @@
 name: spack_deployment
 on:
   push:
-    branch: feature/spack-pipeline2
-    # todo: uncomment
-    # tags:
-    #   - '[0-9]+.[0-9]+.[0-9]+'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 jobs:
   make_spack_pr:
     runs-on: ubuntu-latest
@@ -39,12 +37,12 @@ jobs:
           conda install -y -c conda-forge gh flake8 mypy isort
       - name: Login with PAT
         run: |
-          git config --global user.email "liam.bindle@gmail.com"
-          git config --global user.name "LiamBindle"
+          git config --global user.email "lestrada00@gmail.com"
+          git config --global user.name "laestrada"
           git config --global credential.helper store
-          echo "https://LiamBindle:${{ secrets.GH_PUSH_PAT }}@github.com/LiamBindle/spack.git" > ~/.git-credentials
+          echo "https://laestrada:${{ secrets.GH_PUSH_PAT }}@github.com/geoschem/spack.git" > ~/.git-credentials
           echo ${{ secrets.GH_PUSH_PAT }} | gh auth login --with-token
-      - name: Update GCHP spack package and submit PR
+      - name: Update spack package and submit PR
         env:
           GEOSCHEM_VERSION: ${{ steps.vars.outputs.release_tag }}
           VERSION_STRING: version('${{ steps.vars.outputs.release_tag }}', commit='${{ steps.vars.outputs.release_sha }}',  submodules=True)
@@ -60,8 +58,8 @@ jobs:
           git checkout develop
           . share/spack/setup-env.sh
 
-          # Add LiamBindle/spack as a remote (PR will come from this repo)
-          git remote add pr-source-repo https://github.com/LiamBindle/spack.git
+          # Add geoschem/spack as a remote (PR will come from this repo)
+          git remote add pr-source-repo https://github.com/geoschem/spack.git
           
           # Create a new branch for current release
           git checkout -b gchp-${GEOSCHEM_VERSION}
@@ -78,4 +76,4 @@ jobs:
           git add .
           git commit -m "gchp: added version ${GEOSCHEM_VERSION}"
           git push pr-source-repo gchp-${GEOSCHEM_VERSION}
-          # todo: uncomment (works ok) | gh pr create --title "gchp: added version ${GEOSCHEM_VERSION}" --base develop --body "Pull request for ${GEOSCHEM_VERSION}" --repo spack/spack
+          gh pr create --title "gchp: added version ${GEOSCHEM_VERSION}" --base develop --body "Pull request for ${GEOSCHEM_VERSION}" --repo spack/spack
