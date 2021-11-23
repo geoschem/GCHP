@@ -69,7 +69,7 @@ jobs:
           # replace the tarball link to new version
           sed -i "s|https://github.com/geoschem/GCHP/archive/.*.gz|${TAR_URL_PREFIX}/${GEOSCHEM_VERSION}.tar.gz|" var/spack/repos/builtin/packages/gchp/package.py
           # add new line to version history
-          sed -i "0,/\(  *\)version(.*/s//\1${VERSION_STRING}\n&/" var/spack/repos/builtin/packages/gchp/package.py
+          sed -i "0,/\(  *\)version(.*/s##\1${VERSION_STRING}\n&#" var/spack/repos/builtin/packages/gchp/package.py
 
           # test that style is up to snuff
           spack style
