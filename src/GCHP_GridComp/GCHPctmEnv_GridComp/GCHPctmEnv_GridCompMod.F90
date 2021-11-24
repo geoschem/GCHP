@@ -310,14 +310,15 @@ module GCHPctmEnv_GridComp
       type (ESMF_Grid) :: esmfGrid
 
       ! Locals
+      real(r8), pointer  :: PLE(:,:,:) ! Edge pressures
       integer :: ndt
       real(r8) :: dt
       
       logical, save :: firstRun = .true.
       
-      #ifdef ADJOINT
+#ifdef ADJOINT
       integer :: reverseTime
-      #endif
+#endif
       
       ! Get the target components name and set-up traceback handle.
       call ESMF_GridCompGet(GC, name=COMP_NAME, Grid=esmfGrid, RC=STATUS)
@@ -336,7 +337,7 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       dt = ndt
       
-      #ifdef ADJOINT
+#ifdef ADJOINT
       call MAPL_GetResource(ggState, reverseTime, 'REVERSE_TIME:', default=0, RC=STATUS)
       _VERIFY(STATUS)
       IF(MAPL_Am_I_Root()) THEN
@@ -346,11 +347,14 @@ module GCHPctmEnv_GridComp
          WRITE(*,*) ' GIGCenv swapping timestep sign.'
          dt = -dt
       ENDIF
-      #endif
+#endif
       
-      call prepare_ple_exports(IMPORT, EXPORT, PLE)
-      call prepare_sphu_export(IMPORT, EXPORT)
-      call prepare_massflux_exports(IMPORT, EXPORT, PLE, dt)
+      call prepare_ple_exports(IMPORT, EXPORT, PLE, RC=STATUS)
+      _VERIFY(STATUS)
+      call prepare_sphu_export(IMPORT, EXPORT, RC=STATUS)
+      _VERIFY(STATUS)
+      call prepare_massflux_exports(IMPORT, EXPORT, PLE, dt, RC=STATUS)
+      _VERIFY(STATUS)
 
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
@@ -359,10 +363,11 @@ module GCHPctmEnv_GridComp
    end subroutine
 
 
-   subroutine prepare_ple_exports(IMPORT, EXPORT, PLE)
-      type(ESMF_State), intent(inout) :: IMPORT
-      type(ESMF_State), intent(inout) :: EXPORT
-      real(r8), intent(out)           :: PLE(:,:,:) ! Edge pressures
+   subroutine prepare_ple_exports(IMPORT, EXPORT, PLE, RC)
+      type(ESMF_State), intent(inout)  :: IMPORT
+      type(ESMF_State), intent(inout)  :: EXPORT
+      real(r8), intent(out), pointer   :: PLE(:,:,:) ! Edge pressures
+      integer, optional, intent(out)   :: RC
 
       ! Locals
       real, pointer, dimension(:,:)       ::  PS1_IMPORT => null()
@@ -390,13 +395,17 @@ module GCHPctmEnv_GridComp
       PLE0_EXPORT = PLE0_EXPORT(:,:,num_levels:0:-1) ! flip
       PLE1_EXPORT = PLE0_EXPORT                      ! copy PLE0 to PLE1
 
-      PLE=PLE0_EXPORT
+      PLE=>PLE0_EXPORT
+
+      _RETURN(ESMF_SUCCESS)
    end subroutine
 
 
-   subroutine prepare_sphu_export(IMPORT, EXPORT)
+   subroutine prepare_sphu_export(IMPORT, EXPORT, RC)
       type(ESMF_State), intent(inout) :: IMPORT
       type(ESMF_State), intent(inout) :: EXPORT
+      integer, optional, intent(out)  :: RC
+      integer :: LM
 
       ! Locals
       real, pointer, dimension(:,:,:)     :: SPHU1_IMPORT => null()
@@ -411,19 +420,24 @@ module GCHPctmEnv_GridComp
 
       SPHU0_EXPORT(:,:,:) = 0.0d0
 
+      LM = size(SPHU1_IMPORT, 3)
+
       ! Calculate SPHU0_EXPORT (for FV3, thus, export with top-down index)
       if (meteorology_vertical_index_is_top_down) then 
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
       end if
+
+      _RETURN(ESMF_SUCCESS)
    end subroutine
 
-   subroutine prepare_massflux_exports(IMPORT, EXPORT, PLE, dt)
+   subroutine prepare_massflux_exports(IMPORT, EXPORT, PLE, dt, RC)
       type(ESMF_State), intent(inout) :: IMPORT
       type(ESMF_State), intent(inout) :: EXPORT
-      real(r8), intent(in) :: PLE(:,:,:) ! Edge pressures
-      real(r8), intent(in) :: dt
+      real(r8), intent(in), pointer   :: PLE(:,:,:) ! Edge pressures
+      real(r8), intent(in)            :: dt
+      integer, optional, intent(out)  :: RC       ! Error code
 
       real, pointer, dimension(:,:,:)     :: UA_IMPORT  => null()
       real, pointer, dimension(:,:,:)     :: VA_IMPORT  => null()
@@ -486,17 +500,17 @@ module GCHPctmEnv_GridComp
          UCr8  = dble(UC)
          VCr8  = dble(VC)
          
-         #ifdef ADJOINT
+#ifdef ADJOINT
          if (.not. firstRun) THEN
-         #endif
+#endif
             ! Calculate mass fluxes and courant numbers
             call fv_computeMassFluxes(UCr8, VCr8, PLE, &
                                       MFX_EXPORT, MFY_EXPORT, & 
                                       CX_EXPORT, CY_EXPORT, dt)
-         #ifdef ADJOINT
+#ifdef ADJOINT
          endif
          firstRun = .false.
-         #endif
+#endif
          
          ! Deallocate temporaries
          DEALLOCATE(UC, VC, UCr8, VCr8)
@@ -529,6 +543,8 @@ module GCHPctmEnv_GridComp
          ! Flip vertical so that GCHP diagnostic is positive="up"
          UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)
       end if
+
+      _RETURN(ESMF_SUCCESS)
    end subroutine
    
 
