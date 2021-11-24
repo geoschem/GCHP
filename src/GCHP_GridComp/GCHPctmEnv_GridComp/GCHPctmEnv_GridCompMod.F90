@@ -58,24 +58,8 @@ module GCHPctmEnv_GridComp
       
       call lgr%debug('Adding import specs')
       call MAPL_AddImportSpec(gc, &
-                              SHORT_NAME='AREA', &
-                              LONG_NAME='agrid_cell_area', &
-                              UNITS='m+2', &
-                              DIMS=MAPL_DimsHorzOnly, &
-                              VLOCATION=MAPL_VLocationNone, &
-                              RC=STATUS)
-      _VERIFY(STATUS)
-      call MAPL_AddImportSpec(gc, &
                               SHORT_NAME='PS1', &
                               LONG_NAME='pressure_at_surface_before_advection', &
-                              UNITS='hPa', &
-                              DIMS=MAPL_DimsHorzOnly, &
-                              VLOCATION=MAPL_VLocationEdge, &
-                              RC=STATUS)
-      _VERIFY(STATUS)
-      call MAPL_AddImportSpec(gc, &
-                              SHORT_NAME='PS2', &
-                              LONG_NAME='pressure_at_surface_after_advection', &
                               UNITS='hPa', &
                               DIMS=MAPL_DimsHorzOnly, &
                               VLOCATION=MAPL_VLocationEdge, &
@@ -171,14 +155,6 @@ module GCHPctmEnv_GridComp
                               PRECISION=ESMF_KIND_R8, &
                               DIMS=MAPL_DimsHorzVert, &
                               VLOCATION=MAPL_VLocationEdge, &
-                              RC=STATUS)
-      _VERIFY(STATUS)
-      call MAPL_AddExportSpec(GC, &
-                              SHORT_NAME='AIRDENS', &
-                              LONG_NAME='air_density', &
-                              UNITS='kg m-3', &
-                              DIMS=MAPL_DimsHorzVert, &
-                              VLOCATION=MAPL_VLocationCenter, &
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &

@@ -197,18 +197,6 @@ contains
 
       ! Connectivities between Children
       ! -------------------------------
-      CALL MAPL_AddConnectivity ( GC,                       &
-                                  SHORT_NAME  = (/'AREA'/), &
-                                  DST_ID = ECTM,            &
-                                  SRC_ID = ADV,             &
-                                  __RC__ )
-
-      CALL MAPL_AddConnectivity ( GC,                          &
-                                  SHORT_NAME  = (/'AIRDENS'/), &
-                                  DST_ID = CHEM,               &
-                                  SRC_ID = ECTM,               &
-                                  __RC__  )
-
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME = (/ 'CX   ',     &
                                                   'CY   ',     &
