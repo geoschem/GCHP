@@ -13,25 +13,24 @@ module GCHPctmEnv_GridComp
    
    public SetServices
    
-   integer,  parameter :: r8     = 8
-   integer,  parameter :: r4     = 4
+   integer, parameter :: r8     = 8
+   integer, parameter :: r4     = 4
    
-   LOGICAL             :: meteorology_vertical_index_is_top_down
-   LOGICAL             :: import_mass_flux_from_extdata = .false.
+   logical :: meteorology_vertical_index_is_top_down
+   logical :: import_mass_flux_from_extdata = .false.
    
-   CLASS(Logger),          POINTER  :: lgr => null()
+   class(Logger), pointer :: lgr => null()
    
    public import_mass_flux_from_extdata
    
    contains
    
+
    subroutine SetServices(GC, RC)
-      type(ESMF_GridComp), intent(INOUT)  :: GC  ! gridded component
-      integer, intent(OUT)                :: RC  ! return code
-      
-      type (ESMF_State) :: INTERNAL
+      type(ESMF_GridComp), intent(INOUT) :: GC  ! gridded component
+      integer, intent(OUT)               :: RC  ! return code
+
       integer :: STATUS
-      integer :: I
       type (ESMF_Config) :: CF
       character(len=ESMF_MAXSTR) :: COMP_NAME
       character(len=ESMF_MAXSTR) :: IAm = 'SetServices'
@@ -242,12 +241,13 @@ module GCHPctmEnv_GridComp
       
    end subroutine SetServices
 
+
    subroutine Initialize(GC, IMPORT, EXPORT, CLOCK, RC)
       type(ESMF_GridComp), intent(inout) :: GC     ! Gridded component 
       type(ESMF_State),    intent(inout) :: IMPORT ! Import state
       type(ESMF_State),    intent(inout) :: EXPORT ! Export state
       type(ESMF_Clock),    intent(inout) :: CLOCK  ! The clock
-      integer, optional,   intent(out) :: RC     ! Error code
+      integer, optional,   intent(out)   :: RC     ! Error code
 
       ! Locals
       __Iam__('Initialize')
@@ -257,8 +257,6 @@ module GCHPctmEnv_GridComp
       type (ESMF_VM) :: VM
       type(MAPL_MetaComp), pointer :: ggState      ! GEOS Generic State
       type (ESMF_Config) :: CF
-      integer :: im, jm, km, i
-      integer :: dims(3)
       integer :: comm
       
       !  Get my name and set-up traceback handle
@@ -281,9 +279,6 @@ module GCHPctmEnv_GridComp
       call ESMF_GridCompGet(GC, GRID=esmfGrid, rc=STATUS)
       _VERIFY(STATUS)
       
-      call MAPL_GridGet(esmfGrid, globalCellCountPerDim=dims, RC=STATUS)
-      _VERIFY(STATUS)
-      
       call ESMF_ConfigGetAttribute(CF,value=meteorology_vertical_index_is_top_down, &
       label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:', Default=.false., __RC__)
       if (meteorology_vertical_index_is_top_down) then
@@ -292,16 +287,13 @@ module GCHPctmEnv_GridComp
          call lgr%info('Configured to expect ''bottom-up'' meteorological data from ''ExtData''')
       end if
       
-      im = dims(1)
-      jm = dims(2)
-      km = dims(3)
-      
       call MAPL_TimerOff(ggSTATE,"INITIALIZE")
       call MAPL_TimerOff(ggSTATE,"TOTAL")
       
       _RETURN(ESMF_SUCCESS)
       
-   end subroutine Initialize
+   end subroutine
+
 
    subroutine Run(GC, IMPORT, EXPORT, CLOCK, RC)
       type(ESMF_GridComp), intent(inout) :: GC     ! Gridded component 
@@ -316,37 +308,9 @@ module GCHPctmEnv_GridComp
       character(len=ESMF_MAXSTR) :: COMP_NAME
       type (MAPL_MetaComp), pointer :: ggState
       type (ESMF_Grid) :: esmfGrid
-      type (ESMF_State) :: INTERNAL
-      
-      ! Imports
-      real, pointer, dimension(:,:)   :: PS1_IMPORT => null()
-      real, pointer, dimension(:,:)   :: PS2_IMPORT => null()
-      real, pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
-      real, pointer, dimension(:,:,:) :: UA_IMPORT  => null()
-      real, pointer, dimension(:,:,:) :: VA_IMPORT  => null()
-      
-      ! Exports
-      real(r8), pointer, dimension(:,:,:) :: CX_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: CY_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: PLE0_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: PLE1_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: MFX_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: MFY_EXPORT => null() 
-      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
-      
-      ! Diagnostic Exports
-      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
-      
+
       ! Locals
-      real, pointer, dimension(:,:,:) :: temp3_r4  => null()
-      real, pointer, dimension(:,:,:) :: UC => null()
-      real, pointer, dimension(:,:,:) :: VC => null()
-      real(r8), pointer, dimension(:,:,:) :: UCr8 => null()
-      real(r8), pointer, dimension(:,:,:) :: VCr8 => null()
-      
-      integer :: i, j
-      integer :: km, k, is, ie, js, je, lm, l, ik
-      integer :: ndt, isd, ied, jsd, jed
+      integer :: ndt
       real(r8) :: dt
       
       logical, save :: firstRun = .true.
@@ -384,68 +348,116 @@ module GCHPctmEnv_GridComp
       ENDIF
       #endif
       
+      call prepare_ple_exports(IMPORT, EXPORT, PLE)
+      call prepare_sphu_export(IMPORT, EXPORT)
+      call prepare_massflux_exports(IMPORT, EXPORT, PLE, dt)
+
+      call MAPL_TimerOff(ggState,"RUN")
+      call MAPL_TimerOff(ggState,"TOTAL")
       
-      !! Calculate exports PLE0, PLE1, and SPHU0
-      call lgr%debug('Calculating exports PLE0, PLE1, and SPHU0.')
-      
-      ! Imports 
+      _RETURN(ESMF_SUCCESS)
+   end subroutine
+
+
+   subroutine prepare_ple_exports(IMPORT, EXPORT, PLE)
+      type(ESMF_State), intent(inout) :: IMPORT
+      type(ESMF_State), intent(inout) :: EXPORT
+      real(r8), intent(out)           :: PLE(:,:,:) ! Edge pressures
+
+      ! Locals
+      real, pointer, dimension(:,:)       ::  PS1_IMPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE0_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE1_EXPORT => null()
+      integer :: num_levels
+      integer :: STATUS
+
       call MAPL_GetPointer(IMPORT, PS1_IMPORT,    'PS1', RC=STATUS)
       _VERIFY(STATUS)
-      call MAPL_GetPointer(IMPORT, PS2_IMPORT,    'PS2', RC=STATUS)
-      _VERIFY(STATUS)
-      call MAPL_GetPointer(IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS)
-      _VERIFY(STATUS)
-      
-      ! Exports
+
       call MAPL_GetPointer(EXPORT, PLE0_EXPORT,  'PLE0',  RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_GetPointer(EXPORT, PLE1_EXPORT,  'PLE1',  RC=STATUS)
       _VERIFY(STATUS)
-      call MAPL_GetPointer(EXPORT, SPHU0_EXPORT, 'SPHU0', RC=STATUS)
-      _VERIFY(STATUS)
-      
+
+      num_levels = size(PLE0_EXPORT,3) - 1
+
       PLE0_EXPORT(:,:,:)  = 0.0d0
       PLE1_EXPORT(:,:,:)  = 0.0d0
-      SPHU0_EXPORT(:,:,:) = 0.0d0
-      
-      ! Get local dimensions
-      is = lbound(SPHU1_IMPORT,1); ie = ubound(SPHU1_IMPORT,1)
-      js = lbound(SPHU1_IMPORT,2); je = ubound(SPHU1_IMPORT,2)
-      lm = size  (SPHU1_IMPORT,3)
-      
+
       ! Calculate PLE[01]_EXPORT (for FV3, thus, export with top-down index)
-      call calculatePLE(PS1_IMPORT, PLE0_EXPORT) ! output is bottom-up, units are hPa
-      PLE0_EXPORT = 100.0d0*PLE0_EXPORT          ! convert hPa to Pa
-      PLE0_EXPORT = PLE0_EXPORT(:,:,LM:0:-1)     ! flip
-      PLE1_EXPORT = PLE0_EXPORT                  ! copy PLE0 to PLE1
+      call calculate_ple(PS1_IMPORT, PLE0_EXPORT)    ! output is bottom-up, units are hPa
+      PLE0_EXPORT = 100.0d0*PLE0_EXPORT              ! convert hPa to Pa
+      PLE0_EXPORT = PLE0_EXPORT(:,:,num_levels:0:-1) ! flip
+      PLE1_EXPORT = PLE0_EXPORT                      ! copy PLE0 to PLE1
+
+      PLE=PLE0_EXPORT
+   end subroutine
+
+
+   subroutine prepare_sphu_export(IMPORT, EXPORT)
+      type(ESMF_State), intent(inout) :: IMPORT
+      type(ESMF_State), intent(inout) :: EXPORT
+
+      ! Locals
+      real, pointer, dimension(:,:,:)     :: SPHU1_IMPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
+      integer :: STATUS
+
+      call MAPL_GetPointer(IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS)
+      _VERIFY(STATUS)
       
+      call MAPL_GetPointer(EXPORT, SPHU0_EXPORT, 'SPHU0', RC=STATUS)
+      _VERIFY(STATUS)
+
+      SPHU0_EXPORT(:,:,:) = 0.0d0
+
       ! Calculate SPHU0_EXPORT (for FV3, thus, export with top-down index)
       if (meteorology_vertical_index_is_top_down) then 
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
       end if
-      
-      
-      !! Calculate MF[XY] and C[XY] exports
-      call lgr%debug('Calculating exports MFX, MFY, CX, and CY.')
-      
-      ! Exports
+   end subroutine
+
+   subroutine prepare_massflux_exports(IMPORT, EXPORT, PLE, dt)
+      type(ESMF_State), intent(inout) :: IMPORT
+      type(ESMF_State), intent(inout) :: EXPORT
+      real(r8), intent(in) :: PLE(:,:,:) ! Edge pressures
+      real(r8), intent(in) :: dt
+
+      real, pointer, dimension(:,:,:)     :: UA_IMPORT  => null()
+      real, pointer, dimension(:,:,:)     :: VA_IMPORT  => null()
+      real(r8), pointer, dimension(:,:,:) :: CX_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: CY_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: MFX_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: MFY_EXPORT => null() 
+      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
+
+      real, pointer, dimension(:,:,:) :: temp3_r4  => null()
+      real, pointer, dimension(:,:,:) :: UC => null()
+      real, pointer, dimension(:,:,:) :: VC => null()
+      real(r8), pointer, dimension(:,:,:) :: UCr8 => null()
+      real(r8), pointer, dimension(:,:,:) :: VCr8 => null()
+      integer :: is, ie, js, je, lm
+      integer :: STATUS
+
+
+      is = lbound(PLE, 1); ie = ubound(PLE, 1)
+      js = lbound(PLE, 2); je = ubound(PLE, 2)
+      lm = size(PLE, 3) - 1
+
       call MAPL_GetPointer(EXPORT, MFX_EXPORT, 'MFX', RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_GetPointer(EXPORT, MFY_EXPORT, 'MFY', RC=STATUS)
       _VERIFY(STATUS)
-      call MAPL_GetPointer(EXPORT,  CX_EXPORT,  'CX', RC=STATUS)
+      call MAPL_GetPointer(EXPORT, CX_EXPORT, 'CX', RC=STATUS)
       _VERIFY(STATUS)
-      call MAPL_GetPointer(EXPORT,  CY_EXPORT,  'CY', RC=STATUS)
+      call MAPL_GetPointer(EXPORT, CY_EXPORT, 'CY', RC=STATUS)
       _VERIFY(STATUS)
       if (.not. import_mass_flux_from_extdata) then
-         !! Calculate MFX, MFY, CX, and CY exports (with top-down indexing)
-         
-         ! Imports
-         call MAPL_GetPointer(IMPORT,      UA_IMPORT,    'UA',  RC=STATUS)
+         call MAPL_GetPointer(IMPORT, UA_IMPORT, 'UA', RC=STATUS)
          _VERIFY(STATUS)
-         call MAPL_GetPointer(IMPORT,      VA_IMPORT,    'VA',  RC=STATUS)
+         call MAPL_GetPointer(IMPORT, VA_IMPORT, 'VA', RC=STATUS)
          _VERIFY(STATUS)
          
          ! Temporaries
@@ -459,7 +471,6 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          
          ! Prepare inputs to fv_computeMassFluxes
-         
          if (meteorology_vertical_index_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
             VC(:,:,:) = VA_IMPORT(:,:,:)
@@ -477,12 +488,12 @@ module GCHPctmEnv_GridComp
          
          #ifdef ADJOINT
          if (.not. firstRun) THEN
-            #endif
+         #endif
             ! Calculate mass fluxes and courant numbers
-            call fv_computeMassFluxes(UCr8, VCr8, PLE0_EXPORT, &
-            MFX_EXPORT, MFY_EXPORT, & 
-            CX_EXPORT, CY_EXPORT, dt)
-            #ifdef ADJOINT
+            call fv_computeMassFluxes(UCr8, VCr8, PLE, &
+                                      MFX_EXPORT, MFY_EXPORT, & 
+                                      CX_EXPORT, CY_EXPORT, dt)
+         #ifdef ADJOINT
          endif
          firstRun = .false.
          #endif
@@ -507,7 +518,7 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          CY_EXPORT = dble(temp3_r4)
       end if
-      
+
       ! Vertical motion diagnostics
       call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', RC=STATUS)
       _VERIFY(STATUS)
@@ -518,15 +529,10 @@ module GCHPctmEnv_GridComp
          ! Flip vertical so that GCHP diagnostic is positive="up"
          UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)
       end if
-      
-      call MAPL_TimerOff(ggState,"RUN")
-      call MAPL_TimerOff(ggState,"TOTAL")
-      
-      _RETURN(ESMF_SUCCESS)
-      
-   end subroutine Run
+   end subroutine
    
-   subroutine calculatePLE(PS, PLE)
+
+   subroutine calculate_ple(PS, PLE)
       real(r4), intent(in)    :: PS(:,:)    ! Surface pressure [hPa]
       real(r8), intent(out)   :: PLE(:,:,:) ! Edge pressure    [hPa]
       integer, parameter      :: num_levels = 72
@@ -585,9 +591,6 @@ module GCHPctmEnv_GridComp
       Do L=1,num_edges
          PLE(:,:,L) = (AP(L) + (BP(L) * dble(PS(:,:))))
       End Do
-      
-      RETURN
-      
-   end subroutine calculatePLE
+   end subroutine
    
 end module GCHPctmEnv_GridComp
