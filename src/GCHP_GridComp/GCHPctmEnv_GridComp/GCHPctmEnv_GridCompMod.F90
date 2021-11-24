@@ -24,12 +24,6 @@
 ! !PUBLIC MEMBER FUNCTIONS:
 
       public SetServices
-      public compAreaWeightedAverage
-
-      interface compAreaWeightedAverage
-         module procedure compAreaWeightedAverage_2d
-         module procedure compAreaWeightedAverage_3d
-      end interface
 !
 ! !DESCRIPTION:
 ! This GC is used to derive variables needed by the CTM GC children.
@@ -48,19 +42,9 @@
       integer,  parameter :: r8     = 8
       integer,  parameter :: r4     = 4
 
-      INTEGER, PARAMETER :: sp = SELECTED_REAL_KIND(6,30)
-      INTEGER, PARAMETER :: dp = SELECTED_REAL_KIND(14,300)
-      INTEGER, PARAMETER :: qp = SELECTED_REAL_KIND(18,400)
-
-      real(r8), parameter :: RADIUS = MAPL_RADIUS
-      real(r8), parameter :: PI     = MAPL_PI_R8
-      real(r8), parameter :: D0_0   = 0.0_r8
-      real(r8), parameter :: D0_5   = 0.5_r8
-      real(r8), parameter :: D1_0   = 1.0_r8
-      real(r8), parameter :: GPKG   = 1000.0d0
-      real(r8), parameter :: MWTAIR =   28.96d0
       LOGICAL             :: meteorology_vertical_index_is_top_down
       LOGICAL             :: import_mass_flux_from_extdata = .false.
+
       CLASS(Logger),          POINTER  :: lgr => null()
 
       public import_mass_flux_from_extdata
@@ -151,13 +135,6 @@
            DIMS       = MAPL_DimsHorzVert,                           &
            VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
       _VERIFY(STATUS)
-      call MAPL_AddImportSpec ( gc,                                  &
-           SHORT_NAME = 'SPHU2',                                     &
-           LONG_NAME  = 'specific_humidity_after_advection',         &
-           UNITS      = 'kg kg-1',                                   &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
-      _VERIFY(STATUS)
       if (.not. import_mass_flux_from_extdata) then
          call MAPL_AddImportSpec ( gc,                                  &
             SHORT_NAME = 'UA',                                        &
@@ -210,31 +187,15 @@
 
       ! Exports
       call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'DryPLE1r8',                                 &
-           LONG_NAME  = 'dry_pressure_at_layer_edges_after_advection',&
-           UNITS      = 'Pa',                                        &
+           SHORT_NAME = 'SPHU0',                                   &
+           LONG_NAME  = 'specific_humidity_before_advection',        &
+           UNITS      = 'kg kg-1',                                   &
            PRECISION  = ESMF_KIND_R8,                                &
            DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
+           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
       _VERIFY(STATUS)
       call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'DryPLE0r8',                                 &
-           LONG_NAME  = 'dry_pressure_at_layer_edges_before_advection',&
-           UNITS      = 'Pa',                                        &
-           PRECISION  = ESMF_KIND_R8,                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
-      _VERIFY(STATUS)
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'PLE1r8',                                    &
-           LONG_NAME  = 'pressure_at_layer_edges_after_advection',   &
-           UNITS      = 'Pa',                                        &
-           PRECISION  = ESMF_KIND_R8,                                &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
-      _VERIFY(STATUS)
-      call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'PLE0r8',                                    &
+           SHORT_NAME = 'PLE0',                                    &
            LONG_NAME  = 'pressure_at_layer_edges_before_advection',  &
            UNITS      = 'Pa',                                        &
            PRECISION  = ESMF_KIND_R8,                                &
@@ -242,12 +203,12 @@
            VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
       call MAPL_AddExportSpec ( gc,                                  &
-           SHORT_NAME = 'SPHU0r8',                                   &
-           LONG_NAME  = 'specific_humidity_before_advection',        &
-           UNITS      = 'kg kg-1',                                   &
+           SHORT_NAME = 'PLE1',                                    &
+           LONG_NAME  = 'pressure_at_layer_edges_after_advection',   &
+           UNITS      = 'Pa',                                        &
            PRECISION  = ESMF_KIND_R8,                                &
            DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationCenter,           RC=STATUS  )
+           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(GC,                            &
         SHORT_NAME         = 'AIRDENS',                      &
@@ -296,41 +257,6 @@
          DIMS       = MAPL_DimsHorzVert,                           &
          VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
       _VERIFY(STATUS)
-
-      ! Internal State - MSL
-      !-------------------------
-      ! Store internal state with Config object in the gridded component
-      CALL ESMF_UserCompSetInternalState( GC, 'ctmEnv_State', INTERNAL, STATUS )
-      _VERIFY(STATUS)
-      call MAPL_AddInternalSpec ( gc,                                &
-           SHORT_NAME = 'PLE0',                                      &
-           LONG_NAME  = 'pressure_at_layer_edges_before_advection',  &
-           UNITS      = 'Pa',                                        &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
-      _VERIFY(STATUS)
-      call MAPL_AddInternalSpec ( gc,                                &
-           SHORT_NAME = 'PLE1',                                      &
-           LONG_NAME  = 'pressure_at_layer_edges_after_advection',   &
-           UNITS      = 'Pa',                                        &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
-      _VERIFY(STATUS)
-      call MAPL_AddInternalSpec ( gc,                                &
-           SHORT_NAME = 'DryPLE0',                                   &
-           LONG_NAME  = 'dry_pressure_at_layer_edges_before_advection',&
-           UNITS      = 'Pa',                                        &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
-      _VERIFY(STATUS)
-      call MAPL_AddInternalSpec ( gc,                                &
-           SHORT_NAME = 'DryPLE1',                                   &
-           LONG_NAME  = 'dry_pressure_at_layer_edges_after_advection',&
-           UNITS      = 'Pa',                                        &
-           DIMS       = MAPL_DimsHorzVert,                           &
-           VLOCATION  = MAPL_VLocationEdge,             RC=STATUS  )
-      _VERIFY(STATUS)
-
 
       ! Set the Profiling timers
       !-------------------------
@@ -472,32 +398,28 @@
       type (ESMF_State)               :: INTERNAL
       
       ! Imports
-      real, pointer, dimension(:,:)   :: PS0 => null()
-      real, pointer, dimension(:,:)   :: PS1 => null()
-      real, pointer, dimension(:,:,:) :: SPHU0_IMPORT => null()
+      real, pointer, dimension(:,:)   :: PS1_IMPORT => null()
+      real, pointer, dimension(:,:)   :: PS2_IMPORT => null()
       real, pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
-      real, pointer, dimension(:,:,:) :: UA  => null()
-      real, pointer, dimension(:,:,:) :: VA  => null()
-      real, pointer, dimension(:,:,:) :: temp3_r4  => null()
+      real, pointer, dimension(:,:,:) :: UA_IMPORT  => null()
+      real, pointer, dimension(:,:,:) :: VA_IMPORT  => null()
       
       ! Exports
-      real(r8), pointer, dimension(:,:,:) :: CX => null()
-      real(r8), pointer, dimension(:,:,:) :: CY => null()
-      real(r8), pointer, dimension(:,:,:) :: PLE1r8 => null()
-      real(r8), pointer, dimension(:,:,:) :: PLE0r8 => null()
-      real(r8), pointer, dimension(:,:,:) :: DryPLE1r8 => null()
-      real(r8), pointer, dimension(:,:,:) :: DryPLE0r8 => null()
-      real(r8), pointer, dimension(:,:,:) :: MFX => null()
-      real(r8), pointer, dimension(:,:,:) :: MFY => null() 
-      real(r8), pointer, dimension(:,:,:) :: SPHU0r8 => null()
+      real(r8), pointer, dimension(:,:,:) :: CX_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: CY_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE0_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE1_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: MFX_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: MFY_EXPORT => null() 
+      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
+
+      ! Diagnostic Exports
       real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
 
       ! Locals
-      real, pointer, dimension(:,:,:) :: SPHU0 => null()
-      real, pointer, dimension(:,:,:) :: SPHU1 => null()
+      real, pointer, dimension(:,:,:) :: temp3_r4  => null()
       real, pointer, dimension(:,:,:) :: UC => null()
       real, pointer, dimension(:,:,:) :: VC => null()
-      real(r8), pointer, dimension(:,:,:) :: PLEr8 => null()
       real(r8), pointer, dimension(:,:,:) :: UCr8 => null()
       real(r8), pointer, dimension(:,:,:) :: VCr8 => null()
       
@@ -548,119 +470,68 @@
       ENDIF
 #endif
 
-      !! Calculate PLE0r8, PLE1r8, DryPLE0r8, and DryPLE1r8 exports
-      call lgr%debug('Calculating PLE[01]r8 and DryPLE[01]r8 exports.')
+
+      !! Calculate exports PLE0, PLE1, and SPHU0
+      call lgr%debug('Calculating exports PLE0, PLE1, and SPHU0.')
 
       ! Imports 
-      call MAPL_GetPointer( IMPORT, PS0, 'PS1', RC=STATUS )
+      call MAPL_GetPointer( IMPORT, PS1_IMPORT,    'PS1', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer( IMPORT, PS1, 'PS2', RC=STATUS )
+      call MAPL_GetPointer( IMPORT, PS2_IMPORT,    'PS2', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer( IMPORT, SPHU0_IMPORT, 'SPHU1', RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer( IMPORT, SPHU1_IMPORT,'SPHU2', RC=STATUS )
+      call MAPL_GetPointer( IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS )
       _VERIFY(STATUS)
 
       ! Exports
-      call MAPL_GetPointer ( EXPORT, PLE0r8, 'PLE0r8',  RC=STATUS )
+      call MAPL_GetPointer ( EXPORT, PLE0_EXPORT,  'PLE0',  RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, PLE1r8, 'PLE1r8',  RC=STATUS )
+      call MAPL_GetPointer ( EXPORT, PLE1_EXPORT,  'PLE1',  RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, DryPLE0r8, 'DryPLE0r8',  RC=STATUS )
+      call MAPL_GetPointer ( EXPORT, SPHU0_EXPORT, 'SPHU0', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, DryPLE1r8, 'DryPLE1r8',  RC=STATUS )
-      _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, SPHU0r8, 'SPHU0r8', RC=STATUS )
-      _VERIFY(STATUS)
+
+      PLE0_EXPORT(:,:,:)  = 0.0d0
+      PLE1_EXPORT(:,:,:)  = 0.0d0
+      SPHU0_EXPORT(:,:,:) = 0.0d0
 
       ! Get local dimensions
-      is = lbound(SPHU0_IMPORT,1); ie = ubound(SPHU0_IMPORT,1)
-      js = lbound(SPHU0_IMPORT,2); je = ubound(SPHU0_IMPORT,2)
-      lm = size  (SPHU0_IMPORT,3)
+      is = lbound(SPHU1_IMPORT,1); ie = ubound(SPHU1_IMPORT,1)
+      js = lbound(SPHU1_IMPORT,2); je = ubound(SPHU1_IMPORT,2)
+      lm = size  (SPHU1_IMPORT,3)
 
-      ! Temporaries
-      ALLOCATE(SPHU0(is:ie,js:je,lm), STAT=STATUS); 
-      _VERIFY(STATUS);
-      ALLOCATE(SPHU1(is:ie,js:je,lm), STAT=STATUS); 
-      _VERIFY(STATUS);
-      
-      ! Copy SPHU0 and SPHU1 imports to handle top-down vs. bottom-up meteorological data
-      if (meteorology_vertical_index_is_top_down) then
-         SPHU0(:,:,:) = SPHU0_IMPORT(:,:,LM:1:-1)
-         SPHU1(:,:,:) = SPHU1_IMPORT(:,:,LM:1:-1)
+      ! Calculate PLE[01]_EXPORT (for FV3, thus, export with top-down index)
+      call calculatePLE(PS1_IMPORT, PLE0_EXPORT) ! output is bottom-up, units are hPa
+      PLE0_EXPORT = 100.0d0*PLE0_EXPORT          ! convert hPa to Pa
+      PLE0_EXPORT = PLE0_EXPORT(:,:,LM:0:-1)     ! flip
+      PLE1_EXPORT = PLE0_EXPORT                  ! copy PLE0 to PLE1
+
+      ! Calculate SPHU0_EXPORT (for FV3, thus, export with top-down index)
+      if (meteorology_vertical_index_is_top_down) then 
+         SPHU0_EXPORT = dble( SPHU1_IMPORT )
       else
-         SPHU0(:,:,:) = SPHU0_IMPORT(:,:,:)
-         SPHU1(:,:,:) = SPHU1_IMPORT(:,:,:)
+         SPHU0_EXPORT(:,:,:) = dble( SPHU1_IMPORT(:,:,LM:1:-1) )
       end if
 
-      ! Reset the exports
-      PLE0r8   (:,:,:) = 0.0d0
-      PLE1r8   (:,:,:) = 0.0d0
-      DryPLE0r8(:,:,:) = 0.0d0
-      DryPLE1r8(:,:,:) = 0.0d0
-      SPHU0r8  (:,:,:) = 0.0d0
-
-      ! Calcaulate PLE0/1 - M.Long
-      ! ---------------------
-#include "GEOS_HyCoords.H"
-      
-      ! Calculate dry surface pressure in hPa
-      Do J=js,je
-      Do I=is,ie
-         ! Start with TOA pressure
-         PSDry0 = AP(LM+1)
-         PSDry1 = AP(LM+1)
-         ! Stack up dry delta-P to get surface dry pressure
-         Do L=1,LM
-            ! Pre-advection
-            PEdge_Bot = AP(L  ) + BP(L  ) * PS0(I,J)
-            PEdge_Top = AP(L+1) + BP(L+1) * PS0(I,J)
-            PSDry0    = PSDry0 + (PEdge_Bot - PEdge_Top) & 
-                               * (1.d0 - SPHU0(I,J,L))
-            ! Post-advection
-            PEdge_Bot = AP(L  ) + BP(L  ) * PS1(I,J)
-            PEdge_Top = AP(L+1) + BP(L+1) * PS1(I,J)
-            PSDry1    = PSDry1 + (PEdge_Bot - PEdge_Top) & 
-                               * (1.d0 - SPHU1(I,J,L))
-         End Do
-         ! Work back up from the surface to get dry level edges
-         ! Do wet pressure at the same time - why not
-         Do L=1,LM+1
-            DryPLE0r8(I,J,L-1) = 100.d0*(AP(L)+(BP(L)*PSDry0  ))
-            DryPLE1r8(I,J,L-1) = 100.d0*(AP(L)+(BP(L)*PSDry1  ))
-            PLE0r8   (I,J,L-1) = 100.d0*(AP(L)+(BP(L)*PS0(I,J)))
-            PLE1r8   (I,J,L-1) = 100.d0*(AP(L)+(BP(L)*PS1(I,J)))
-         End Do
-      End Do
-      End Do
-
-      ! Flip vertically so that exports have top-down indexing (as per AdvCore_GridComp imports)      
-      DryPLE0r8(:,:,:) = DryPLE0r8(:,:,LM:0:-1)
-      DryPLE1r8(:,:,:) = DryPLE1r8(:,:,LM:0:-1)
-      PLE0r8   (:,:,:) = PLE0r8   (:,:,LM:0:-1)
-      PLE1r8   (:,:,:) = PLE1r8   (:,:,LM:0:-1)
-      SPHU0r8  (:,:,:) = 1.0d0*SPHU0(:,:,LM:1:-1)
-      
-      ! Deallocate temporaries
-      DEALLOCATE( AP, BP, SPHU0, SPHU1 )
 
       !! Calculate MF[XY] and C[XY] exports
+      call lgr%debug('Calculating exports MFX, MFY, CX, and CY.')
+
       ! Exports
-      call MAPL_GetPointer ( EXPORT, MFX, 'MFX', RC=STATUS )
+      call MAPL_GetPointer ( EXPORT, MFX_EXPORT, 'MFX', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT, MFY, 'MFY', RC=STATUS )
+      call MAPL_GetPointer ( EXPORT, MFY_EXPORT, 'MFY', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT,  CX,  'CX', RC=STATUS )
+      call MAPL_GetPointer ( EXPORT,  CX_EXPORT,  'CX', RC=STATUS )
       _VERIFY(STATUS)
-      call MAPL_GetPointer ( EXPORT,  CY,  'CY', RC=STATUS )
+      call MAPL_GetPointer ( EXPORT,  CY_EXPORT,  'CY', RC=STATUS )
       _VERIFY(STATUS)
       if (.not. import_mass_flux_from_extdata) then
          !! Calculate MFX, MFY, CX, and CY exports (with top-down indexing)
 
          ! Imports
-         call MAPL_GetPointer ( IMPORT,      UA,    'UA',  RC=STATUS )
+         call MAPL_GetPointer ( IMPORT,      UA_IMPORT,    'UA',  RC=STATUS )
          _VERIFY(STATUS)
-         call MAPL_GetPointer ( IMPORT,      VA,    'VA',  RC=STATUS )
+         call MAPL_GetPointer ( IMPORT,      VA_IMPORT,    'VA',  RC=STATUS )
          _VERIFY(STATUS)
 
          ! Temporaries
@@ -672,58 +543,55 @@
          _VERIFY(STATUS)
          ALLOCATE(VCr8(is:ie,js:je,lm), STAT=STATUS); 
          _VERIFY(STATUS)
-         ALLOCATE(PLEr8(is:ie,js:je,lm+1), STAT=STATUS); 
-         _VERIFY(STATUS)
 
          ! Prepare inputs to fv_computeMassFluxes
-
-         ! Copy UA,VA to UC,VC while handling top-down vs. bottom-up meteorological data
+         
          if (meteorology_vertical_index_is_top_down) then
-            UC(:,:,:) = UA(:,:,LM:1:-1)
-            VC(:,:,:) = VA(:,:,LM:1:-1)
+            UC(:,:,:) = UA_IMPORT(:,:,:)
+            VC(:,:,:) = VA_IMPORT(:,:,:)
          else
-            UC(:,:,:) = UA(:,:,:)
-            VC(:,:,:) = VA(:,:,:)
+            UC(:,:,:) = UA_IMPORT(:,:,LM:1:-1)
+            VC(:,:,:) = VA_IMPORT(:,:,LM:1:-1)
          end if
+
          ! Restagger winds (A-grid to C-grid)
-         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
+         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.) ! real4 only
 
-         ! fv_computeMassFluxes expects top-down indexing
-         UC(:,:,:) =  UC(:,:,LM:1:-1)
-         VC(:,:,:) =  VC(:,:,LM:1:-1)
          ! Convert real4->real8 for fv_computeMassFluxes 
-         UCr8  = 1.00d0*(UC)
-         VCr8  = 1.00d0*(VC)
-
-         PLEr8 = 1.00d0*(PLE0r8)
+         UCr8  = dble(UC)
+         VCr8  = dble(VC)
 
 #ifdef ADJOINT
          if (.not. firstRun) THEN
 #endif
          ! Calculate mass fluxes and courant numbers
-         call fv_computeMassFluxes(UCr8, VCr8, PLEr8, &
-                                   MFX, MFY, CX, CY, dt)
+         call fv_computeMassFluxes(UCr8, VCr8, PLE0_EXPORT, &
+                                   MFX_EXPORT, MFY_EXPORT, & 
+                                   CX_EXPORT, CY_EXPORT, dt)
 #ifdef ADJOINT
          endif
          firstRun = .false.
 #endif
 
          ! Deallocate temporaries
-         DEALLOCATE(UC, VC, UCr8, VCr8, PLEr8)
+         DEALLOCATE(UC, VC, UCr8, VCr8)
       else
          ! Convert MF[XY]C and C[XY]C imports to real8 exports
          call MAPL_GetPointer ( IMPORT, temp3_r4, 'MFXC',  RC=STATUS )
          _VERIFY(STATUS)
-         MFX = 1.0d0*temp3_r4
+         MFX_EXPORT = dble(temp3_r4)
+
          call MAPL_GetPointer ( IMPORT, temp3_r4, 'MFYC',  RC=STATUS )
          _VERIFY(STATUS)
-         MFY = 1.0d0*temp3_r4
+         MFY_EXPORT = dble(temp3_r4)
+
          call MAPL_GetPointer ( IMPORT, temp3_r4, 'CXC',  RC=STATUS )
          _VERIFY(STATUS)
-         CX = 1.0d0*temp3_r4
+         CX_EXPORT = dble(temp3_r4)
+
          call MAPL_GetPointer ( IMPORT, temp3_r4, 'CYC',  RC=STATUS )
          _VERIFY(STATUS)
-         CY = 1.0d0*temp3_r4
+         CY_EXPORT = dble(temp3_r4)
       end if
 
       ! Vertical motion diagnostics
@@ -732,7 +600,7 @@
 
       if (associated(UpwardsMassFlux)) then
          ! Get vertical mass flux
-         call fv_getVerticalMassFlux(MFX, MFY, UpwardsMassFlux, dt)
+         call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
          ! Flip vertical so that GCHP diagnostic is positive="up"
          UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)
       end if
@@ -747,268 +615,71 @@
       end subroutine Run
 !EOC
 !------------------------------------------------------------------------------
-!BOP
-      subroutine computeEdgePressure(PLE, PS, AK, BK, km)
-!
-! !INPUT PARAMETERS:
-      INTEGER,  intent(in) :: km      ! number of vertical levels
-      REAL(r4), intent(in) :: PS(:,:) ! Surface pressure (Pa)
-      REAL(r8), intent(in) :: ak(km+1), bk(km+1)
-!
-! !OUTPUT PARAMETERS:
-      REAL(r4), intent(out) :: PLE(:,:,:)  ! Edge pressure (Pa)
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-      INTEGER  :: L
+
+      subroutine calculatePLE(PS, PLE)
+      real(r4), intent(in)    :: PS(:,:)    ! Surface pressure [hPa]
+      real(r8), intent(out)   :: PLE(:,:,:) ! Edge pressure    [hPa]
+      integer, parameter      :: num_levels = 72
+      integer, parameter      :: num_edges = num_levels + 1
+      real(r8)                :: AP(num_edges), BP(num_edges)
+      integer                 :: L
       
-      DO L = 1, km
-         PLE(:,:,L) = ak(L) + bk(L)*PS(:,:)
-      END DO
+      AP = 1d0
+      BP = 0d0
 
-      RETURN
-
-      end subroutine computeEdgePressure
-!EOC
-!------------------------------------------------------------------------------
-!BOP
-      subroutine computeLWI(LWI, TSKIN, FRLAKE, FROCEAN, FRSEAICE)
-!
-! !INPUT PARAMETERS:
-     REAL(r4), intent(in) :: TSKIN(:,:)    ! Surface skin temperature (K)
-     REAL(r4), intent(in) :: FRLAKE(:,:)   ! Fraction of lake type in grid box (1)
-     REAL(r4), intent(in) :: FROCEAN(:,:)  ! Fraction of ocean in grid box (1)
-     REAL(r4), intent(in) :: FRSEAICE(:,:) ! Ice covered fraction of tile (1)
-!
-! !OUTPUT PARAMETERS:
-     REAL(r4), intent(out) :: LWI(:,:) ! Land water ice flag (1)
-!
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-
-                                          LWI = 1.0  ! Land
-      where ( FROCEAN+FRLAKE >= 0.6     ) LWI = 0.0  ! Water
-      where ( LWI==0 .and. FRSEAICE>0.5 ) LWI = 2.0  ! Ice
-      where ( LWI==0 .and. TSKIN<271.40 ) LWI = 2.0  ! Ice
-
-      RETURN
-
-      end subroutine computeLWI
-!EOC
-!------------------------------------------------------------------------------
-!BOP
-      subroutine computeRelativeHumidity(RH2, PRESS3D, T, QV)
-
-!
-! !INPUT PARAMETERS:
-      REAL, intent(in) :: PRESS3D(:,:,:)  ! Pressure (Pa)
-      REAL, intent(in) :: T      (:,:,:)  ! Air temperature (K)
-      REAL, intent(in) :: QV     (:,:,:)  ! Specific humidity (kg/kg)
-!
-! !OUTPUT PARAMETERS:
-      REAL, intent(out) :: RH2(:,:,:) ! Relative humidity (1)
-!
-!EOP
-!------------------------------------------------------------------------------
-!BOC
-
-      ! -----------------------------------------------------------------
-      ! First calculate relative humidity from Seinfeld (1986) p. 181.
-      ! The first  RH2 is the temperature dependent parameter a.
-      ! The second RH2 is the saturation vapor pressure of water.
-      ! The third  RH2 is the actual relative humidity as a fraction.
-      ! Then make sure RH2 is between 0 and 0.95.
+      !-----------------------------------------------------------------
+      ! GMAO 72 level grid
       !-----------------------------------------------------------------
 
-      RH2(:,:,:) = 1.0d0 - (373.15d0 / T(:,:,:))
+      ! Ap [hPa] for 72 levels (73 edges)
+      AP = (/ 0.000000d+00, 4.804826d-02, 6.593752d+00, 1.313480d+01, &
+              1.961311d+01, 2.609201d+01, 3.257081d+01, 3.898201d+01, &
+              4.533901d+01, 5.169611d+01, 5.805321d+01, 6.436264d+01, &
+              7.062198d+01, 7.883422d+01, 8.909992d+01, 9.936521d+01, &
+              1.091817d+02, 1.189586d+02, 1.286959d+02, 1.429100d+02, &
+              1.562600d+02, 1.696090d+02, 1.816190d+02, 1.930970d+02, &
+              2.032590d+02, 2.121500d+02, 2.187760d+02, 2.238980d+02, &
+              2.243630d+02, 2.168650d+02, 2.011920d+02, 1.769300d+02, &
+              1.503930d+02, 1.278370d+02, 1.086630d+02, 9.236572d+01, &
+              7.851231d+01, 6.660341d+01, 5.638791d+01, 4.764391d+01, &
+              4.017541d+01, 3.381001d+01, 2.836781d+01, 2.373041d+01, &
+              1.979160d+01, 1.645710d+01, 1.364340d+01, 1.127690d+01, &
+              9.292942d+00, 7.619842d+00, 6.216801d+00, 5.046801d+00, &
+              4.076571d+00, 3.276431d+00, 2.620211d+00, 2.084970d+00, &
+              1.650790d+00, 1.300510d+00, 1.019440d+00, 7.951341d-01, &
+              6.167791d-01, 4.758061d-01, 3.650411d-01, 2.785261d-01, &
+              2.113490d-01, 1.594950d-01, 1.197030d-01, 8.934502d-02, &
+              6.600001d-02, 4.758501d-02, 3.270000d-02, 2.000000d-02, &
+              1.000000d-02 /)
 
-      RH2(:,:,:) =  &
-             1013.25d0 * Exp (13.3185d0 * RH2(:,:,:)    -  &
-                               1.9760d0 * RH2(:,:,:)**2 -  &
-                               0.6445d0 * RH2(:,:,:)**3 -  &
-                               0.1299d0 * RH2(:,:,:)**4)
+      ! Bp [unitless] for 72 levels (73 edges)
+      BP = (/ 1.000000d+00, 9.849520d-01, 9.634060d-01, 9.418650d-01, &
+              9.203870d-01, 8.989080d-01, 8.774290d-01, 8.560180d-01, &
+              8.346609d-01, 8.133039d-01, 7.919469d-01, 7.706375d-01, &
+              7.493782d-01, 7.211660d-01, 6.858999d-01, 6.506349d-01, &
+              6.158184d-01, 5.810415d-01, 5.463042d-01, 4.945902d-01, &
+              4.437402d-01, 3.928911d-01, 3.433811d-01, 2.944031d-01, &
+              2.467411d-01, 2.003501d-01, 1.562241d-01, 1.136021d-01, &
+              6.372006d-02, 2.801004d-02, 6.960025d-03, 8.175413d-09, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
+              0.000000d+00 /)
+      
+      ! Calculate level edges
+      Do L=1,num_edges
+         PLE(:,:,L) = (AP(L) + (BP(L) * dble(PS(:,:))))
+      End Do
 
-      RH2(:,:,:) = QV(:,:,:) * MWTAIR / 18.0d0 /  &
-                      GPKG * PRESS3D(:,:,:) / RH2(:,:,:)
+      RETURN
 
-      RH2(:,:,:) = Max (Min (RH2(:,:,:), 0.95d0), 0.0d0)
-
-      RETURN 
-
-      end subroutine computeRelativeHumidity
-!EOC
-!------------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINES: airdens
-!
-! !INTERFACE:
-
-      subroutine airdens_ ( rho, pe, th, q )
-!
-! !INPUT PARAMETERS:
-      real,    intent(in) :: pe(:,:,:)      ! pressure edges
-      real,    intent(in) :: th(:,:,:)      ! (dry) potential temperature
-      real,    intent(in) :: q(:,:,:)       ! apecific humidity
-!
-! !OUTPUT PARAMETERS:
-      real,    intent(out) :: rho(:,:,:)    ! air density [kg/m3]
-!
-! !DESCRIPTION:
-! Computes the air density that might be needed when GEOSchem is not
-! exercised.
-!
-!EOP
-!-----------------------------------------------------------------------
-!BOC
-!
-! !LOCAL VARIABLES:
-      integer :: k, iml, jml, nl     ! dimensions
-      real :: eps
-      integer :: STATUS, RC
-      character(len=ESMF_MAXSTR)      :: IAm = "airdens_"
-      real, allocatable :: npk(:,:,:) ! normalized pk = (pe/p0)^kappa
-
-      iml = size(q,1);  jml = size(q,2);  nl = size(q,3)
-
-      allocate(npk(iml,jml,nl+1),stat=STATUS) ! work space
-      _VERIFY(STATUS)
-
-      eps = MAPL_RVAP / MAPL_RGAS - 1.0
-
-      ! Compute normalized pe**Kappa
-      ! ----------------------------
-      npk = (pe/MAPL_P00)**MAPL_KAPPA
-
-      ! Compute rho from hydrostatic equation
-      ! -------------------------------------
-      do k = 1, nl
-         rho(:,:,k) =       ( pe(:,:,k+1) - pe(:,:,k) ) /      &
-                      ( MAPL_CP * ( th(:,:,k)*(1. + eps*q(:,:,k) ) ) &
-                              * ( npk(:,:,k+1) - npk(:,:,k) ) )
-      end do
-
-      deallocate(npk)
-
-      end subroutine airdens_
-!EOC
-!-----------------------------------------------------------------------
-!BOP
-      function compAreaWeightedAverage_2d (var2D, vm, cellArea) result(wAverage)
-!
-! !INPUT PARAMETER:
-      real            :: var2D(:,:)
-      real            :: cellArea(:,:)
-      type (ESMF_VM)  :: VM
-!
-! RETURNED VALUE:
-      real  :: wAverage
-!
-! DESCRIPTION:
-! Computes the area weighted average of a 2d variable.
-!
-!EOP
-!-----------------------------------------------------------------------
-!BOC
-      logical, save :: first = .true.
-      real(r8) , save :: sumArea
-      real(r8) :: sumWeight
-      integer :: ik, im, jm, STATUS, RC
-      real(r8), pointer :: weightVals(:,:)
-      real(r8) :: sumWeight_loc, sumArea_loc
-      character(len=ESMF_MAXSTR) :: IAm = 'compAreaWeightedAverage_2d'
-
-      ! Determine the earth surface area
-      if (first) then
-         sumArea_loc   = SUM( cellArea  (:,:)  )
-         call MAPL_CommsAllReduceSum(vm, sendbuf= sumArea_loc, &
-                                         recvbuf= sumArea, &
-                                         cnt=1, RC=status)
-         _VERIFY(STATUS)
-
-         first = .false.
-      end if
-
-      im = size(cellArea,1)
-      jm = size(cellArea,2)
-
-      allocate(weightVals(im,jm))
-      weightVals(:,:) = cellArea(:,:)*var2D(:,:)
-
-      sumWeight_loc = SUM( weightVals(:,:) )
-
-      call MAPL_CommsAllReduceSum(vm, sendbuf= sumWeight_loc, recvbuf= sumWeight, &
-         cnt=1, RC=status)
-      _VERIFY(STATUS)
-
-      wAverage = sumWeight/sumArea
-
-      deallocate(weightVals)
-
-      return
-
-      end function compAreaWeightedAverage_2d
-!EOC
-!-----------------------------------------------------------------------
-!BOP
-      function compAreaWeightedAverage_3d (var3D, vm, cellArea) result(wAverage)
-!
-! !INPUT PARAMETER:
-      real            :: var3D(:,:,:)
-      real            :: cellArea(:,:)
-      type (ESMF_VM)  :: VM
-!
-! RETURNED VALUE:
-      real  :: wAverage
-!
-! DESCRIPTION:
-! Computes the area weighted average of a 3d variable.
-!
-!EOP
-!-----------------------------------------------------------------------
-!BOC
-      logical, save :: first = .true.
-      real(r8) , save :: sumArea
-      real(r8) :: sumWeight
-      integer :: ik, im, jm, STATUS, RC
-      real(r8), pointer :: weightVals(:,:)
-      real(r8) :: sumWeight_loc, sumArea_loc
-      character(len=ESMF_MAXSTR) :: IAm = 'compAreaWeightedAverage_3d'
-
-      ! Determine the earth surface area
-      if (first) then
-         sumArea_loc   = SUM( cellArea  (:,:)  )
-         call MAPL_CommsAllReduceSum(vm, sendbuf= sumArea_loc, &
-                                         recvbuf= sumArea, &
-                                         cnt=1, RC=status)
-         _VERIFY(STATUS)
-
-         first = .false.
-      end if
-
-      im = size(cellArea,1)
-      jm = size(cellArea,2)
-
-      allocate(weightVals(im,jm))
-      weightVals(:,:) = 0.0d0
-      DO ik = lbound(var3D,3), ubound(var3D,3)
-         weightVals(:,:) = weightVals(:,:) + cellArea(:,:)*var3D(:,:,ik)
-      END DO
-
-      sumWeight_loc = SUM( weightVals(:,:) )
-
-      call MAPL_CommsAllReduceSum(vm, sendbuf= sumWeight_loc, recvbuf= sumWeight, &
-         cnt=1, RC=status)
-      _VERIFY(STATUS)
-
-      wAverage = sumWeight/sumArea
-
-      deallocate(weightVals)
-
-      return
-
-      end function compAreaWeightedAverage_3d
-!EOC
-!-----------------------------------------------------------------------
+      end subroutine calculatePLE
+      
       end module GCHPctmEnv_GridComp

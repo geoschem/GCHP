@@ -203,20 +203,6 @@ contains
                                   SRC_ID = ADV,             &
                                   __RC__ )
 
-      CALL MAPL_AddConnectivity ( GC, &
-                                  SRC_NAME  = (/ 'PLE0r8   ',    &
-                                                 'PLE1r8   ',    &
-                                                 'DryPLE0r8',    &
-                                                 'DryPLE1r8' ,   &
-                                                 'SPHU0r8  ' /), &
-                                  DST_NAME  = (/ 'PLE0   ',      &
-                                                 'PLE1   ',      &
-                                                 'DryPLE0',      &
-                                                 'DryPLE1',      &
-                                                 'SPHU0  ' /), &
-                                  DST_ID = ADV,                  &
-                                  SRC_ID = ECTM,                 &
-                                  __RC__  )
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME  = (/'AIRDENS'/), &
                                   DST_ID = CHEM,               &
@@ -224,18 +210,20 @@ contains
                                   __RC__  )
 
       CALL MAPL_AddConnectivity ( GC,                          &
-                                  SHORT_NAME = (/ 'CX ',    &
-                                                  'CY ',    &
-                                                  'MFX',    &
-                                                  'MFY' /), &
-                                  DST_ID = ADV,             &
-                                  SRC_ID = ECTM,                &
+                                  SHORT_NAME = (/ 'CX   ',     &
+                                                  'CY   ',     &
+                                                  'MFX  ',     &
+                                                  'MFY  ',     &
+                                                  'PLE0 ',     &
+                                                  'PLE1 ',     &
+                                                  'SPHU0'  /), &
+                                  DST_ID = ADV,                &
+                                  SRC_ID = ECTM,               &
                                   __RC__ )
 
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME = (/ 'AREA  ',    &
-                                                  'PLE   ',    &
-                                                  'DryPLE' /), &
+                                                  'PLE   ' /), &
                                   DST_ID   = CHEM,             &
                                   SRC_ID = ADV,                &
                                   __RC__ )
