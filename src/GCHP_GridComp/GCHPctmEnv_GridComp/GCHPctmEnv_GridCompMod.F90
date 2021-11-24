@@ -352,6 +352,8 @@ module GCHPctmEnv_GridComp
       integer :: num_levels
       integer :: STATUS
 
+      call lgr%debug('Preparing FV3 inputs PLE0, and PLE1')
+
       call MAPL_GetPointer(IMPORT, PS1_IMPORT,    'PS1', RC=STATUS)
       _VERIFY(STATUS)
 
@@ -382,6 +384,8 @@ module GCHPctmEnv_GridComp
       type(ESMF_State), intent(inout) :: EXPORT
       integer, optional, intent(out)  :: RC
       integer :: LM
+
+      call lgr%debug('Preparing FV3 input SPHU0')
 
       ! Locals
       real, pointer, dimension(:,:,:)     :: SPHU1_IMPORT => null()
@@ -431,6 +435,7 @@ module GCHPctmEnv_GridComp
       integer :: is, ie, js, je, lm
       integer :: STATUS
 
+      call lgr%debug('Preparing FV3 input MFX, MFY, CX, and CY')
 
       is = lbound(PLE, 1); ie = ubound(PLE, 1)
       js = lbound(PLE, 2); je = ubound(PLE, 2)
@@ -514,6 +519,8 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       
       if (associated(UpwardsMassFlux)) then
+         call lgr%debug('Calculating diagnostic export UpwardsMassFlux')
+
          ! Get vertical mass flux
          call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
          ! Flip vertical so that GCHP diagnostic is positive="up"
