@@ -34,6 +34,7 @@ target_link_libraries(GEOSChemBuildProperties INTERFACE
     $<LINK_ONLY:MAPL.base>
     $<LINK_ONLY:FVdycoreCubed_GridComp>
     $<LINK_ONLY:HCOI_MAPL_ESMF>
+    $<$<BOOL:${OMP}>:OpenMP::OpenMP_Fortran>
     MPI::MPI_C MPI::MPI_Fortran
 )
 target_include_directories(GEOSChemBuildProperties INTERFACE
