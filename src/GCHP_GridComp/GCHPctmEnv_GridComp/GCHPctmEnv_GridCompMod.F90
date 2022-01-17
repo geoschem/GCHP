@@ -385,12 +385,12 @@ module GCHPctmEnv_GridComp
       integer, optional, intent(out)  :: RC
       integer :: LM
 
-      call lgr%debug('Preparing FV3 input SPHU0')
-
       ! Locals
       real, pointer, dimension(:,:,:)     :: SPHU1_IMPORT => null()
       real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
       integer :: STATUS
+
+      call lgr%debug('Preparing FV3 input SPHU0')
 
       call MAPL_GetPointer(IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS)
       _VERIFY(STATUS)
