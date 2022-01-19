@@ -10,6 +10,7 @@ set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
 
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake 
   ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake/ecbuild/cmake
 )
@@ -40,48 +41,23 @@ endfunction()
 inspect_netcdf_config(CMAKE_PREFIX_PATH "${NC_CONFIG}" "--prefix")
 inspect_netcdf_config(CMAKE_PREFIX_PATH "${NF_CONFIG}" "--prefix")
 
-# Set variables so that include(esma) does what we want
-set(BASEDIR IGNORE CACHE INTERNAL "Path to base libs")
-set(ENABLE_TESTS OFF)
-set(PFUNIT OFF)
-
-# Override REQUIRED-ness of certain packages searched for in FindBaselibs.cmake
-set(GFTL_IS_REQUIRED_ARG
-	"" CACHE INTERNAL
-	"Prevent Baselibs from requiring GFTL as an external library")
-set(GFTL_SHARED_IS_REQUIRED_ARG
-	"" CACHE INTERNAL
-	"Prevent Baselibs from requiring GFTL_SHARED as an external library")
-set(YAFYAML_IS_REQUIRED_ARG
-	"" CACHE INTERNAL
-	"Prevent Baselibs from requiring YAFYAML as an external library")
-set(PFLOGGER_IS_REQUIRED_ARG
-	"" CACHE INTERNAL
-	"Prevent Baselibs from requiring PFLOGGER as an external library")
-set(MKL_IS_REQUIRED_ARG
-	"" CACHE INTERNAL
-	"Prevent Baselibs from requiring MKL as an external library")
-set(FLAP_IS_REQUIRED_ARG
-	"" CACHE INTERNAL
-	"Prevent Baselibs from requiring FLAG as an external library")
-
-# Disable find packages that aren't required for gchp_ctm
-set(CMAKE_DISABLE_FIND_PACKAGE_MKL          TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_FLAP         TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_GFTL         TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_GFTL_SHARED  TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_YAFYAML      TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_PFLOGGER     TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_FARGPARSE    TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_LATEX        TRUE)
-set(CMAKE_DISABLE_FIND_PACKAGE_F2PY         TRUE)
-
 # Add gchp_ctm's expected environment variables to CMAKE_PREFIX_PATH
 list(APPEND CMAKE_PREFIX_PATH 
   $ENV{ESMF_ROOT} $ENV{ESMF_ROOT}/DEFAULTINSTALLDIR
 )
+
+set(ECBUILD_LOG_LEVEL ERROR)
+
 # Include ESMA macros
 include(esma)
+
+# Add NetCDF::NetCDF_Fortran alias (this is required by some ESMA_cmake things)
+add_library(NetCDF::NetCDF_Fortran STATIC IMPORTED)
+set_target_properties(NetCDF::NetCDF_Fortran PROPERTIES
+    IMPORTED_LOCATION "${NETCDF_F_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${NETCDF_C_INCLUDE_DIR};${NETCDF_F77_INCLUDE_DIR};${NETCDF_F90_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES  "${NETCDF_F_LIBRARY};${NETCDF_C_LIBRARY}"
+)
 
 # Declare ecbuild project
 ecbuild_declare_project()
@@ -93,13 +69,15 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   list(APPEND CMAKE_Fortran_FLAGS "-ffree-line-length-none")
 endif()
 
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
+
 # Add the directory with gchp_ctm's source code
 add_subdirectory(src)
 
 # Exclude the following libraries from the "all" target 
 set_target_properties(
   MAPL_cfio_r8                    GMAO_pilgrim
-  NSIDC-OSTIA_SST-ICE_blend       LANL_cice       GEOS_PertShared
+  NSIDC-OSTIA_SST-ICE_blend       GEOS_PertShared
   GEOS_PertSvecs                  Tapenade        GMAO_psas
   GMAO_transf                     GMAO_stoch      arpack
   lanso                           planso          post
@@ -110,8 +88,8 @@ set_target_properties(
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
 
-target_compile_definitions(Baselibs INTERFACE 
-    $<$<BOOL:${ADJOINT}>:ADJOINT>
-    $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
-    ""
-)
+#target_compile_definitions(Baselibs INTERFACE 
+#    $<$<BOOL:${ADJOINT}>:ADJOINT>
+#    $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
+#    ""
+#)
