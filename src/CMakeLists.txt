@@ -10,12 +10,15 @@ endif()
 
 # Add yaFyaml
 add_subdirectory(yaFyaml EXCLUDE_FROM_ALL)
+set(YAFYAML_DIR ${YAFYAML_SOURCE_DIR})
+message(STATUS "${YAFYAML_DIR}")
 
 # Add pFlogger
 add_subdirectory(pFlogger EXCLUDE_FROM_ALL)
 
 # Add MAPL
 set(LATEX_FOUND FALSE) # Disable LaTeX support (to avoid dependencies like ImageMagick)
+set(BUILD_WITH_FLAP OFF CACHE BOOL "Disable FLAP for GCHP build")
 add_subdirectory(MAPL EXCLUDE_FROM_ALL)
 
 # Add GMAO_Shared
