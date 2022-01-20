@@ -48,16 +48,11 @@ list(APPEND CMAKE_PREFIX_PATH
 
 set(ECBUILD_LOG_LEVEL ERROR)
 
+find_package(NetCDF REQUIRED)
+find_package(ESMF REQUIRED)
+
 # Include ESMA macros
 include(esma)
-
-# Add NetCDF::NetCDF_Fortran alias (this is required by some ESMA_cmake things)
-add_library(NetCDF::NetCDF_Fortran STATIC IMPORTED)
-set_target_properties(NetCDF::NetCDF_Fortran PROPERTIES
-    IMPORTED_LOCATION "${NETCDF_F_LIBRARY}"
-    INTERFACE_INCLUDE_DIRECTORIES "${NETCDF_C_INCLUDE_DIR};${NETCDF_F77_INCLUDE_DIR};${NETCDF_F90_INCLUDE_DIR}"
-    INTERFACE_LINK_LIBRARIES  "${NETCDF_F_LIBRARY};${NETCDF_C_LIBRARY}"
-)
 
 # Declare ecbuild project
 ecbuild_declare_project()
