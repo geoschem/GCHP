@@ -69,7 +69,8 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
 # Add the directory with gchp_ctm's source code
 add_subdirectory(src)
 
-# Exclude the following libraries from the "all" target 
+# Fix the "all" target so it only contains GCHP: add EXCLUDE_FROM_ALL=TRUE to every
+# GMAO target. 
 set_target_properties(
   MAPL_cfio_r8                    GMAO_pilgrim
   NSIDC-OSTIA_SST-ICE_blend       GEOS_PertShared
@@ -79,9 +80,16 @@ set_target_properties(
   post_nompi                      nc_diag_write   nc_diag_res
   nc_diag_read                    nc_diag_cat     parpack
   putil                           util            GMAO_gfio_r4
-  
+  MAPL.generic MAPL.oomph MAPL MAPL.gridcomps MAPL.cap MAPL.history
+  MAPL.orbit MAPL.ExtData MAPL.griddedio GEOS_Shared
+  GMAO_hermes CICE4 GMAO_pyobs GMAO_gfio_r8 FVdycoreCubed_GridComp
+  fvdycore
+  MAPL_cfio_r4 MAPL.pfio MAPL.profiler MAPL.shared MAPL.constants
+  MAPL.base GMAO_mpeu GMAO_eu mpi0 fms_r8
+
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
+
 
 #target_compile_definitions(Baselibs INTERFACE 
 #    $<$<BOOL:${ADJOINT}>:ADJOINT>
