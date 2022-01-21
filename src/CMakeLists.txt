@@ -19,6 +19,7 @@ add_subdirectory(pFlogger EXCLUDE_FROM_ALL)
 # Add MAPL
 set(LATEX_FOUND FALSE) # Disable LaTeX support (to avoid dependencies like ImageMagick)
 set(BUILD_WITH_FLAP OFF CACHE BOOL "Disable FLAP for GCHP build")
+set(BUILD_SHARED_MAPL OFF CACHE BOOL "Build MAPL as static libraries")
 add_subdirectory(MAPL EXCLUDE_FROM_ALL)
 
 # Add GMAO_Shared
