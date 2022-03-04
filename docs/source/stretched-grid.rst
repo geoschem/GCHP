@@ -154,3 +154,17 @@ configuration files.
 
    $ ./runConfig.sh
 
+.. warning::
+   
+   For stretched-grid simulation with GCHP version 13.4.0 and earlier, the 
+   time steps for chemistry and transport needs to be specified manually. You can do this
+   by replacing the if/else block that sets the time steps in :file:`runConfig.sh` with
+
+   .. code-block::
+      
+      ChemEmiss_Timestep_sec=600
+      TransConv_Timestep_sec=300
+      TransConv_Timestep_HHMMSS=000500
+   
+   if your effective resolution is greater than or equal to C180-equivalent.
+   
