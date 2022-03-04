@@ -2,49 +2,99 @@
 Downloading Input Data
 ======================
 
-Input data for GEOS-Chem is available from the following FTP servers:
+Input data for GEOS-Chem is available at http://geoschemdata.wustl.edu/ExtData/.
 
-* http://geoschemdata.wustl.edu/ExtData/ (preferred)
-* http://geoschemdata.computecanada.ca/ExtData/
-* http://ftp.as.harvard.edu/gcgrid/data/ExtData/
+The bashdatacatalog is the recommended for downloading and managing your GEOS-Chem input data. Refer to 
+the bashdatacatalog's `Instructions for GEOS-Chem Users <https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_.
+Below is a brief summary of using the bashdatacatalog for aquiring GCHP input data.
 
-Notably, you will need four types of input data to run GCHP:
+Install the bashdatacatalog
+---------------------------
 
-Restart file (initial conditions)
-   These are initial conditions for the simulation. You can find some reasonable default initial conditions
-   in the :file:`GEOSCHEM_RESTARTS/` directory. Default run directories have symlinks to these default restart files.
-
-Meteorological data
-   GCHP is driven by meteorological data from GEOS-FP or MERRA2. The GEOS-FP data is in :file:`GEOS_0.5x0.625/MERRA2/`
-   and the MERRA2 data is in :file:`GEOS_0.25x0.3125/GEOS_FP/`. Default run directories have a symlink 
-   (:file:`./MetDir`) to the local copy of this data.
-
-Emissions data
-   Emissions data is in the :file:`HEMCO/` directory. In this directory are :file:`INVENTORY/vYYYY-MM/` subdirectories, where
-   :literal:`INVENTORY` is the name of the inventory, and :literal:`vYYYY-MM` is the date of the inventory version.
-   Default run directories have a symlink (:file:`./HcoDir`) to the local copy of this data.
-
-Chemistry inputs
-   These are miscellaneous data files for GEOS-Chem. They are in the :file:`CHEM_INPUTS/` directory.
-   Default run directories have a symlink (:file:`./ChemDir`) to the local copy of this data.
-
-You can get a url list for the input data for a simulation by running (in your run directory)
+Install the bashdatacatalog with the following command. Follow the prompts and restart your console.
 
 .. code-block:: console
-   
-   $ ./utils/listInputDataFiles 20190101 20190108 --wget-urls > urls.txt
-   ... <answer prompts> ...
 
-Replace :literal:`20190101` with your desired start date and :literal:`20190108` with your desired end date.
-For climatological data you will be asked to select a year. If the climatology covers your simulation period, you can
-leave it blank (hit enter). If the climatology doesn't cover your simulation period, pick the closest year. Note that
-this script does not include restart files, and it's a "best effort" estimation of the input data for your simulation.
-At runtime you might encounter errors due from missing data files (download these yourself).
+   gcuser:~$ bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/install.sh)
 
-You can download the files in :file:`urls.txt` like so (replace :file:`/ExtData` with the path to your local copy of GEOS-Chem input data)
+.. note:: You can rerun this command to upgrade to the latest version.
+
+Download Data Catalogs
+----------------------
+
+Catalog files can be downloaded from http://geoschemdata.wustl.edu/ExtData/DataCatalogs/.
+
+The catalog files define the input data collections that GEOS-Chem needs. There are four catalogs files:
+
+* MeteorologicalInputs.csv -- Meteorological input data collections
+* ChemistryInputs.csv -- Chemistry input data collections
+* EmissionsInputs.csv -- Emissions input data collections
+* InitialConditions.csv -- Initial conditions input data collections (restart files)
+
+The latter 3 are version specific, so you need to download the catalogs for the version you intend to use (you can have catalogs
+for multiple versions at the same time).
+
+Create a directory to house your catalog files in the top-level of your GEOS-Chem input data directory (commonly known as "ExtData"). 
+You should create subdirectories for version-specific catalog files.
 
 .. code-block:: console
-   
-   $ cp urls.txt /ExtData/urls.txt  # copy url list to local /ExtData directory
-   $ cd /ExtData                    # cd to root of local /ExtData directory
-   $ wget -i urls.txt -cxnH --cut-dirs=1   # download all the data
+
+   gcuser:~$ cd /ExtData  # navigate to GEOS-Chem data
+   gcuser:/ExtData$ mkdir InputDataCatalogs       # new directory for catalog files
+   gcuser:/ExtData$ mkdir InputDataCatalogs/13.3  # " for 13.3-specific catalogs (example)
+
+Next, download the catalog for the appropriate version:
+
+.. code-block:: console
+
+   gcuser:/ExtData$ cd InputDataCatalogs
+   gcuser:/ExtData/InputDataCatalogs$ wget http://geoschemdata.wustl.edu/ExtData/DataCatalogs/MeteorologicalInputs.csv
+   gcuser:/ExtData/InputDataCatalogs$ cd 13.3
+   gcuser:/ExtData/InputDataCatalogs/13.3$ wget http://geoschemdata.wustl.edu/ExtData/DataCatalogs/13.3/ChemistryInputs.csv
+   gcuser:/ExtData/InputDataCatalogs/13.3$ wget http://geoschemdata.wustl.edu/ExtData/DataCatalogs/13.3/EmissionsInputs.csv
+   gcuser:/ExtData/InputDataCatalogs/13.3$ wget http://geoschemdata.wustl.edu/ExtData/DataCatalogs/13.3/InitialConditions.csv
+
+
+Fetching Metadata and Downloading Input Data
+--------------------------------------------
+
+.. important:: You should always run bashdatacatalog commands from the top-level of your GEOS-Chem data directory (the directory with ``HEMCO/``, ``CHEM_INPUTS/``, etc.).
+
+Before you can run ``bashdatacatalog-list`` commands, you need to fetch the metadata of each collection. 
+This is done with the command ``bashdatacatalog-fetch`` whose arguments are catalog files:
+
+.. code-block:: console
+
+   gcuser:~$ cd /ExtData  # IMPORTANT: navigate to top-level of GEOS-Chem input data
+   gcuser:/ExtData$ bashdatacatalog-fetch InputDataCatalogs/*.csv InputDataCatalogs/**/*.csv
+
+Fetching downloads the latest metadata for every active collection in your catalogs. 
+You should run ``bashdatacatalog-fetch`` whenever you add or modify a catalog, as well as periodically so you get updates to your collections
+(e.g., new meteorological data that is processed and added to the meteorological collections).
+
+Now that you have fetched, you can run ``bashdatacatalog-list`` commands. You can tailor this command the generate various types of file lists using its command-line arguments. 
+See ``bashdatacatalog-list -h`` for details. A common use case is generating a list of required input files that missing in your local file system.
+
+.. code-block:: console
+
+   gcuser:/ExtData$ bashdatacatalog-list -am -r 2018-06-30,2018-08-01 InputDataCatalogs/*.csv InputDataCatalogs/**/*.csv
+
+
+Here, ``-a`` means "all" files (temporal files and static files), ``-m`` means "missing" (list files that are absent locally), ``-r START,END`` is the date-range of your simulation 
+(you should add an extra day before/after your simulation), and the remaining arguments are the paths to your catalog files.
+
+The command can be easily modified so that it generates a list of missing files that is compatible with xargs curl to download all the files you are missing:
+
+.. code-block:: console
+
+   gcuser:/ExtData$ bashdatacatalog-list -am -r 2018-06-30,2018-08-01 -f xargs-curl InputDataCatalogs/*.csv InputDataCatalogs/**/*.csv | xargs curl
+
+Here, ``-f xargs-curl`` means the output file list should be formatted for piping into xargs curl.
+
+
+See Also
+--------
+
+* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
+* `bashdatacatalog - List of useful commands <https://github.com/LiamBindle/bashdatacatalog/wiki/3.-Useful-Commands>`_
+* `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs/>`_
