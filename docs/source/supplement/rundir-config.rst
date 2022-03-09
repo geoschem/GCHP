@@ -167,6 +167,11 @@ If you alternatively comment out the emissions in :file:`ExtData.rc` but not :fi
 Another option to skip file read for certain files is to replace the file path in :file:`ExtData.rc` with :literal:`/dev/null`. 
 However, if you want to turn these inputs back on at a later time you should preserve the original path by commenting out the original line.
 
+Change input meteorology
+""""""""""""""""""""""""
+
+Input meteorology source and grid resolution are set in config file :file:`ExtData.rc` during run directory creation. You will be prompted to choose between MERRA2 and GEOS-FP, and grid resolution is automatically set to the native grid lat-lon resolution. If you would like to change the meteorology inputs, for example using a different grid resolution, then you would need to change the met-field entries in run directory file :file:`ExtData.rc` after creating a run directory. Simply open the file, search for the meteorology section, and edit file paths as needed. Please note that while MAPL will automatically regrid met-fields to the run resolution you specify in :file:`runConfig.sh`, you will achieve best performance using native resolution inputs. 
+
 Add new emissions files
 """""""""""""""""""""""
 
@@ -281,3 +286,39 @@ All of them involve sending additional print statements to the log files.
 None of these options require recompiling. 
 Be aware that all of them will slow down your simulation. 
 Be sure to set them back to the default values after you are finished debugging.
+
+Inspecting memory
+"""""""""""""""""
+
+Memory statistics are printed to the GCHP log each model timestep. This includes percentage of memory committed, percentage of memory used, total used memory (MB), and total swap memory (MB). This information is always printed and is not configurable from the run directory. Additional memory prints may be enabled by changing the value set for variable :literal:`MEMORY_DEBUG_LEVEL` in run directory file :literal:`GCHP.rc`. Setting this to a value greater than zero will print out total used memory and swap memory before and after run methods for gridded components GCHPctmEnv, FV3 advection, and GEOS-Chem. Within GEOS-Chem, total and swap memory will also be printed before and after subroutines to run GEOS-Chem, perform chemistry, and apply emissions. 
+
+To inspect the memory usage of GCHP you can grep the output log file for string :literal:`Date:` and :literal:`Mem/Swap`. For example, :literal:`grep "Date:\|Mem/Swap" gchp.log`. The end of the line containing date and time shows memory committed and used. For example, :literal:`42.8% :  40.4% Mem Comm:Used` indicates 42.8% of memory available is committed and 40.4% of memory is actually used. The total memory used is in the next line, for example :literal:`Mem/Swap Used (MB) at MAPL_Cap:TimeLoop=  1.104E+05  0.000E+00`. The first value is the total memory used in MB, and the second line is swap (virtual) memory used. In this example GCHP is using around 110 gigabytes of memory with zero swap.
+
+These memory statistics are useful for assessing how much memory GCHP is using and whether the memory usage grows over time. If the memory usage goes up throughout a run then it is an indication of a memory leak in the model. The memory debugging option is useful for isolating the memory leak by determining if there if it is in GEOS-Chem or advection.
+
+
+Configuring MAPL Timers
+"""""""""""""""""""""""
+
+Timing of GCHP components is done using MAPL timers. A summary of all timing is printed to the GCHP log at the end of a run. Configuring timers from the run directory is not currently possible but will be an option in a future version. Until then a complete summary of timing will always be printed to the end of the log for a successful GCHP run. You can use this information to help diagnose timing issues in the model, such as extra slow file read due to system problems.
+
+The timing output written by MAPL is somewhat cryptic but you can use this guide to decipher it. Timing is broken in up into several sections.
+
+1. :literal:`GCHPctmEnv`, the environment component that facilitates exchange between GEOS-Chem and FV3 advection
+2. :literal:`GCHPchem`, the GEOS-Chem component containing chemistry, mixing, convection, emissions and deposition
+3. :literal:`DYNAMICS`, the FV3 advection component
+4. :literal:`GCHP`, the parent component of GCHPctmEnv, GCHPchem, and DYNAMICS, and sibling component to HIST and EXTDATA
+5. :literal:`HIST`, the MAPL History component for writing diagnostics
+6. :literal:`EXTDATA`, the MAPL ExtData component for processing inputs, including reading and regridding
+7. Total model and MPI communicator run times broken into user, system, and total times
+8. Full summary of all major model components, including core routines SetService, Initialize, Run, and Finalize
+9. Model throughput in units of days per day
+
+Each of the six gridded component sections contains two sub-sections. The first subsection shows timing statistics for core gridded component processes and their child functions. These statistics include number of execution cycles as well as inclusive and exclusive total time and percent time. :literal:`Inclusive` refers to the time spent in that function including called child functions. :literal:`Exclusive` refers to the time spent in that function excluding called child functions.
+
+The second subsection shows from left to right minimum, mean, and maximum processor times for the gridded component and its MAPL timers. If you are interested in timing for a specific part of GEOS-Chem then use the timers in this section for :literal:`GCHPchem`, specifically the ones that start with prefix :literal:`GC_`. For chemistry you should look at timer :literal:`GC_CHEM` which includes the calls to compute overhead ozone, set H2O, and calling the chemistry driver routine.
+
+Beware that the timers can be difficult to interpret because the component times do not always add up to the total run time. This is likely due to load imbalance where processors wait (timed in MAPL) while other processors complete (timed in other processes). You can get a sense of how large the wait time is by comparing the :literal:`Exclusive` time to the :literal:`Inclusive` time. If the former is smaller than the latter then the bulk of time is spent in a sub-process and the :literal:`Exclusive` time may be at least partially due to wait time. 
+
+If you are interested in changing the definitions of GCHP timers, or adding a new one, you will need to edit the source code. Toggling :literal:`GC_` timers on and off are mostly in file :file:`geos-chem/Interfaces/GCHP/gchp_chunk_mod.F90`, but also in :file:`geos-chem/Interfaces/GCHP/Chem_GridCompMod.F90`, using MAPL subroutines :literal:`MAPL_TimerOn` and :file:`MAPL_TimerOff`. When in doubt about what a timer is measuring it is best to check the source code to see what calls it is wrapping.
+
