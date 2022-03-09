@@ -64,7 +64,7 @@ jobs:
             --output text \
             --query 'stateMachines[?name==`benchmarks-cloud-workflow`].stateMachineArn | [0]')
           aws stepfunctions start-execution \
-            --name ${STEP_FN_NAME} \
+            --name "gchp-${STEP_FN_NAME}" \
             --state-machine-arn ${WORKFLOW_ARN} \
             --input "{\"event\": {"`
                 `"\"nameSuffix\": \"${GITHUB_SHA_SHORT}\","`
