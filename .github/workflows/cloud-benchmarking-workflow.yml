@@ -1,0 +1,80 @@
+# Release pipeline:
+# 
+# This pipeline triggers the cloud-based benchmarking workflow
+# The benchmarking workflow infrastructure code can be found 
+# in the following repository:
+# https://github.com/geoschem/gc-cloud-infrastructure
+#
+# This pipeline is triggered by pushes, pull requests, and tags in dev
+#
+# Notes:
+#   - This workflow requires aws credentials necessary to
+#     trigger the benchmarking step function via the aws cli. 
+#     The credentials need step function permissions and can 
+#     be added to the repo as an action secret called 
+#     AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID.
+
+name: cloud_benchmarking
+on:
+  push:
+    branches:
+      - dev
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  trigger_step_function:
+    runs-on: ubuntu-latest # aws cli comes pre-installed
+    steps:
+      # for now both use Spot instances -- may need to update to use on demand
+      - name: Set Initial Variables
+        # By default we use 1Day benchmarks
+        run: |
+          echo "TIME_PERIOD=1Hr" >> $GITHUB_ENV
+          echo "GITHUB_SHA_SHORT=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+          echo "STEP_FN_NAME=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+      # conditionally overwrite variables if a tag was the triggering event
+      - name: Reset Initial Variables for pull request
+        run: |
+          echo "GITHUB_SHA_SHORT=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
+          echo "STEP_FN_NAME=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request'
+      - name: Reset Variables For Tags
+        # We do a 1Month benchmark for tags
+        run: |
+          echo "TIME_PERIOD=1Mon" >> $GITHUB_ENV
+          echo "STEP_FN_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        if: startsWith(github.ref, 'refs/tags/')
+      - name: Trigger Step Function
+        env:
+          # Set config options for aws cli
+          NUM_CORES: 62
+          EC2_TYPE: SPOT # SPOT or DEMAND
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_OUTPUT: json
+
+        # Note the step function input is sent in as a single json string
+        run: |
+          export WORKFLOW_ARN=$(aws stepfunctions list-state-machines \
+            --output text \
+            --query 'stateMachines[?name==`benchmarks-cloud-workflow`].stateMachineArn | [0]')
+          aws stepfunctions start-execution \
+            --name ${STEP_FN_NAME} \
+            --state-machine-arn ${WORKFLOW_ARN} \
+            --input "{\"event\": {"`
+                `"\"nameSuffix\": \"${GITHUB_SHA_SHORT}\","`
+                `"\"simulationType\": \"gchp\","`
+                `"\"runType\": \"${EC2_TYPE}\","`
+                `"\"timePeriod\": \"${TIME_PERIOD}\","`
+                `"\"tag\": \"${STEP_FN_NAME}\","`
+                `"\"numCores\": \"${NUM_CORES}\","`
+                `"\"memory\": \"60000\","` 
+                `"\"resolution\": \"24\","`
+                `"\"sendEmailNotification\": \"true\""`
+              `"}}"
+      
