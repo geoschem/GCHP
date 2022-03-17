@@ -89,7 +89,7 @@ The next step is building the GCHP dependencies. This will be done a :command:`s
 
 To install the GCHP dependencies, choose one of the following for :literal:`<install-spec>`:
 
-* :literal:`esmf%intel` - **(Recommended)** Default GCHP dependencies, using Intel compilers and Intel MPI.
+* :literal:`esmf%intel ^intel-oneapi-mpi` - **(Recommended)** Default GCHP dependencies, using Intel compilers and Intel MPI.
 * :literal:`esmf%intel ^openmpi` - Default GCHP dependencies, using Intel compilers and OpenMPI.
 
 For :literal:`<scope-arguments>`, you should always include :literal:`-C GCHP/spack`. This configures settings for the
@@ -106,7 +106,7 @@ If no subdirectories are relevant to you, just use :literal:`-C GCHP/spack`.
    .. code-block:: console
    
       $ scope_args="-C GCHP/spack -C GCHP/spack/aws-parallelcluster-3.0.1"  # (modifiable) see description of <scope-arguments>
-      $ install_spec="esmf%intel"  # (modifiable) see description of <install-spec>
+      $ install_spec="esmf%intel ^intel-oneapi-mpi"  # (modifiable) see description of <install-spec>
       $ spack ${scope_args} spec -I ${install_spec}
       Input spec
       --------------------------------
@@ -136,7 +136,7 @@ The following commands build the GCHP dependencies. Note that this may take seve
 .. code-block:: console
 
    $ scope_args="-C GCHP/spack -C GCHP/spack/aws-parallelcluster-3.0.1" # (modifiable) see description of <scope-arguments>
-   $ install_spec="esmf%intel"  # (modifiable) see description of <install-spec>
+   $ install_spec="esmf%intel ^intel-oneapi-mpi"  # (modifiable) see description of <install-spec>
    $ spack ${scope_args} install ${install_spec}
 
 
@@ -151,7 +151,8 @@ The following commands generate a script called :literal:`geoschem_deps-YYYY.MM`
 
    $ load_script_name="geoschem_deps-$(date +%Y.%m)"  # (modifiable) rename if you want to
    $ spack ${scope_args} module tcl refresh -y  # regenerate all the modulefiles
-   $ spack ${scope_args} module tcl loads -r -p $(pwd)/spack/share/spack/modules/linux-*-x86_64/ intel-oneapi-compilers cmake ${install_spec} > ${load_script_name}
+   $ spack ${scope_args} module tcl loads -r -p $(pwd)/spack/share/spack/modules/linux-*-x86_64/ intel-oneapi-compilers cmake > ${load_script_name}
+   $ spack ${scope_args} module tcl loads -r -p $(pwd)/spack/share/spack/modules/linux-*-x86_64/ ${install_spec} >> ${load_script_name}
 
 For me, this generated a load script named :file:`geoschem_deps-2022.03`.
 In terminals or scripts you can load the GCHP dependencies by running:
