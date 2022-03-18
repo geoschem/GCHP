@@ -23,20 +23,7 @@ Checkout the GEOS-Chem version that you want to use:
 
 .. code-block:: console
 
-   gcuser:~/GCHP$ git checkout 13.0.0-beta.1
-
-.. note::
-   Version 13 is not officially released yet. Until then, the most recent
-   commit to :literal:`main` is the most stable version of GCHP. Therefore,
-   we recommend you checkout :literal:`main`, rather than a version
-   like :literal:`13.0.0-beta.1`. E.g.:
-
-   .. code-block:: console
-
-      $ git checkout main   # recommended until version 13 is officially released
-
-   Once version 13 is released, we will resume recommending users checkout
-   a specific version.
+   gcuser:~/GCHP$ git checkout 13.3.4
 
 Initialize and update all the submodules:
 
