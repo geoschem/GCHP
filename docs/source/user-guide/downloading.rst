@@ -1,4 +1,4 @@
-
+.. _downloading_gchp:
 
 Downloading GCHP
 ================

@@ -1,3 +1,4 @@
+.. _downloading_input_data:
 
 Downloading Input Data
 ======================

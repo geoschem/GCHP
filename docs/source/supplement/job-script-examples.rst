@@ -1,3 +1,4 @@
+.. _example_job_scripts:
 
 Example Job Scripts
 ===================
@@ -37,4 +38,3 @@ simplicity, and build your own automated functionality with time.
 
 * Auto-requeuing C360 simulation (Compute1): :download:`c360_requeuing.sh <../../../run/runScriptSamples/operational_examples/wustl_gcst/c360_requeuing.sh>`
 * 1 month benchmark simulation (Cannon): :download:`gchp.benchmark.run <../../../run/runScriptSamples/operational_examples/harvard_gcst/gchp.benchmark.run>`
-
