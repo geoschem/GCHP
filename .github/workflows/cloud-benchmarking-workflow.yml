@@ -73,7 +73,7 @@ jobs:
                 `"\"timePeriod\": \"${TIME_PERIOD}\","`
                 `"\"tag\": \"${STEP_FN_NAME}\","`
                 `"\"numCores\": \"${NUM_CORES}\","`
-                `"\"memory\": \"60000\","` 
+                `"\"memory\": \"80000\","` 
                 `"\"resolution\": \"24\","`
                 `"\"sendEmailNotification\": \"true\""`
               `"}}"
