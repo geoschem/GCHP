@@ -1,11 +1,11 @@
 # Release pipeline:
 # 
 # This pipeline triggers the cloud-based benchmarking workflow
-# The benchmarking workflow infrastructure code can be found 
-# in the following repository:
+# upon pushes to the dev environment. The benchmarking workflow 
+# infrastructure code can be found in the following repository:
 # https://github.com/geoschem/gc-cloud-infrastructure
 #
-# This pipeline is triggered by pushes, pull requests, and tags in dev
+# This pipeline is triggered by pushes to dev
 #
 # Notes:
 #   - This workflow requires aws credentials necessary to
@@ -30,24 +30,38 @@ jobs:
     runs-on: ubuntu-latest # aws cli comes pre-installed
     steps:
       # for now both use Spot instances -- may need to update to use on demand
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Set Initial Variables
-        # By default we use 1Day benchmarks
+        # By default we use 1Hr benchmarks
         run: |
           echo "TIME_PERIOD=1Hr" >> $GITHUB_ENV
+          echo "RESOLUTION=24" >> $GITHUB_ENV
           echo "GITHUB_SHA_SHORT=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
-          echo "STEP_FN_NAME=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+          echo "COMMIT_NAME=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
       # conditionally overwrite variables if a tag was the triggering event
       - name: Reset Initial Variables for pull request
         run: |
           echo "GITHUB_SHA_SHORT=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
-          echo "STEP_FN_NAME=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
+          echo "COMMIT_NAME=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
         if: github.event_name == 'pull_request'
       - name: Reset Variables For Tags
         # We do a 1Month benchmark for tags
         run: |
           echo "TIME_PERIOD=1Mon" >> $GITHUB_ENV
-          echo "STEP_FN_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "COMMIT_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
         if: startsWith(github.ref, 'refs/tags/')
+      - name: Generate Primary Key
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_OUTPUT: json
+        run: |
+          cd ${{ github.workspace }}
+          echo "DEV_PRIMARY_KEY=gchp-${RESOLUTION}-${TIME_PERIOD}-`git describe --tags`" >> $GITHUB_ENV
+          echo "REF_PRIMARY_KEY=`./.github/workflows/findRefKey.sh ${RESOLUTION} ${TIME_PERIOD} ${GITHUB_SHA}`" >> $GITHUB_ENV
       - name: Trigger Step Function
         env:
           # Set config options for aws cli
@@ -60,21 +74,25 @@ jobs:
 
         # Note the step function input is sent in as a single json string
         run: |
-          export WORKFLOW_ARN=$(aws stepfunctions list-state-machines \
-            --output text \
-            --query 'stateMachines[?name==`benchmarks-cloud-workflow`].stateMachineArn | [0]')
+          export WORKFLOW_ARN=`aws stepfunctions list-state-machines --output json \
+            | jq -r '.stateMachines[] | select(.name == "benchmarks-cloud-workflow").stateMachineArn'`
           aws stepfunctions start-execution \
-            --name "gchp-${STEP_FN_NAME}" \
+            --name ${DEV_PRIMARY_KEY} \
             --state-machine-arn ${WORKFLOW_ARN} \
             --input "{\"event\": {"`
                 `"\"nameSuffix\": \"${GITHUB_SHA_SHORT}\","`
+                `"\"primaryKey\": \"${DEV_PRIMARY_KEY}\","`
                 `"\"simulationType\": \"gchp\","`
                 `"\"runType\": \"${EC2_TYPE}\","`
                 `"\"timePeriod\": \"${TIME_PERIOD}\","`
-                `"\"tag\": \"${STEP_FN_NAME}\","`
+                `"\"tag\": \"${COMMIT_NAME}\","`
                 `"\"numCores\": \"${NUM_CORES}\","`
                 `"\"memory\": \"80000\","` 
-                `"\"resolution\": \"24\","`
+                `"\"resolution\": \"${RESOLUTION}\","`
                 `"\"sendEmailNotification\": \"true\""`
+              `"},"`
+              `"\"plotting\": {"`
+                `"\"devPrimaryKey\": \"${DEV_PRIMARY_KEY}\","`
+                `"\"refPrimaryKey\": \"${REF_PRIMARY_KEY}\""`
               `"}}"
       
