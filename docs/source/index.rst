@@ -67,6 +67,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    supplement/job-script-examples.rst
    supplement/building-gchp-dependencies.rst
    supplement/setting-up-aws-parallelcluster.rst
+   supplement/caching-input-data.rst
    supplement/containers.rst
    supplement/plotting-output.rst
    stretched-grid.rst
