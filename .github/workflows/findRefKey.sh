@@ -11,7 +11,7 @@
                
 function find_previous_tag() {
     new_tag=`$describe_command $commit`
-    primary_key="${MODEL_PREFIX}-${resolution}-${time_period}-${new_tag}"
+    primary_key="${MODEL_PREFIX}-c${resolution}-${time_period}-${new_tag}"
 }
 
 # Constants
