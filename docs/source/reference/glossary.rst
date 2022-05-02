@@ -18,6 +18,25 @@ Terminology
 
    compile
       Generating an executable program from source code (which is in a plain-text format).
+   
+   dependencies
+      The software libraries that are needed to compile GCHP. These include HDF5, NetCDF, and ESMF. 
+      See :ref:`software_requirements` for a complete list.
+
+   environment
+      The software packages and software configuration that are active in your current :term:`terminal` or :term:`script`.
+      In Linux, the :file:`${HOME}/.bashrc` script performs automatic configuration when your terminal starts. You can
+      manually configure your environment by running commands like :command:`source path_to_a_script` or with tools
+      like TCL or LMod for modulefiles. Software containers are effectively a prepackaged operating system + software + environment.
+   
+   software environment
+      See :term:`environment`.
+
+   terminal
+      A command-line.
+
+   script
+      A file that scripts a sequence of commands. Typically a bash that is written to execute a sequence of commands.
 
    checkpoint file
       See :term:`restart file`.
@@ -49,3 +68,5 @@ Terminology
 
    HISTORY
       The MAPL :term:`gridded component` that handles model output. All GCHP output diagnostics are facilitated by HISTORY.
+   
+   

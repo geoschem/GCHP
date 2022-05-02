@@ -10,6 +10,8 @@
 .. note::
    Another resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_.
 
+.. _building_gchp:
+
 Compiling GCHP
 ==============
 

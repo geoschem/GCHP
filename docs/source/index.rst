@@ -12,14 +12,6 @@ GEOS-Chem High Performance
    <a href="https://github.com/geoschem/GCHP/releases"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?include_prereleases&label=Latest%20Pre-Release"></a>
    </p>
 
-.. important:: This is a prerelease of the GEOS-Chem High Performance user guide.
-   These pages are the most up-to-date and accurate instructions for GCHP, but they
-   are still a work in progress. 
-   
-   Contributions (e.g., suggestions, edits, revisions) would be greatly appreciated. See
-   :ref:`editing this guide <editing_this_user_guide>` and our :doc:`contributing guidelines <reference/CONTRIBUTING>`. 
-   If you find a something hard to understand---let us know!
-
 The `GEOS--Chem model <http://acmg.seas.harvard.edu/geos/>`_ is a global 3-D model of atmospheric
 composition driven by assimilated meteorological observations from the Goddard Earth Observing
 System (GEOS) of the `NASA Global Modeling and Assimilation Office <http://gmao.gsfc.nasa.gov/>`_.
@@ -73,7 +65,9 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    supplement/rundir-config.rst
    supplement/config-files.rst
    supplement/job-script-examples.rst
-   supplement/spack.rst
+   supplement/building-gchp-dependencies.rst
+   supplement/setting-up-aws-parallelcluster.rst
+   supplement/caching-input-data.rst
    supplement/containers.rst
    supplement/plotting-output.rst
    stretched-grid.rst
@@ -89,7 +83,6 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    :maxdepth: 1
    :caption: Help & Reference
 
-   reference/known-bugs.rst
    reference/SUPPORT.md
    reference/CONTRIBUTING.md
    geos-chem-shared-docs/editing_these_docs.rst

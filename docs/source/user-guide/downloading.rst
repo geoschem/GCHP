@@ -1,4 +1,4 @@
-
+.. _downloading_gchp:
 
 Downloading GCHP
 ================
@@ -29,7 +29,7 @@ Checkout the version that you want to work with, and update the submodules:
 
 .. code-block:: console
 
-   gcuser:~/Code.GCHP$ git checkout 13.0.2
+   gcuser:~/Code.GCHP$ git checkout 13.3.4
    gcuser:~/Code.GCHP$ git submodule update --init --recursive
 
 --------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ Run :command:`git status` to check that there are no differences:
 .. code-block:: console
 
    gcuser:~/Code.GCHP$ git status
-   HEAD detached at 13.0.2
+   HEAD detached at 13.3.4
    nothing to commit, working tree clean
    gcuser:~/Code.GCHP$
 
