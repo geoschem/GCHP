@@ -53,7 +53,7 @@ jobs:
           SPACK_DIR=$TEMP_DIR/spack
           
           # Checkout spack/spack:develop
-          git clone https://github.com/spack/spack.git $SPACK_DIR
+          git clone -c feature.manyFiles=true https://github.com/spack/spack.git $SPACK_DIR
           cd $SPACK_DIR
           git checkout develop
           . share/spack/setup-env.sh
