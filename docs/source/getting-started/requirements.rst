@@ -6,7 +6,7 @@ System Requirements
 Software Requirements
 ---------------------
 
-To use GCHP you need a compute environment with the following software:
+To build and run GCHP you compute :term:`environment` needs the following software:
 
 * Git
 * Make (or GNUMake)
@@ -28,11 +28,10 @@ To use GCHP you need a compute environment with the following software:
 * NetCDF (with C, C++, and Fortran support)
 * ESMF version ≥ 8.0.0
 
-Your system administrator can tell you what software is available and how to activate it. 
+Your system administrator should be able to tell you if this software is already available on your cluster, and if so, how to activate it.
+If it is not already available, they might be able to build it for you.
 
-If you need to install any of these software yourself, you can do that 
-manually (build from source), but it is faster and easier to do it with Spack. See 
-our guide on :ref:`installing GCHP's dependencies with Spack <installing_with_spack>`.
+If you need to build GCHP's dependencies yourself, see :ref:`building_gchp_dependencies`.
 
 .. _hardware_requirements:
 
