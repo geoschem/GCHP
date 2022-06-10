@@ -42,7 +42,6 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    :maxdepth: 1
    :caption: Getting Started
 
-
    getting-started/quick-start.rst
    getting-started/requirements.rst
    getting-started/key-references.rst
@@ -72,6 +71,9 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    supplement/plotting-output.rst
    stretched-grid.rst
    supplement/satellite-overpass.rst
+   geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
+   geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
+   geos-chem-shared-docs/supplemental-guides/video-tutorials.rst
 
 .. toctree::
    :maxdepth: 1
