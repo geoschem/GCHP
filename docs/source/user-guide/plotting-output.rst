@@ -2,6 +2,8 @@
 Plotting GCHP Output
 ====================
 
+With the exception of the restart file, all GCHP output netCDF files may be viewed with Panoply software freely available from NASA GISS. In addition, python works very well with all GCHP output.
+
 Panoply
 -------
 

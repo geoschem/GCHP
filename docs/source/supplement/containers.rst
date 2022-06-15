@@ -24,8 +24,7 @@ Performance
 -----------
 
 Because we do not include optimized infiniband libraries within the provided Docker images, container-based GCHP is currently not as fast as other setups. 
-Container-based benchmarks on Harvard's Cannon cluster up to 360 cores and c90 (~1x1.25) resolution averaged 15% slower than equivalent non-container runs, 
-and may perform worse at a higher core count and resolution.
+Container-based benchmarks deployed on Harvard's Cannon cluster using up to 360 cores at c90 (~1x1.25) resolution averaged 15% slower than equivalent non-container runs. Performance may worsen at a higher core count and resolution.
 If this performance hit is not a concern, these containers are the quickest way to setup and run GCHP.
 
 
@@ -99,7 +98,7 @@ Replace the typical execution line in the script (where ``mpirun`` or ``srun`` i
    $ time mpirun singularity exec ../gchp.sif /rundir/internal_exec >> ${log}
    
 
-You can now setup your run configuration as normal using `runConfig.sh` and tweak Slurm parameters in your run script.
+You can now setup your run configuration as normal using `setCommonRunSettings.sh` and tweak Slurm parameters in your run script.
 
 
 If you already have GCHP data directories, congratulations! You've completed all the steps you need to run GCHP in a container.
@@ -124,7 +123,7 @@ Luckily we can use a GC Classic container to execute a dry-run that matches the 
    $ #get pre-compiled GC Classic executable
    $ singularity exec -B .:/classic_rundir ../gcc.sif cp /opt/geos-chem/bin/gcclassic /classic_rundir
 
-Make sure to tweak dates of run in input.geos as needed, following info `here <http://wiki.seas.harvard.edu/geos-chem/index.php/Downloading_data_with_the_GEOS-Chem_dry-run_option#Executing_GEOS-Chem_in_dry-run_mode>`__.
+Make sure to tweak dates of run in geoschem_config.yml as needed, following info `here <http://wiki.seas.harvard.edu/geos-chem/index.php/Downloading_data_with_the_GEOS-Chem_dry-run_option#Executing_GEOS-Chem_in_dry-run_mode>`__.
 
 .. code-block:: console
 

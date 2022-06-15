@@ -55,31 +55,24 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    user-guide/rundir-init.rst
    user-guide/getting-input-data.rst
    user-guide/running.rst
-
+   user-guide/configuration-files.rst
+   user-guide/rundir-config.rst
+   user-guide/output_files.rst
+   user-guide/plotting-output.rst
 
 .. toctree::
    :maxdepth: 1
    :caption: Supplemental Guides
 
-   supplement/rundir-config.rst
-   supplement/config-files.rst
-   supplement/job-script-examples.rst
    supplement/building-gchp-dependencies.rst
    supplement/setting-up-aws-parallelcluster.rst
    supplement/caching-input-data.rst
    supplement/containers.rst
-   supplement/plotting-output.rst
-   stretched-grid.rst
+   supplement/stretched-grid.rst
    supplement/satellite-overpass.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
    geos-chem-shared-docs/supplemental-guides/video-tutorials.rst
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Tutorials
-
-   tutorials/stretched-grid.rst
 
 .. toctree::
    :maxdepth: 1
