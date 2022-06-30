@@ -1,7 +1,7 @@
 Debugging
 =========
 
-This page provides strategies for debugging GCHP.
+This page provides strategies for investigating errors encountered while using GCHP.
 
 .. contents:: Table of contents
     :depth: 4
