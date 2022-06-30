@@ -145,7 +145,7 @@ A few common errors encountered when adding new input emissions files to GCHP ar
 4. You have a typo in either :file:`HEMCO_Config.rc` or :file:`ExtData.rc`. Errors in :file:`HEMCO_Config.rc` typically result in the model crashing right away. 
    Errors in :file:`ExtData.rc` typically result in a problem later on during ExtData read. 
    Always try a short run with all debug prints enabled when first implementing new emissions. 
-   See the debugging section of this page for more information on enabled debug prints..
+   See the debugging section of the user manual for more information. 
    Another useful strategy is to find config file entries for similar input files and compare them against the entry for your new file. 
    Directly comparing the file metadata may also lead to insights into the problem.
 
@@ -199,27 +199,3 @@ Generate monthly mean diagnostics
 
 You can toggle monthly mean diagnostics on/off from within :file:`setCommonRunSettings.sh` in the "DIAGNOSTICS" section if you also set auto-update of diagnostics it that file to on. All time-averaged diagnostic collections will then automatically be configured to compute monthly mean. Alternatively, you can edit :file:`HISTORY.rc` directly and set the "monthly" field to value 1 for each collection you wish to output monthly diagnostics for. 
 
----------------------------------------------------------------------------------------------------
-
-Debugging
----------
-
-Enable maximum print output
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Besides compiling with :literal:`CMAKE_BUILD_TYPE=Debug`, there are a few run-time settings you can configure to boost your chance of successful debugging.
-All of them involve sending additional print statements to the log files.
-
-1. Set Turn on debug printout? in :file:`geoschem_config.yml` to T to turn on extra GEOS-Chem print statements in the main log file.
-2. Set the Verbose and Warnings settings in :file:`HEMCO_Config.rc` to maximum values of 3 to send the maximum number of prints to :file:`HEMCO.log`.
-3. Set :literal:`CAP.EXTDATA` option :literal:`root_level` in :file:`logging.yml` to :literal:`DEBUG` to send root thread MAPL ExtData (input) prints to :file:`allPEs.log`.
-4. Set :literal:`CAP.EXTDATA` option :literal:`level` in :file:`logging.yml` to :literal:`DEBUG` to send all thread MAPL ExtData (input) prints to :file:`allPEs.log`.
-
-None of these options require recompiling. 
-Be aware that all of them will slow down your simulation. 
-Be sure to set them back to the default values after you are finished debugging.
-
-Inspecting memory
-^^^^^^^^^^^^^^^^^
-
-Memory statistics are printed to the GCHP log each model timestep by default. This includes percentage of memory committed, percentage of memory used, total used memory (MB), and total swap memory (MB). This information is always printed and is not configurable from the run directory. However, additional memory prints may be enabled by changing the value set for variable :literal:`MEMORY_DEBUG_LEVEL` in run directory file :literal:`GCHP.rc`. Setting this to a value greater than zero will print out total used memory and swap memory before and after run methods for gridded components GCHPctmEnv, FV3 advection, and GEOS-Chem. Within GEOS-Chem, total and swap memory will also be printed before and after subroutines to run GEOS-Chem, perform chemistry, and apply emissions. For more information about inspecting memory see the output files section of this user guide.

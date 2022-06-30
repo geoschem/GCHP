@@ -59,6 +59,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    user-guide/rundir-config.rst
    user-guide/output_files.rst
    user-guide/plotting-output.rst
+   user-guide/debugging.rst
 
 .. toctree::
    :maxdepth: 1
