@@ -1,7 +1,7 @@
 .. _caching_input_data:
 
-Caching Input Data on Fast Drives
-=================================
+Cache Input Data on Fast Drives
+===============================
 
 This page describes how to set up a cache of GEOS-Chem input data.
 This is useful if you want to temporarily transfer a simulation's input data to a performant hard drive.

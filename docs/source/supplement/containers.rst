@@ -1,5 +1,5 @@
-Using GCHP Containers
-=====================
+Use GCHP Containers
+===================
 
 Containers are an effective method of packaging and delivering GCHP's source code and requisite libraries.
 We offer up-to-date Docker images for GCHP `through Docker Hub <https://hub.docker.com/r/geoschem/gchp>`__.

@@ -1,7 +1,7 @@
 .. _building_gchp_dependencies:
 
-Building GCHP's Dependencies
-============================
+Build Dependencies
+==================
 
 This page has instructions for building GCHP's :term:`dependencies`. 
 These are the software libraries that are needed to compile and execute the GCHP program.

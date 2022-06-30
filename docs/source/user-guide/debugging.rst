@@ -25,6 +25,9 @@ Coming soon
 Run-time errors
 ---------------
 
+Recompile with debug flags
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Recompile using debug flags by setting :literal:`-DCMAKE_BUILD_TYPE=Debug` during the configure step. See the section of the user guide on compiling GCHP for more guidance on how to do this. Once you rebuild there may be more information in the logs when you run again.
 
 

@@ -1,7 +1,7 @@
 .. _using_aws_parallelcluster:
 
-AWS ParallelCluster Setup
-=========================
+Set up AWS ParallelCluster
+==========================
 
 .. important::
 
