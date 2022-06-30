@@ -1,11 +1,12 @@
 # Requirements for building the GCHP documentation
 #
-# NOTE: There are issues with sphinx 4.0.0+ and sphinx-rtd-theme 1.0.0
-# so we'll use older versions (Bob Yantosca, 01 Feb 2022)
+# NOTE: Use specific versions for Python packages instead of upper
+# bounds.  Using an upper bound will not necessarily install the
+# intended version if there already is a version that meets the
+# criteria present in the Python environment.
+#  -- Bob Yantosca and Lizzie Lundgren (30 Jun 2022)
 #
-# Also note: a recent update to jinja2 has broken backwards
-# compatibility with the older ReadTheDocs package, so we need to
-# use a version of jinja2 prior to 3.1.0. (Bob Yantosca, 02 May 2022)
+# The following package versions have been proven to work together:
 #
 sphinx==3.5.4
 sphinx_rtd_theme==0.5.2
