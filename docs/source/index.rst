@@ -72,7 +72,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    supplement/satellite-overpass.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
-   geos-chem-shared-docs/supplemental-guides/video-tutorials.rst
+   geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
 .. toctree::
    :maxdepth: 1
