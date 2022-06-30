@@ -39,7 +39,7 @@ extensions = [
 bibtex_default_style = 'gcrefstyle'
 bibtex_reference_style = "author_year"
 
-from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.formatting.alpha import Style as AlphaStyle
 from pybtex.style.names.lastfirst import NameStyle as LastFirst
 from pybtex.style.template import join, words, optional, sentence
 from pybtex.style.labels import BaseLabelStyle
@@ -49,7 +49,10 @@ class GCLabelStyle(BaseLabelStyle):
         for entry in sorted_entries:
             yield entry.key.replace("_", " ").replace("et al.", "et al.,")
 
-class GCRefStyle(UnsrtStyle):
+class GCRefStyle(AlphaStyle):
+    # Using pybtex.style.formatting.alpha will list citations
+    # in alphabetical order by last author name, then by year.
+    #  -- Bob Yantosca (30 Jun 2022)
     default_name_style = LastFirst
     default_sort_style = None
     default_label_style = GCLabelStyle
@@ -70,7 +73,9 @@ register_plugin('pybtex.style.formatting', 'gcrefstyle', GCRefStyle)
 bibtex_bibliography_header = ".. rubric:: References"
 bibtex_footbibliography_header = bibtex_bibliography_header
 
-bibtex_bibfiles = ['geos-chem-shared-docs/geos-chem.bib']
+bibtex_bibfiles = [
+    'geos-chem-shared-docs/biblio/geos-chem.bib'
+]
 
 
 # List of patterns, relative to source directory, that match files and
