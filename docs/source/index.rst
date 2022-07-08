@@ -72,6 +72,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    supplement/stretched-grid.rst
    supplement/satellite-overpass.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
+   geos-chem-shared-docs/supplemental-guides/debug-guide.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
