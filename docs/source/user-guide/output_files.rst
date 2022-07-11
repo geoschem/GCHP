@@ -43,7 +43,7 @@ Below is a summary of all GCHP output files that you may encounter depending on 
    After a successful run the content of the file is updated to the simulation end date. 
    As an output file it is therefore the input file for the next run if running GCHP simulations consecutively in time.
 
-.. option:: Restarts/GEOSChem.Restart.YYYYMMDD_HHmmSSz.cN.nc4
+.. option:: Restarts/GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc4
 
    GCHP restart file output at the end of the run. 
    This file is actually the GCHP end-of-run checkpoint file that is moved and renamed as part of the run script. 

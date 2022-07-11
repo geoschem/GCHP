@@ -91,7 +91,7 @@ Change restart file
 
 All GCHP run directories come with symbolic links to initial restart files for commonly used cubed sphere resolutions. These are located in the :file:`Restarts` directory in the run directory. All initial restart files contain start date and grid resolution in the filename using the start date in :file:`cap_restart`. Prior to running GCHP, either you or your run script will execute :file:`setRestartLink.sh` to create a symbolic link :file:`gchp_restart.nc4` to point to the appropriate restart file given configured start date and grid resolution. :file:`gchp_restart.nc4` will always be used as the restart file for all runs since it is specified as the restart file in :file:`GCHP.rc`.
 
-If you want to change the restart file then you should put the restart file you want to use in the :file:`Restarts` directory using the expected filename format with the start date you configure in :file:`cap_restart` and the grid resolution you configure in :file:`setCommonRunSettings.sh`. The expected format is :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmSSz.cN.nc4`. Running :file:`setRestartLink.sh` will update :file:`gchp_restart.nc4` to use it.
+If you want to change the restart file then you should put the restart file you want to use in the :file:`Restarts` directory using the expected filename format with the start date you configure in :file:`cap_restart` and the grid resolution you configure in :file:`setCommonRunSettings.sh`. The expected format is :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`. Running :file:`setRestartLink.sh` will update :file:`gchp_restart.nc4` to use it.
 
 If you do not want to rename your restart file then you can create a symbolic link in the :file:`Restarts` folder that points to it.
 

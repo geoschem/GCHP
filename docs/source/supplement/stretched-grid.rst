@@ -65,7 +65,7 @@ GCPy documentation for this program's exact usage, and for installation instruct
 .. code-block:: console
 
    $ python -m gcpy.file_regrid                                  \
-                  -i GEOSChem.Restart.20190701_000000z.c90.nc4   \
+                  -i GEOSChem.Restart.20190701_0000z.c90.nc4   \
                   --dim_format_in checkpoint                     \
                   -o sg_restart_c48_3_260_40.nc                  \
                   --cs_res_out 48                                \
@@ -74,9 +74,9 @@ GCPy documentation for this program's exact usage, and for installation instruct
 
 Description of arguments:
 
-.. option:: -i GEOSChem.Restart.20190701_000000z.c90.nc
+.. option:: -i GEOSChem.Restart.20190701_0000z.c90.nc
 
-   Specifies the input restart file is :file:`GEOSChem.Restart.20190701_000000z.c90.nc4` (in the current working directory).
+   Specifies the input restart file is :file:`GEOSChem.Restart.20190701_0000z.c90.nc4` (in the current working directory).
 
 
 .. option:: --dim_format_in checkpoint
@@ -206,7 +206,7 @@ To create a restart file for a stretched-grid simulation you can regrid a restar
 .. code-block:: console
 
    $ python -m gcpy.file_regrid                           \
-        -i GEOSChem.Restart.20190701_000000z.c48.nc4      \
+        -i GEOSChem.Restart.20190701_0000z.c48.nc4      \
         --dim_format_in checkpoint                        \
         --dim_format_out checkpoint                       \
         --cs_res_out 60                                   \
@@ -245,7 +245,7 @@ Next, execute :file:`setCommonRunSettings.sh` to apply the updates to the variou
 
    $ ./setCommonRunSettings.sh
 
-Before running GCHP you also need to configure the model to use your stretched-grid restart file. Move or copy your restart file to the :file:`Restarts` subdirectory. Then change the symbolic link :file:`GEOSChem.Restart.20190701_000000z.c48.nc4` to point to your stretched-grid restart file while keeping the name of the link the same. You could also rename your restart file to this format but this would remove valuable information about the content of the file from the filename. Symbolically linking is a better way to preserve the information to avoid errors. You can check that you did this correctly by running :file:`setRestartLink.sh` in the run directory.
+Before running GCHP you also need to configure the model to use your stretched-grid restart file. Move or copy your restart file to the :file:`Restarts` subdirectory. Then change the symbolic link :file:`GEOSChem.Restart.20190701_0000z.c48.nc4` to point to your stretched-grid restart file while keeping the name of the link the same. You could also rename your restart file to this format but this would remove valuable information about the content of the file from the filename. Symbolically linking is a better way to preserve the information to avoid errors. You can check that you did this correctly by running :file:`setRestartLink.sh` in the run directory.
 
 Run GCHP
 ^^^^^^^^
@@ -256,7 +256,7 @@ To run GCHP you can use the example run script for running interactively located
 
    $ ./gchp.local.run
 
-Log output of the run should be printed to both screen and log file :file:`gchp.20190701_000000z.nc4`. Check that your run was successful by inspecting the log and looking for output in the :file:`OutputDir` subdirectory.
+Log output of the run should be printed to both screen and log file :file:`gchp.20190701_000000z.log`. Check that your run was successful by inspecting the log and looking for output in the :file:`OutputDir` subdirectory.
 
 .. _sg_plotting_example:
 

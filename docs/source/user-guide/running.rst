@@ -41,7 +41,7 @@ These commands include:
 4. Set restart file symbolic link :file:`gchp_restart.nc4` to target file in :file:`Restarts` subdirectory for configured start date and grid resolution
 5. Check that :file:`cap_restart` now contains end date of your run
 6. Move the output restart file to the :file:`Restarts` subdirectory
-7. Rename the output restart file to include run start date and grid resolution (format :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmSSz.cN.nc4`)
+7. Rename the output restart file to include run start date and grid resolution (format :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`)
 
 Run interactively
 ^^^^^^^^^^^^^^^^^
