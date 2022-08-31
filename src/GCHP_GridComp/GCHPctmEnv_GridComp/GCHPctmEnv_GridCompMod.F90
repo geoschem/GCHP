@@ -524,7 +524,7 @@ module GCHPctmEnv_GridComp
          ! Get vertical mass flux
          call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
          ! Flip vertical so that GCHP diagnostic is positive="up"
-         UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)
+         UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)/dt
       end if
 
       _RETURN(ESMF_SUCCESS)
