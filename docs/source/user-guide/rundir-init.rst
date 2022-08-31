@@ -1,7 +1,7 @@
 .. _creating_a_run_directory:
 
-Creating a Run Directory
-========================
+Create a Run Directory
+======================
 
 Run directories are created with the :file:`createRunDir.sh` script in the :file:`run/` subdirectory of the source code.
 Run directories are version-specific, so you need to create new run directories for every GEOS-Chem version.
@@ -10,15 +10,15 @@ and answer the prompts:
 
 .. code-block:: console
 
-   gcuser:~$ cd Code.GCHP/run
-   gcuser:~/Code.GCHP/run$ ./createRunDir.sh
+   gcuser:~$ cd GCHP/run
+   gcuser:~/GCHP/run$ ./createRunDir.sh
    ... <answer the prompts> ...
    
 .. important::
    Use :term:`absolute paths <absolute path>` when responding to prompts.
 
-Create a run directory. If you are unsure what a prompt is asking, see their explanations below, or ask a question 
-on GitHub. After creating a run directory, you can move on to the next section.
+If you are unsure what a prompt is asking, see their explanations below, or ask a question 
+on GitHub. After following all prompts a run directory should be created for you with a confirmation message, and, you can move on to the next section.
 
 -------------------------------------------------------------------------------------------
 

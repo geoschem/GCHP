@@ -1,5 +1,5 @@
-Uploading to Spack
-==================
+Upload to Spack
+===============
 
 This page describes how to upload recipe changes to Spack. Common recipe changes include updating available versions of GCHP 
 and changing version requirements for dependencies.

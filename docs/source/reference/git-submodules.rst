@@ -12,11 +12,11 @@ update submodule so that they use your forks at any time. It is recommended you
 only update the submodules that you need to, and that you leave submodules that
 you don't need to modify pointing to the GEOS-Chem repositories.
 
-The rest of this section assumes you are in the top-level of GCHPctm, i.e.,
+The rest of this section assumes you are in the top-level of GCHP, i.e.,
 
 .. code-block:: console
 
-   $ cd GCHPctm   # navigate to top-level of GCHPctm
+   $ cd GCHP   # navigate to top-level of GCHP
 
 First, identify the submodules that you need to modify. The :file:`.gitmodules`
 file has the paths and URLs to the submodules. You can see it with the following
@@ -72,5 +72,5 @@ Add and commit the update to :file:`.gitmodules`.
    $ git add .gitmodules
    $ git commit -m "Updated submodules to use my own forks"
 
-Now, when you push to your GCHPctm fork, you should see the submodules point to your
+Now, when you push to your GCHP fork, you should see the submodules point to your
 submodule forks.

@@ -1,7 +1,7 @@
 .. _downloading_input_data:
 
-Downloading Input Data
-======================
+Download Input Data
+===================
 
 Input data for GEOS-Chem is available at http://geoschemdata.wustl.edu/ExtData/.
 

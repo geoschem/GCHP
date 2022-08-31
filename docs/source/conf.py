@@ -19,11 +19,11 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'GCHP'
-copyright = '2021, GEOS-Chem Support Team'
+copyright = '2022, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
-release = '13.0.2'
+release = '14.0.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,13 +32,14 @@ release = '13.0.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx_rtd_theme",   
+    "sphinx_rtd_theme",
     "sphinxcontrib.bibtex",
     "recommonmark",
 ]
 bibtex_default_style = 'gcrefstyle'
+bibtex_reference_style = "author_year"
 
-from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.formatting.alpha import Style as AlphaStyle
 from pybtex.style.names.lastfirst import NameStyle as LastFirst
 from pybtex.style.template import join, words, optional, sentence
 from pybtex.style.labels import BaseLabelStyle
@@ -48,7 +49,8 @@ class GCLabelStyle(BaseLabelStyle):
         for entry in sorted_entries:
             yield entry.key.replace("_", " ").replace("et al.", "et al.,")
 
-class GCRefStyle(UnsrtStyle):
+class GCRefStyle(AlphaStyle):
+    # Sorts authors alphabetically by last name
     default_name_style = LastFirst
     default_sort_style = None
     default_label_style = GCLabelStyle
@@ -69,7 +71,9 @@ register_plugin('pybtex.style.formatting', 'gcrefstyle', GCRefStyle)
 bibtex_bibliography_header = ".. rubric:: References"
 bibtex_footbibliography_header = bibtex_bibliography_header
 
-bibtex_bibfiles = ['geos-chem-shared-docs/geos-chem.bib']
+bibtex_bibfiles = [
+    'geos-chem-shared-docs/biblio/geos-chem.bib'
+]
 
 
 # List of patterns, relative to source directory, that match files and
@@ -89,14 +93,25 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = [
+    '_static',
+    'geos-chem-shared-docs/_static/',
+]
 
+# CSS files that will override sphinx-rtd-theme default settings
+# (paths are relative to _static, which is specified above)
+html_css_files = [
+    'css/icon_home.css',
+    'theme_overrides.css',
+]
 
-# Display GEOS-Chem logo
-html_favicon = 'geos-chem-shared-docs/_static/favicon.png'
-html_logo = "geos-chem-shared-docs/_static/geos-chem-logo.svg"
+# Display GEOS-Chem favicon and logo
+html_favicon = 'geos-chem-shared-docs/_static/gc-o-logo-favicon.ico'
+html_logo = "geos-chem-shared-docs/_static/GEOS-Chem_Logo_Light_Background.png"
+
+# More theme settings
 html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
-    'style_nav_header_background': '#FCFCFC',
+    'logo_only': False,                        # Show logo & top text
+    'display_version': False,                  # Don't show version number
+    'style_nav_header_background': '#FCFCFC',  # 99% white for top left bkgrnd
 }

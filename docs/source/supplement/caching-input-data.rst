@@ -1,7 +1,7 @@
 .. _caching_input_data:
 
-Caching Input Data on Fast Drives
-=================================
+Cache Input Data on Fast Drives
+===============================
 
 This page describes how to set up a cache of GEOS-Chem input data.
 This is useful if you want to temporarily transfer a simulation's input data to a performant hard drive.
@@ -140,7 +140,7 @@ Make sure to set :literal:`FIND_PATH` to ExtData and :literal:`REPLACE_PATH` to 
    gcuser:/MyRunDirectory$ swap_extdata_link ChemDir
    gcuser:/MyRunDirectory$ swap_extdata_link HcoDir
    gcuser:/MyRunDirectory$ swap_extdata_link MetDir
-   gcuser:/MyRunDirectory$ sed -i "s#${FIND_PATH}#${REPLACE_PATH}#g" HEMCO_Config.rc input.geos
+   gcuser:/MyRunDirectory$ sed -i "s#${FIND_PATH}#${REPLACE_PATH}#g" HEMCO_Config.rc geoschem_config.yml
 
 Now your GCHP simulation will use input data from ExtDataCache.
 

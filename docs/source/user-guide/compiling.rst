@@ -1,27 +1,26 @@
 .. note::
    Compiling GCHP and creating a run directory are independent steps, and their order doesn't matter. A small exception
-   is the :ref:`RUNDIR <build_setting_rundir>` build option, which controls the behaviour of :command:`make install`;
+   is the :ref:`RUNDIR <build_setting_rundir>` build option, which controls the behaviour of :command:`make install` which copies the GCHP executable to the run directory;
    however, this setting can be reconfigured at any time (e.g., after compiling and creating a run directory). 
    
-   Here in the User Guide, we describe compiling GCHP before we describe creating a run directory. This is
-   so that conceptually the instructions have a linear flow. The Quickstart Guide uses the opposite ordering
-   to minimize the number of commands.
+   Here in the User Guide we describe compiling GCHP before we describe creating a run directory. This is
+   so that conceptually the instructions have a linear flow. The Quickstart Guide, on the other hand, shows how to make a run directory prior to compiling.
 
 .. note::
    Another resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_.
 
 .. _building_gchp:
 
-Compiling GCHP
-==============
+Compile
+=======
 
-There are two steps to building GCHP. The first is configuring your build, which is done with :program:`cmake`; 
-the second step is compiling, which is done with :program:`make`.
+There are three steps to building GCHP. The first is configuring your build, which is done with :program:`cmake`; 
+the second step is compiling, which is done with :program:`make`. The third step is install, which is also done with :program:`make`.
 
 In the first step (build configuration), :program:`cmake` finds GCHP's :ref:`software dependencies <software_requirements>`
 on your system, and you can set :ref:`build options <gchp_build_options>` like
-enabling/disabling components, setting paths to run directories, picking between debug or speed-optimizing compiler
-flags, etc. The second step (running :program:`make`) compiles GCHP according your build configuration.
+enabling/disabling components (such as RRTMG), setting paths to run directories, picking between debug or speed-optimizing compiler
+flags, etc. The second step (running :program:`make`) compiles GCHP according your build configuration. The third step copies GCHP executable to an appropriate location, such as one or more run directories if you specify them.
 
 .. important::
    These instructions assume you have loaded a computing environment that satisfies

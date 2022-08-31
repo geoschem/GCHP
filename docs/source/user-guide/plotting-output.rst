@@ -1,6 +1,8 @@
 
-Plotting GCHP Output
-====================
+Plot Output Data
+================
+
+With the exception of the restart file, all GCHP output netCDF files may be viewed with Panoply software freely available from NASA GISS. In addition, python works very well with all GCHP output.
 
 Panoply
 -------
@@ -27,7 +29,7 @@ Some suggestions
 Python
 ------
 
-To plot GCHP data with Python you will need the following libraries:
+To make a basic plot of GCHP data using Python you will need the following libraries:
 
 * cartopy >= 0.19 (0.18 won't work -- see `cartopy#1622 <https://github.com/SciTools/cartopy/pull/1622>`_)
 * xarray 
@@ -74,3 +76,5 @@ Here is a basic example of plotting cubed-sphere data:
    
    The grid-box corners should be used with :code:`pcolormesh()` because the grid-boxes are not regular (it's a curvilinear grid).
    This is why we use :code:`corner_lats` and :code:`corner_lons` in the example above.
+
+You may also use the GCPy python toolkit to work with GCHP files. For more information see `https://github.com/geoschem/gcpy/ <https://github.com/geoschem/gcpy/>`_.

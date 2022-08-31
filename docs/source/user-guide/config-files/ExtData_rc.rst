@@ -1,5 +1,5 @@
 ExtData.rc
-==================
+==========
 
 :file:`ExtData.rc` contains input variable and file read information for GCHP. 
 Explanatory information about the file is located at the top of the configuration file in all run directories. 
