@@ -6,7 +6,7 @@ System Requirements
 Software Requirements
 ---------------------
 
-To build and run GCHP you compute :term:`environment` needs the following software:
+To build and run GCHP your compute :term:`environment` needs the following software:
 
 * Git
 * Make (or GNUMake)
@@ -57,7 +57,7 @@ Bare Minimum Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These bare minimum requirements are sufficient for running GCHP at C24. The are adequate 
-for try GCHP out, and for learning purposes.
+for trying GCHP out, and for learning purposes.
 
 * 6 cores
 * 32 GB of memory
@@ -77,11 +77,21 @@ computational problems:
 
 * Lots of storage. Several TB is sufficient, but tens or hundreds of TB is better.
 
-Other Recommendations
-^^^^^^^^^^^^^^^^^^^^^
+General Hardware and Software Recommendations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Hyper-threading may improve simulation throughput, particularly at low core counts
+
 * MPI process should be bound sequentially across cores and nodes (e.g., a simulation with 48-processes with 24 processes per node 
   should bind rank 0 to CPU L#0, rank 1 to CPU L#1, etc. on the first node, and rank 24 to CPU L#0, rank 1 to CPU L#1, etc. on the 
   second node). This should be the default, but it's worth checking if your performance is lower than expected. With OpenMPI the
   `--report-bindings` argument will show you how processes are ranked and binded.
+
+* If using IntelMPI include the following your environment setup to avoid a run-time error:
+
+.. code-block:: bash
+
+    export I_MPI_ADJUST_GATHERV=3
+    export I_MPI_ADJUST_ALLREDUCE=12
+
+* If using OpenMPI and a large number of cores (>1000) we recommend setting :literal:`WRITE_RESTART_BY_OSERVER: YES` in config file :file:`GCHP.rc`. This enables the MAPL o-server functionality for writing restart files, thereby speeding up the mdoel. This is set automatically when executing :file:`setCommonRunSettings.sh`.
