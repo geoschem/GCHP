@@ -60,11 +60,7 @@ jobs:
           AWS_DEFAULT_OUTPUT: json
         run: |
           cd ${{ github.workspace }}
-          if [[ "x${TIME_PERIOD}" == "x1Mon" ]]; then
-            echo "DEV_PRIMARY_KEY=gchp-c${RESOLUTION}-${TIME_PERIOD}-${COMMIT_NAME}" >> $GITHUB_ENV
-          else
-            echo "DEV_PRIMARY_KEY=gchp-c${RESOLUTION}-${TIME_PERIOD}-`git describe --tags`" >> $GITHUB_ENV
-          fi
+          echo "DEV_PRIMARY_KEY=gchp-c${RESOLUTION}-${TIME_PERIOD}-`git describe --tags`" >> $GITHUB_ENV
           echo "REF_PRIMARY_KEY=`./.github/workflows/findRefKey.sh ${RESOLUTION} ${TIME_PERIOD} ${GITHUB_SHA}`" >> $GITHUB_ENV
       - name: Trigger Step Function
         env:
