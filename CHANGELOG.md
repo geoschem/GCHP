@@ -1,26 +1,40 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+This file documents all notable changes to the GCHP wrapper repository since version 13.4.1. See also CHANGELOG files for individual submodules, such as:
+- src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md
+- src/GCHP_GridComp/HEMCO_GridComp/HEMCO/CHANGELOG.md
+- src/MAPL/CHANGELOG.md
 
-See also: src/GCHP_GridComp/GEOS-Chem_GridComp/geos-chem/CHANGELOG.md
-          src/GCHP_GridComp/HEMCO_GridComp/HEMCO/CHANGELOG.md
-	  src/MAPL/CHANGELOG.md
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased 14.0.0]
 ### Added
-- Build configuration settings to work with native ESMA_cmake without Baselibs
+- Created CHANGELOG.md
 
 ### Changed
-- Updated CONTRIBUTING.md and SUPPORT.md with info from the GEOS-Chem wiki
+- Changed GEOS-Chem submodule to 14.0.0 release
+- Changed HEMCO submodule version: 3.4.0 -> 3.5.0
+- Changed GEOS-ESM submodule versions:
+   * MAPL: v2.6.3 -> v2.18.3
+   * FVdycoreCubed_GridComp: v1.2.12 -> v1.8.0
+   * fvdycore: geos/v1.1.6 -> geos/v1.4.0
+   * GMAO_Shared: v1.3.8 -> v1.5.3
+   * FMS: geos/2019.01.02+noaff.6 -> geos/2019.01.02+noaff.8
+   * ESMA_cmake: v3.0.6 -> v3.8.0
+- Changed Goddard-Fortran-Ecosystem submodule versions:
+   * gFTL-shared: v1.2.0 -> v1.4.1
+   * gFTL: v1.3.1 -> v1.6.0
+   * pFlogger: v1.5.0 -> v1.6.1
+   * yaFyaml: v0.5.0 -> v1.0-beta.4
+- Updated build files for compatibility with new submodule versions
+- Updated CONTRIBUTING.md and SUPPORT.md to retire guidelines on GEOS-Chem wiki
 - Updated GCHP ReadTheDocs documentation
-- Update submodules to newer versions from GMAO
-- Update spack deployment action to use new installation procedure
+- Updated spack deployment action to use new installation procedure
+- Update AWS benchmarking github actions to act on all dev* branches
 
 ### Removed
-- Remove Azure continuous integration test pipeline
+- Removed Azure continuous integration test pipeline
+- Removed pFUnit submodule since not used
 
 ### Fixed
-- Fix GNU compiler options
+- Fixed broken CMAKE_BUILD_TYPE options for intel and gfortran compilers
