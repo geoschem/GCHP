@@ -18,12 +18,12 @@ name: cloud_benchmarking
 on:
   push:
     branches:
-      - dev
+      - dev*
     tags:
       - '*'
   pull_request:
     branches:
-      - dev
+      - dev*
 
 jobs:
   trigger_step_function:
