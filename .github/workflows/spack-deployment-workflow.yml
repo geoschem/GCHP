@@ -39,7 +39,7 @@ jobs:
           set -x
           conda install -y -c conda-forge gh flake8 mypy isort curl black
           pip install pkgconfig
-          apt -o Apt::Get::Assume-Yes=true install update
+          apt -o Apt::Get::Assume-Yes=true update
           apt -o Apt::Get::Assume-Yes=true install build-essential
           apt -o Apt::Get::Assume-Yes=true install cmake
       - name: Login with PAT
