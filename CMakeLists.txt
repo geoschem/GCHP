@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.13)
 project (gchp_ctm
-  VERSION 14.0.1
+  VERSION 14.0.2
   LANGUAGES Fortran CXX C
 )
 
