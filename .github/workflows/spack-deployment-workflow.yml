@@ -36,9 +36,14 @@ jobs:
           echo ::set-output name=release_sha::$(git rev-list -n 1 $GEOSCHEM_VERSION)
       - name: Install dependencies
         run: |
+          # Print out statements as they are executed
           set -x
+
+          # Install Python dependencies
           conda install -y -c conda-forge gh flake8 mypy isort curl black
           pip install pkgconfig
+
+          # Install GCC, make, cmake from Ubuntu
           apt -o Apt::Get::Assume-Yes=true update
           apt -o Apt::Get::Assume-Yes=true install build-essential
           apt -o Apt::Get::Assume-Yes=true install cmake
@@ -55,7 +60,10 @@ jobs:
           VERSION_STRING: version('${{ steps.vars.outputs.release_tag }}', commit='${{ steps.vars.outputs.release_sha }}',  submodules=True)
           TAR_URL_PREFIX: https://github.com/geoschem/GCHP/archive
         run: |
+          # Print commands as they are executed
           set -x
+
+          # Directories
           TEMP_DIR=$(mktemp -d)
           SPACK_DIR=$TEMP_DIR/spack
           
