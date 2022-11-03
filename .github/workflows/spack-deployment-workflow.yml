@@ -15,10 +15,10 @@
 name: spack_deployment
 on:
   push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'   # Will deploy on any tag
     branches:
-      - bugfix/spack-deployment  # for testing
-#    tags:
-#      - '[0-9]+.[0-9]+.[0-9]+'
+      - bugfix/spack-deployment  # Will deploy on any pushes to this branch
 
 jobs:
   make_spack_pr:
@@ -38,6 +38,7 @@ jobs:
         run: |
           set -x
           conda install -y -c conda-forge gh flake8 mypy isort curl
+          pip install pkgconfig
       - name: Login with PAT
         run: |
           git config --global user.email "lestrada00@gmail.com"
