@@ -55,7 +55,7 @@ jobs:
           set -x
           TEMP_DIR=$(mktemp -d)
           SPACK_DIR=$TEMP_DIR/spack
-          sudo apt install gcc
+          apt install gcc
           
           # Checkout spack/spack:develop
           git clone -c feature.manyFiles=true https://github.com/spack/spack.git $SPACK_DIR
