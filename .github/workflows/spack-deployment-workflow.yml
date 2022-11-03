@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           set -x
-          conda install -y -c conda-forge gh flake8 mypy isort curl
+          conda install -y -c conda-forge gh flake8 mypy isort curl black
           pip install pkgconfig
       - name: Login with PAT
         run: |
@@ -60,6 +60,14 @@ jobs:
           git clone -c feature.manyFiles=true https://github.com/spack/spack.git $SPACK_DIR
           cd $SPACK_DIR
           git checkout develop
+          #----------------------------------------------------------------
+          # KLUDGE: This is a workaround for a Spack error in bootstrap.py
+          # where the wrong directory is used.  This is still an open issue.
+          # See https://github.com/spack/spack/issues/31265
+          # In the meantime, we will use a sed command to change
+          # the directory path.  -- Bob Yantosca (03 Nov 2022)
+          sed -i -e 's/bin_dir = concrete_spec.prefix.bin/bin_dir = concrete_spec.prefix.local.bin/' spack/lib/spack/spack/bootstrap.py
+          #----------------------------------------------------------------
           . share/spack/setup-env.sh
 
           # Add geoschem/spack as a remote (PR will come from this repo)
@@ -81,3 +89,4 @@ jobs:
           git commit -m "gchp: added version ${GEOSCHEM_VERSION}"
           git push pr-source-repo gchp-${GEOSCHEM_VERSION}
           gh pr create --title "gchp: added version ${GEOSCHEM_VERSION}" --base develop --body "Pull request for ${GEOSCHEM_VERSION}" --repo spack/spack
+error
