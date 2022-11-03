@@ -55,7 +55,9 @@ jobs:
           set -x
           TEMP_DIR=$(mktemp -d)
           SPACK_DIR=$TEMP_DIR/spack
-          apt install gcc
+          apt update
+          apt install build-essential
+          apt install cmake
           
           # Checkout spack/spack:develop
           git clone -c feature.manyFiles=true https://github.com/spack/spack.git $SPACK_DIR
