@@ -89,4 +89,3 @@ jobs:
           git commit -m "gchp: added version ${GEOSCHEM_VERSION}"
           git push pr-source-repo gchp-${GEOSCHEM_VERSION}
           gh pr create --title "gchp: added version ${GEOSCHEM_VERSION}" --base develop --body "Pull request for ${GEOSCHEM_VERSION}" --repo spack/spack
-error
