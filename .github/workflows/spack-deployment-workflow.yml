@@ -15,8 +15,10 @@
 name: spack_deployment
 on:
   push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+    - bugfix/spack-deployment  # for testing
+#    tags:
+#      - '[0-9]+.[0-9]+.[0-9]+'
+
 jobs:
   make_spack_pr:
     runs-on: ubuntu-latest
