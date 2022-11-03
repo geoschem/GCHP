@@ -69,7 +69,8 @@ jobs:
           sed -i -e 's/bin_dir = concrete_spec.prefix.bin/bin_dir = concrete_spec.prefix.local.bin/' ./lib/spack/spack/bootstrap.py
           #----------------------------------------------------------------
           . share/spack/setup-env.sh
-
+          spack compilers
+          
           # Add geoschem/spack as a remote (PR will come from this repo)
           git remote add pr-source-repo https://github.com/geoschem/spack.git
           
