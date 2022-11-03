@@ -39,6 +39,9 @@ jobs:
           set -x
           conda install -y -c conda-forge gh flake8 mypy isort curl black
           pip install pkgconfig
+          apt -o Apt::Get::Assume-Yes=true install update
+          apt -o Apt::Get::Assume-Yes=true install build-essential
+          apt -o Apt::Get::Assume-Yes=true install cmake
       - name: Login with PAT
         run: |
           git config --global user.email "lestrada00@gmail.com"
@@ -55,8 +58,6 @@ jobs:
           set -x
           TEMP_DIR=$(mktemp -d)
           SPACK_DIR=$TEMP_DIR/spack
-          DEBIAN_FRONTEND=noninteractive apt install build-essential
-          DEBIAN_FRONTEND=noninteractive apt install cmake
           
           # Checkout spack/spack:develop
           git clone -c feature.manyFiles=true https://github.com/spack/spack.git $SPACK_DIR
