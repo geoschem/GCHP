@@ -55,7 +55,6 @@ jobs:
           set -x
           TEMP_DIR=$(mktemp -d)
           SPACK_DIR=$TEMP_DIR/spack
-          DEBIAN_FRONTEND=noninteractive apt update
           DEBIAN_FRONTEND=noninteractive apt install build-essential
           DEBIAN_FRONTEND=noninteractive apt install cmake
           
@@ -72,7 +71,7 @@ jobs:
           sed -i -e 's/bin_dir = concrete_spec.prefix.bin/bin_dir = concrete_spec.prefix.local.bin/' ./lib/spack/spack/bootstrap.py
           #----------------------------------------------------------------
           . share/spack/setup-env.sh
-
+          
           # Add geoschem/spack as a remote (PR will come from this repo)
           git remote add pr-source-repo https://github.com/geoschem/spack.git
           
