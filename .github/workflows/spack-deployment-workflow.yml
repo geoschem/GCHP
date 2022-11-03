@@ -15,7 +15,8 @@
 name: spack_deployment
 on:
   push:
-    - bugfix/spack-deployment  # for testing
+    branches:
+      - bugfix/spack-deployment  # for testing
 #    tags:
 #      - '[0-9]+.[0-9]+.[0-9]+'
 
