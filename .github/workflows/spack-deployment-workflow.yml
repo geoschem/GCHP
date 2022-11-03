@@ -22,7 +22,7 @@ on:
 
 jobs:
   make_spack_pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: continuumio/miniconda3
     steps:
       - uses: actions/checkout@v2
@@ -69,8 +69,6 @@ jobs:
           sed -i -e 's/bin_dir = concrete_spec.prefix.bin/bin_dir = concrete_spec.prefix.local.bin/' ./lib/spack/spack/bootstrap.py
           #----------------------------------------------------------------
           . share/spack/setup-env.sh
-          gcc --version
-          spack compilers
 
           # Add geoschem/spack as a remote (PR will come from this repo)
           git remote add pr-source-repo https://github.com/geoschem/spack.git
