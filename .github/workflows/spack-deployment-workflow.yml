@@ -29,8 +29,7 @@ jobs:
       - name: Get release tag
         id: vars
         run: |
-          #GEOSCHEM_VERSION=${GITHUB_REF#refs/*/}
-          GEOSCHEM_VERSION="14.0.1"  # Hack this
+          GEOSCHEM_VERSION=${GITHUB_REF#refs/*/}
           echo ::set-output name=release_tag::${GEOSCHEM_VERSION}
           cd ${GITHUB_WORKSPACE}
           git checkout $GEOSCHEM_VERSION
