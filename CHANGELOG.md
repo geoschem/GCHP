@@ -10,11 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased 14.0.2]
 ### Changed
 - Updated GEOS-Chem submodule to 14.0.2
-- Updated HEMCO submodule to 3.5.1
+- Updated HEMCO submodule to 3.5.2
 
+### Fixed
+- Removed memory leaks in GEOS-Chem and HEMCO submodule code
+- Units for State_Diag%RxnRate diagnostic are now `molec cm-3 s-1`
+  instead of `s-1`
 
 ## [14.0.1] - 2022-10-31
-## Changed
+### Changed
 - Updated GEOS-Chem submodule to 14.0.1
 
 
