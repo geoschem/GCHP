@@ -11,7 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Updated GEOS-Chem submodule to 14.1.0
 - Updated HEMCO submodule to 3.6.0
-
+- Updated MAPL submodule from v2.18.3 -> v2.26.0
+- Updated gFTL-shared submodule from v1.4.1 -> v1.5.0
+- Updated yaFyaml submodule from v1.0-beta.4 -> v1.0.4
+- Updated pFlogger submodule from v1.6.1 -> v1.9.1
 
 ## [14.0.1] - 2022-10-31
 ### Changed
