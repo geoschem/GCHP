@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           set -x
-          conda install -y -c conda-forge gh flake8 mypy isort
+          conda install -y -c conda-forge gh flake8 mypy isort curl
       - name: Login with PAT
         run: |
           git config --global user.email "lestrada00@gmail.com"
