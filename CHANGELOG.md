@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Updated yaFyaml submodule from v1.0-beta.4 -> v1.0.4
   - Updated pFlogger submodule from v1.6.1 -> v1.9.1
 
+### Fixed
+  - Fixed logic in .github/workflows/findRefKey.sh for determining previous commit
 
 ## [14.0.2] - 2022-11-29
 ### Changed
