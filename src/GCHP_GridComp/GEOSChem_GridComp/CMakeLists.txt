@@ -121,7 +121,7 @@ target_compile_definitions(GEOSChemBuildProperties
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/geos-chem/CMakeScripts)
 include(GC-Helpers)
 gc_pretty_print(SECTION "Settings")
-gc_pretty_print(VARIABLE MECH OPTIONS "fullchem" "carboncycle" "custom")
+gc_pretty_print(VARIABLE MECH OPTIONS "fullchem" "carbon" "custom")
 gc_pretty_print(VARIABLE OMP IS_BOOLEAN)
 gc_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
 gc_pretty_print(VARIABLE APM IS_BOOLEAN)
