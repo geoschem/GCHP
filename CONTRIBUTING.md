@@ -69,7 +69,7 @@ Also follow these additional steps to ensure that your data can be read by GCHP:
   3. The first time value in each file should be 0, corresponding with the reference datetime.
 
 ## How can I request a new feature?
-We accept feature requests through issues on GitHub. To request a new feature, [open a new issue](https://github.com/geoschem/GCHP/issues/new/choose) and select the feature request template. Please include all the information that migth be relevant, including the motivation for the feature.
+We accept feature requests through issues on GitHub. To request a new feature, **[open a new issue](https://github.com/geoschem/GCHP/issues/new/choose)** and select the feature request template. Please include all the information that migth be relevant, including the motivation for the feature.
 
 ## How can I report a bug?
 Please see "Support Guidelines".
