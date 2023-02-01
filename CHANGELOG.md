@@ -1,13 +1,13 @@
 # Changelog
 
-This file documents all notable changes to the GCHP wrapper repository since version 13.4.1. See also CHANGELOG files for individual submodules, such as:
+This file documents all notable changes to the GCHP wrapper repository starting in version 14.0.0. See also CHANGELOG files for individual submodules, such as:
 - src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md
 - src/GCHP_GridComp/HEMCO_GridComp/HEMCO/CHANGELOG.md
 - src/MAPL/CHANGELOG.md
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased 14.1.0]
+## [14.1.0] - 2023-02-01
 ### Changed
   - Updated GEOS-Chem submodule to 14.1.0
   - Updated HEMCO submodule to 3.6.0
