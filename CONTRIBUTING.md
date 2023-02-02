@@ -5,15 +5,15 @@ Thank you for looking into contributing to GEOS-Chem! GEOS-Chem is a grass-roots
 Updates to the GEOS-Chem model benefit both you and the [entire GEOS-Chem community](https://geoschem.github.io/geos-chem-people-projects-map/).  You benefit through [coauthorship and citations](https://geos-chem.seas.harvard.edu/geos-new-developments).  Priority development needs are identified at GEOS-Chem users' meetings with updates between meetings based on [GEOS-Chem Steering Committee (GCSC)](https://geos-chem.seas.harvard.edu/geos-steering-cmte) input through [Working Groups](https://geos-chem.seas.harvard.edu/geos-working-groups).
 
 ## We use GitHub and ReadTheDocs
-We use GitHub to host GCHP source code, to track issues, user questions, and feature requests, and to accept pull requests: [https://github.com/geoschem/GCHP](https://github.com/geoschem/gchp). Please help out as you can in response to issues and user questions.
+We use GitHub to host the GCHP source code, to track issues, user questions, and feature requests, and to accept pull requests: [https://github.com/geoschem/GCHP](https://github.com/geoschem/GCHP). Please help out as you can in response to issues and user questions.
 
-GCHP documentation can be found at [gchp.readthedocs.io](https://gchp.readthedocs.io).
+GCHP Classic documentation can be found at [gchp.readthedocs.io](https://geos-chem.readthedocs.io).
 
 ## When should I submit updates?
 
 Submit bug fixes right away, as these will be given the highest priority.  Please see "Support Guidelines" for more information.
 
-Submit updates (code and/or data) for mature model developments once you have submitted a paper on the topic.  Your Working Group chair can offer guidance on the timing of submitting code for inclusion into GCHP.
+Submit updates (code and/or data) for mature model developments once you have submitted a paper on the topic.  Your Working Group chair can offer guidance on the timing of submitting code for inclusion into GEOS-Chem.
 
 The practical aspects of submitting code updates are listed below.
 
