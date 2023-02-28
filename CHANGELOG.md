@@ -7,10 +7,13 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased 14.1.1]
 ### Added
-- Add `EXE_FILE_NAME` and `INSTALLCOPY` to src/CMakeLists.txt (facilitates integration testing)
-- Change "carboncycle" to "carbon" in `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt`
+  - Added `EXE_FILE_NAME` and `INSTALLCOPY` to src/CMakeLists.txt (facilitates integration testing)
+
+### Changed
+  - Changed "carboncycle" to "carbon" in `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt`
+  - Simplified Github issue and pull request templates
 
 ## [14.1.0] - 2023-02-01
 ### Changed
