@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Changed "carboncycle" to "carbon" in `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt`
+- Simplified Github issue and pull request templates
 
 ### Fixed
 - Fixed global attributes written to stretched grid checkpoint files to enable restart
