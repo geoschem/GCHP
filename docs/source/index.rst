@@ -12,15 +12,15 @@ GEOS-Chem High Performance
    <a href="https://github.com/geoschem/GCHP/releases"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?include_prereleases&label=Latest%20Pre-Release"></a>
    </p>
 
-The `GEOS--Chem model <http://acmg.seas.harvard.edu/geos/>`_ is a global 3-D model of atmospheric
+The `GEOS--Chem model <http://geos-chem.org/>`_ is a global 3-D model of atmospheric
 composition driven by assimilated meteorological observations from the Goddard Earth Observing
 System (GEOS) of the `NASA Global Modeling and Assimilation Office <http://gmao.gsfc.nasa.gov/>`_.
 It is applied by `research groups around the world
 <http://acmg.seas.harvard.edu/geos/geos_people.html>`_ to a wide range of atmospheric composition
 problems.
 
-* `GEOS-Chem Overview <http://acmg.seas.harvard.edu/geos/geos_overview.html>`_
-* `Narrative description of GEOS-Chem <http://acmg.seas.harvard.edu/geos/geos_chem_narrative.html>`_
+* `GEOS-Chem Overview <http://geos-chem.org/geos-overview>`_
+* `Narrative description of GEOS-Chem <http://geos-chem.org/geos-chem-narrative>`_
 
 This site provides instructions for GEOS-Chem High Performance, GEOS-Chem's multi-node variant. We provide two different
 instruction sets for downloading and compiling GCHP: from a clone of the source code, or using the Spack package manager. 
