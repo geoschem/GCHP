@@ -13,8 +13,8 @@ To build and run GCHP your compute :term:`environment` needs the following softw
 * CMake version ≥ 3.13
 * Compilers (C, C++, and Fortran):
 
-   * Intel compilers version ≥ 18.0.5, or
-   * GNU compilers version ≥ 8.3
+   * Intel compilers version ≥ 19, or
+   * GNU compilers version ≥ 10
 
 * MPI (Message Passing Interface)
 
@@ -26,7 +26,7 @@ To build and run GCHP your compute :term:`environment` needs the following softw
 
 * HDF5
 * NetCDF (with C, C++, and Fortran support)
-* ESMF version ≥ 8.0.0
+* ESMF version ≥ 8.1.0
 
 Your system administrator should be able to tell you if this software is already available on your cluster, and if so, how to activate it.
 If it is not already available, they might be able to build it for you.
@@ -51,13 +51,12 @@ applications:
 * 2 nodes, preferably ≥24 cores per node
 * Gigabit Ethernet (GbE) interconnect or better
 * 100 GB memory per node
-* 1 TB of storage
+* 1 TB of storage, depending on your input and output needs
 
 Bare Minimum Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These bare minimum requirements are sufficient for running GCHP at C24. The are adequate 
-for trying GCHP out, and for learning purposes.
+These bare minimum requirements are sufficient for running GCHP at C24. They are adequate for trying GCHP out, and for learning purposes. Please note that we recommend running at C90 or greater for scientific applications.
 
 * 6 cores
 * 32 GB of memory
@@ -66,8 +65,7 @@ for trying GCHP out, and for learning purposes.
 Big Compute Recommendations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These hardware recommendations are for users that are interested in tackling large bleeding-edge
-computational problems:
+These hardware recommendations are for users that are interested in tackling large bleeding-edge computational problems:
 
 * A high-performance-computing cluster (or a cloud-HPC service like AWS)
 
