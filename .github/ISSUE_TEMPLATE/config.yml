@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GCHP user manual
+    url: https://gchp.readthedocs.io/en/stable
+    about: Click this link to read the GCHP user manual.
