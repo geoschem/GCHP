@@ -46,3 +46,6 @@ USE_SHMEM
 
 REVERSE_TIME	
    Enables running time backwards in CAP. Default is 0 (off).
+
+USE_EXTDATA2G
+   Enables using the next generation of MAPL ExtData (input component) which uses a yaml-format configuration file. Default is .FALSE. (off).

@@ -10,7 +10,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased 14.2.0]
 ### Changed
   - Updated GEOS-Chem submodule to 14.2.0
-	- Updated HEMCO submodule to 3.7.0
+  - Updated HEMCO submodule to 3.7.0
+  - Updated version numbers in `CMakeLists.txt` and `docs/source/conf.py` to 14.2.0
+
+## [14.1.1] - 2023-03-03
+### Added
+  - Added `EXE_FILE_NAME` and `INSTALLCOPY` to src/CMakeLists.txt (facilitates integration testing)
+
+### Changed
+  - Changed "carboncycle" to "carbon" in `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt`
+  - Simplified Github issue and pull request templates
+  - Updated ReadTheDocs to specify 8.1 is minimum version of ESMF
+  - Updated version numbers in `CMakeLists.txt` and `docs/source/conf.py` to 14.1.1
+
+### Fixed
+  - Fixed global attributes written to stretched grid checkpoint files to enable restart
+  - Fixed day-of-week scale factor handling in MAPL ExtData
+  - Fixed stretched grid checkpoint file issue in MAPL that prevented restarting stretched grid simulations
 
 ## [14.1.0] - 2023-02-01
 ### Changed

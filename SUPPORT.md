@@ -18,7 +18,8 @@ Even though we can assist in several ways, we cannot possibly do everything.  We
 If you have a science question rather than a technical question, you should contact the relevant [GEOS-Chem Working Group(s)](https://geos-chem.seas.harvard.edu/geos-working-groups) directly. But if you do not know whom to ask, you may open a new issue (See "Where can I ask for help" above) and we will be happy to direct your question to the appropriate person(s).
 
 ## How to submit changes
-Please see "Contributing Guidelines".
+Please see **[Contributing Guidelines](https://gchp.readthedocs.io/en/latest/reference/CONTRIBUTING.html)**.
 
 ## How to request an enhancement
-Please see "Contributing Guidelines".
+Please see **[Contributing Guidelines](https://gchp.readthedocs.io/en/latest/reference/CONTRIBUTING.html)**.
+
