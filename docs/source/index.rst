@@ -65,7 +65,7 @@ with Spack, as well as how to use Spack to install GCHP's dependencies if needed
    :maxdepth: 1
    :caption: Supplemental Guides
 
-   supplement/building-gchp-dependencies.rst
+   geos-chem-shared-docs/supplemental-guides/spack-guide.rst
    supplement/setting-up-aws-parallelcluster.rst
    supplement/caching-input-data.rst
    supplement/containers.rst
