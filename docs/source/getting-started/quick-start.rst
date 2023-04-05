@@ -19,17 +19,31 @@ Download the source code:
    gcuser:~$ git clone https://github.com/geoschem/GCHP.git ~/GCHP
    gcuser:~$ cd ~/GCHP
 
-Checkout the GEOS-Chem version that you want to use:
+Upon download you will have the most recently released version. You can check what this is by printing the last commit in the git log and scanning the output for tag.
 
 .. code-block:: console
 
-   gcuser:~/GCHP$ git checkout 14.0.0
+   gcuser:~/GCHP$ git log -n 1
 
-Initialize and update all the submodules:
+You can stay with this version or checkout an earlier version by its tag name:
+
+.. code-block:: console
+
+   gcuser:~/GCHP$ git checkout tags/13.3.4
+
+You can see a list of all possible tables using the git tag command:
+
+.. code-block:: console
+
+   gcuser:~/GCHP$ git tag
+
+When you have the version you wish to use you must initialize and update all the submodules:
 
 .. code-block:: console
 
    gcuser:~/GCHP$ git submodule update --init --recursive
+
+Repeat this last step every time you switch to a new version of GCHP.
 
 2. Create a run directory
 -------------------------
@@ -45,10 +59,7 @@ To create a run directory, run :file:`./createRunDir.sh` and answer the prompts:
 3. Configure your build
 -----------------------
 
-Create a build directory and :command:`cd` into it. 
-A good name for this directory is :file:`build/`, and you may put this directory anywhere on your system, such as in the top-level of the source code or in your run directory. 
-The GCHP build directory will require 1.4G of storage space. 
-In this guide we put it in the source code:
+Building GCHP will require 1.4G of storage space. You may build GCHP from within the run directory or from anywhere else on your system. Building from within the run directory is convenient because it keeps all build files in close proximity to where you will run GCHP. For this purpose the GCHP run directory includes a build directory called :file:`build/`. However, you can create a build directory elsewhere, such as within the GCHP source code. In this guide we will do both, starting with building from the source code.
 
 .. code-block:: console
 
@@ -64,9 +75,9 @@ Make sure you have loaded all libraries required for GCHP prior to this step.
 
 Now you can configure :ref:`build options <gchp_build_options>`. 
 These are persistent settings that are saved to your build directory.
-A common build option is :literal:`-DRUNDIR`. 
+A useful build option is :literal:`-DRUNDIR`. 
 This option lets you specify one or more run directories that GCHP is "installed" to, meaning where the executable is copied, when you do :command:`make install`. 
-Configure your build so it installs GCHP to the run directory you created in Step 2:
+Configure your build so it installs GCHP to the run directory you created in Step 2.
 
 .. code-block:: console
 
@@ -75,18 +86,27 @@ Configure your build so it installs GCHP to the run directory you created in Ste
 .. note::
    The :literal:`.` in the :program:`cmake` command above is important. It tells CMake that your current working directory (i.e., :literal:`.`) is your build directory.
 
-If you decide instead to build GCHP in your run directory you can do all of the above in one step making use of the :literal:`CodeDir` symbolic link in the run directory:
+If you decide instead to build GCHP in your run directory you can do all of the above in one step. This makes use of the :literal:`CodeDir` symbolic link in the run directory:
 
 .. code-block:: console
 
+   gcuser:/path/to/your/run/directory/$ cd build
    gcuser:/path/to/your/run/directory/build$ cmake ../CodeDir -DRUNDIR=..
 
+GEOS-Chem has a number of optional compiler flags you can add here. For example, to compile with RRTMG:
+
+   gcuser:/path/to/your/run/directory/build$ cmake ../CodeDir -DRUNDIR=.. -DRRTMG=y
+
+A useful compiler option is to build in debug mode. Doing this is a good idea if you encountered a segmentation fault in a previous run and need more information about where the error happened and why.
+
+   gcuser:/path/to/your/run/directory/build$ cmake ../CodeDir -DRUNDIR=.. -DCMAKE_BUILD_TYPE=Debug
+
+See the GEOS-Chem documentation for more information on compiler flags.
 
 4. Compile and install
 ----------------------
 
-Compiling GCHP takes about 20 minutes, but it can vary depending on your system. 
-Next, compile GCHP in parallel using as many cores as are available:
+Compiling GCHP takes about 20 minutes, but it can vary depending on your system, your compiler, and your compiler flags. To maximize build speed you should compile GCHP in parallel using as many cores as are available. Do this with the -j flag:
 
 .. code-block:: console
 
@@ -104,9 +124,11 @@ This copies :file:`bin/gchp` and supplemental files to your run directory.
    You can update build settings at any time:
    
    1. Navigate to your build directory.
-   2. Update your build settings with :program:`cmake`.
+   2. Update your build settings with :program:`cmake` (only if they differ since your last execution of cmake)
    3. Recompile with :command:`make -j`. Note that the build system automatically figures out what (if any) files need to be recompiled.
    4. Install the rebuilt executable with :command:`make install`.
+
+If you do not install the executable to your run directory you can always get the executable from the directory :command:`build/bin`.
 
 
 5. Configure your run directory

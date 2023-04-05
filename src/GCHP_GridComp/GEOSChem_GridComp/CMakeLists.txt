@@ -17,7 +17,7 @@ set(LUO_WETDEP OFF CACHE BOOL
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
 set(GTMM                    FALSE)
-set(MECH                    "fullchem") # for now, we only support "fullchem"
+set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
 set(GCHP                    TRUE)
 set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
@@ -126,7 +126,7 @@ target_compile_definitions(GEOSChemBuildProperties
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/geos-chem/CMakeScripts)
 include(GC-Helpers)
 gc_pretty_print(SECTION "Settings")
-set(MECH "fullchem")
+gc_pretty_print(VARIABLE MECH OPTIONS "fullchem" "carbon" "custom")
 gc_pretty_print(VARIABLE OMP IS_BOOLEAN)
 gc_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
 gc_pretty_print(VARIABLE APM IS_BOOLEAN)

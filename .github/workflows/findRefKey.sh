@@ -25,25 +25,36 @@ hash=$3
 
 
 commits=`git rev-list --max-count=${MAX_COMMITS} ${hash}`
-describe_command="git describe --tags"
+recent_tags=`git tag --sort=-v:refname --list "[0-9]*" | head -n 5`
 
 # in reverse chronological order we query dynamodb for the last
 # successful simulation run
 for commit in ${commits}
 do
-    find_previous_tag
+    exclude_string=""
 
-    # query dynamodb for the given primary key simulation
-    output=`aws dynamodb get-item \
-        --table-name geoschem_testing \
-        --key "{\"InstanceID\": {\"S\": \"${primary_key}\"}}"`
-    # Check if the simulation for given primary key exists and ran
-    # successfully print out the first successful primary key and exit
-    if [[ `echo $output | jq '.Item.ExecStatus.S | contains("SUCCESSFUL")'` == "true" ]] \
-    && [[ `echo $output | jq 'any(.Item.Stages.L[].M.Name.S; . == "RunGCHP")'` == "true" ]]; then
-        echo $primary_key
-        exit 0
-    fi
+    for tag in ${recent_tags}
+    do
+        if [[ ! -z $exclude_string ]]; then
+            describe_command="git describe ${exclude_string} --tags"
+        else
+            describe_command="git describe --tags"
+        fi
+        find_previous_tag
+
+        # query dynamodb for the given primary key simulation
+        output=`aws dynamodb get-item \
+            --table-name geoschem_testing \
+            --key "{\"InstanceID\": {\"S\": \"${primary_key}\"}}"`
+        # Check if the simulation for given primary key exists and ran
+        # successfully print out the first successful primary key and exit
+        if [[ `echo $output | jq '.Item.ExecStatus.S | contains("SUCCESSFUL")'` == "true" ]] \
+        && [[ `echo $output | jq 'any(.Item.Stages.L[].M.Name.S; . == "RunGCHP")'` == "true" ]]; then
+            echo $primary_key
+            exit 0
+        fi
+        exclude_string="${exclude_string} --exclude ${tag}"
+    done
 done
 
 echo "Error: No successful primary key found within $MAX_COMMITS commits"
