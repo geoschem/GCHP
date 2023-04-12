@@ -26,8 +26,9 @@ Institution:
 ### Submodule Pull Requests
 
 <!--- Create a list of checkboxes (using "[ ]") for your submodule pull requests. --->
+<!--- Examples are shown below using 'xxx' as placeholder for pull request number. --->
 <!--- If your pull requests should be merged in a specific order, please make sure they are ordered correctly. --->
 
-* [ ] https://github.com/geoschem/geos-chem/pull/834 
-* [ ] https://github.com/geoschem/HEMCO/pull/49
+* [ ] https://github.com/geoschem/geos-chem/pull/xxx
+* [ ] https://github.com/geoschem/HEMCO/pull/xxx
 
