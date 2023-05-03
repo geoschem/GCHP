@@ -153,7 +153,7 @@ Before continuing with the tutorial check that you have all pre-requisites:
 
 * You are able to run global GCHP simulations using MERRA2 data for July 2019
 * You have the latest version of GEOS-Chem python package GCPy
-* You python package cartopy >= 0.19
+* You have python package cartopy with version >= 0.19
 
 Create run directory
 ^^^^^^^^^^^^^^^^^^^^^^^
