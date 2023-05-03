@@ -66,6 +66,14 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddImportSpec(gc, &
+                              SHORT_NAME='PS2', &
+                              LONG_NAME='pressure_at_surface_after_advection', &
+                              UNITS='hPa', &
+                              DIMS=MAPL_DimsHorzOnly, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddImportSpec(gc, &
                               SHORT_NAME='SPHU1', &
                               LONG_NAME='specific_humidity_before_advection', &
                               UNITS='kg kg-1', &
@@ -347,14 +355,19 @@ module GCHPctmEnv_GridComp
 
       ! Locals
       real, pointer, dimension(:,:)       ::  PS1_IMPORT => null()
+      real, pointer, dimension(:,:)       ::  PS2_IMPORT => null()
       real(r8), pointer, dimension(:,:,:) :: PLE0_EXPORT => null()
       real(r8), pointer, dimension(:,:,:) :: PLE1_EXPORT => null()
       integer :: num_levels
       integer :: STATUS
 
+      ! NB: Input at ExtData is PS1 (before) and PS2 (after)
+      !     Input at FV3 is PLE0 (before) and PLE1 (after)
       call lgr%debug('Preparing FV3 inputs PLE0, and PLE1')
 
       call MAPL_GetPointer(IMPORT, PS1_IMPORT,    'PS1', RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_GetPointer(IMPORT, PS2_IMPORT,    'PS2', RC=STATUS)
       _VERIFY(STATUS)
 
       call MAPL_GetPointer(EXPORT, PLE0_EXPORT,  'PLE0',  RC=STATUS)
@@ -371,7 +384,10 @@ module GCHPctmEnv_GridComp
       call calculate_ple(PS1_IMPORT, PLE0_EXPORT)    ! output is bottom-up, units are hPa
       PLE0_EXPORT = 100.0d0*PLE0_EXPORT              ! convert hPa to Pa
       PLE0_EXPORT = PLE0_EXPORT(:,:,num_levels:0:-1) ! flip
-      PLE1_EXPORT = PLE0_EXPORT                      ! copy PLE0 to PLE1
+      
+      call calculate_ple(PS2_IMPORT, PLE1_EXPORT)    ! output is bottom-up, units are hPa
+      PLE1_EXPORT = 100.0d0*PLE1_EXPORT              ! convert hPa to Pa
+      PLE1_EXPORT = PLE1_EXPORT(:,:,num_levels:0:-1) ! flip
 
       PLE=>PLE0_EXPORT
 
@@ -390,6 +406,8 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
       integer :: STATUS
 
+      ! NB: Input at ExtData is SPHU1 (before) and SPHU2 (after)
+      !     Input at FV3 is SPHU0 (before) and SPHU1 (after)
       call lgr%debug('Preparing FV3 input SPHU0')
 
       call MAPL_GetPointer(IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS)
