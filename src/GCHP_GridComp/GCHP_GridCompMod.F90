@@ -198,15 +198,15 @@ contains
       ! Connectivities between Children
       ! -------------------------------
       CALL MAPL_AddConnectivity ( GC,                          &
-                                  SHORT_NAME = (/ 'CX   ',     &
-                                                  'CY   ',     &
-                                                  'MFX  ',     &
-                                                  'MFY  ',     &
-                                                  'PLE0 ',     &
-                                                  'PLE1 ',     &
+                                  SHORT_NAME = (/ 'CX     ',   &
+                                                  'CY     ',   &
+                                                  'MFX    ',   &
+                                                  'MFY    ',   &
+                                                  'PLE0   ',   &
+                                                  'PLE1   ',   &
                                                   'DryPLE0',   &
                                                   'DryPLE1',   &
-                                                  'SPHU0'  /), &
+                                                  'SPHU0  '/), &
                                   DST_ID = ADV,                &
                                   SRC_ID = ECTM,               &
                                   __RC__ )
