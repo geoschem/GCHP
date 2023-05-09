@@ -204,6 +204,8 @@ contains
                                                   'MFY  ',     &
                                                   'PLE0 ',     &
                                                   'PLE1 ',     &
+                                                  'DryPLE0',   &
+                                                  'DryPLE1',   &
                                                   'SPHU0'  /), &
                                   DST_ID = ADV,                &
                                   SRC_ID = ECTM,               &
@@ -211,6 +213,7 @@ contains
 
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME = (/ 'AREA  ',    &
+                                                  'DryPLE',    &
                                                   'PLE   ' /), &
                                   DST_ID   = CHEM,             &
                                   SRC_ID = ADV,                &
