@@ -655,10 +655,9 @@ module GCHPctmEnv_GridComp
       PLE0_EXPORT = PLE0_EXPORT(:,:,LM:0:-1)
 
       ! Compute PLE1 from PS2 (naming mismatch between FV3 GEOS-Chem )
-!      call calculate_ple(PS2_IMPORT, PLE1_EXPORT)
-!      PLE1_EXPORT = 100.0d0 * PLE1_EXPORT
-!      PLE1_EXPORT = PLE1_EXPORT(:,:,LM:0:-1)
-      PLE1_EXPORT = PLE0_EXPORT ! ewl: eventually replace with above after zero diff
+      call calculate_ple(PS2_IMPORT, PLE1_EXPORT)
+      PLE1_EXPORT = 100.0d0 * PLE1_EXPORT
+      PLE1_EXPORT = PLE1_EXPORT(:,:,LM:0:-1)
 
       ! Also compute dry pressures if using dry pressure in advection
       if ( use_total_air_pressure_in_advection < 1 ) then
