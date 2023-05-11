@@ -630,7 +630,6 @@ module GCHPctmEnv_GridComp
       PLE0_EXPORT(:,:,:)  = 0.0d0
       PLE1_EXPORT(:,:,:)  = 0.0d0
 
-      ! If using dry pressure
       if ( use_total_air_pressure_in_advection < 1 ) then
          call MAPL_GetPointer(EXPORT, DryPLE0_EXPORT,  'DryPLE0',  RC=STATUS)
          _VERIFY(STATUS)
@@ -644,10 +643,10 @@ module GCHPctmEnv_GridComp
       LM = size(PLE0_EXPORT,3) - 1
 
       ! Compute pressure edge exports from surface pressure and
-      ! then convert from hPa to Pa and vertical flip so that top-down
-      ! (level 1 is TOA). The transformation is needed because calculate_ple
-      ! returns pressure as bottom-up in [Pa] and advection expects top-down
-      ! in [hPa].
+      ! then convert from hPa to Pa and vertically flip so that level index
+      ! is top-down (level 1 is TOA). The transformation is needed because
+      ! calculate_ple returns bottom-up pressure as in [hPa] and advection
+      ! expects top-down pressure in [Pa].
 
       ! Compute PLE0 from PS1 (naming mismatch between FV3 GEOS-Chem)
       call calculate_ple(PS1_IMPORT, PLE0_EXPORT)
@@ -893,10 +892,10 @@ module GCHPctmEnv_GridComp
       end if
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
-      call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
-                           RC=STATUS)
-      _VERIFY(STATUS)
       if (associated(UpwardsMassFlux)) then
+         call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
+                              RC=STATUS)
+         _VERIFY(STATUS)
          call lgr%debug('Calculating diagnostic export UpwardsMassFlux')
 
          ! Get vertical mass flux
@@ -1012,30 +1011,44 @@ module GCHPctmEnv_GridComp
               0.000000d+00 /)
 
       
-      ! Calculate level edges
+      ! Calculate bottom-up level edge pressures [hPa]
       if ( .not. PRESENT( SPHU ) ) then
+
+         ! Total pressure
          do L=1,num_edges
             PLE(:,:,L) = AP(L) + ( BP(L) * dble(PS(:,:)) )
          enddo
+
       else
 
-         is = lbound(PS,1); ie = ubound(PS,1)
-         js = lbound(PS,2); je = ubound(PS,2)
-         lm = size  (SPHU,3)
-
+         ! Dry pressure
+         is = lbound(PS,1)
+         ie = ubound(PS,1)
+         js = lbound(PS,2)
+         je = ubound(PS,2)
+         LM = size  (SPHU,3)
          do J=js,je
          do I=is,ie
+
+            ! Start with TOA pressure
             PSDry = AP(LM+1)
-            do L=1,num_edges
+
+            ! Stack up dry delta-P to get surface dry pressure
+            do L=1,LM
                PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
                PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )
                PSDry = PSDry &
                        + ( ( PEdge_Bot - Pedge_Top ) * ( 1.d0 - SPHU(I,J,L) ) )
+            enddo
+
+            ! Work back up from the surface to get dry level edges
+            do L=1,LM+1
                PLE(I,J,L) = AP(L) + ( BP(L) * dble(PSDry) )
             enddo
          enddo
          enddo
       endif
+
 
    end subroutine calculate_ple
 !EOC
