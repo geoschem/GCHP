@@ -14,3 +14,11 @@ sphinxcontrib-bibtex==2.2.0
 recommonmark
 docutils==0.16
 jinja2==3.0.3
+#
+# The updates below are needed along with the ~/.readthedocs.yaml file
+# in order to prevent builds from failing due to package version
+# incompatibilities.  Please see this Github issue for more information:
+# https://github.com/readthedocs/readthedocs.org/issues/10290
+#
+pybtex==0.24.0
+pybtex-docutils==1.0.2
