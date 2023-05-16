@@ -50,6 +50,7 @@ module GCHPctmEnv_GridComp
    
    logical :: meteorology_vertical_index_is_top_down
    integer :: use_total_air_pressure_in_advection
+   integer :: correct_mass_flux_for_humidity
    
    class(Logger), pointer :: lgr => null()
 !
@@ -457,6 +458,19 @@ module GCHPctmEnv_GridComp
       end if
       call lgr%info(trim(msg))
 
+      ! Get whether to correct mass flux for humidity (convert total to dry)
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute( &
+                               CF,                                             &
+                               value=correct_mass_flux_for_humidity,           &
+                               label='CORRECT_MASS_FLUX_FOR_HUMIDITY:',        &
+                               Default=1,                                      &
+                               __RC__ )
+      if ( correct_mass_flux_for_humidity > 0 ) then
+         msg='Configured to correct native mass flux (if using) for humidity'
+      end if
+      call lgr%info(trim(msg))
+
       ! Turn off timers
       ! -----------------------------------------------------------------
       call MAPL_TimerOff(ggSTATE,"INITIALIZE")
@@ -786,6 +800,7 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: MFY_EXPORT => null() 
       real(r8), pointer, dimension(:,:,:) :: CX_EXPORT  => null()
       real(r8), pointer, dimension(:,:,:) :: CY_EXPORT  => null()
+      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT  => null()
 
       ! Pointers to imports
       real,     pointer, dimension(:,:,:) :: UA_IMPORT  => null()
@@ -823,14 +838,28 @@ module GCHPctmEnv_GridComp
 
       if ( import_mass_flux_from_extdata ) then
 
+         ! Get SPHU0 export set in prepare_sphu_export
+         if ( correct_mass_flux_for_humidity > 0 ) then
+            call MAPL_GetPointer(EXPORT, SPHU0_EXPORT, 'SPHU0', RC=STATUS)
+            _VERIFY(STATUS)
+         endif
+
          ! Get imports (real4) and copy to exports, converting to real8
          call MAPL_GetPointer(IMPORT, temp3d_r4, 'MFXC',  RC=STATUS)
          _VERIFY(STATUS)
-         MFX_EXPORT = dble(temp3d_r4)
+         if ( correct_mass_flux_for_humidity > 0 ) then
+            MFX_EXPORT = dble(temp3d_r4) / ( 1.d0 - SPHU0_EXPORT )
+         else
+            MFX_EXPORT = dble(temp3d_r4)
+         endif
 
          call MAPL_GetPointer(IMPORT, temp3d_r4, 'MFYC',  RC=STATUS)
          _VERIFY(STATUS)
-         MFY_EXPORT = dble(temp3d_r4)
+         if ( correct_mass_flux_for_humidity > 0 ) then
+            MFY_EXPORT = dble(temp3d_r4) / ( 1.d0 - SPHU0_EXPORT )
+         else
+            MFY_EXPORT = dble(temp3d_r4)
+         endif
 
          call MAPL_GetPointer(IMPORT, temp3d_r4, 'CXC',  RC=STATUS)
          _VERIFY(STATUS)
@@ -899,8 +928,8 @@ module GCHPctmEnv_GridComp
          call lgr%debug('Calculating diagnostic export UpwardsMassFlux')
 
          ! Get vertical mass flux
-         call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, &
-                                     dt)
+         call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
+
          ! Flip vertical so that GCHP diagnostic is positive="up"
          UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)/dt
       end if
@@ -910,6 +939,7 @@ module GCHPctmEnv_GridComp
       MFY_EXPORT      => null()
       CX_EXPORT       => null()
       CY_EXPORT       => null()
+      SPHU0_EXPORT    => null()
       UA_IMPORT       => null()
       VA_IMPORT       => null()
       UpwardsMassFlux => null()
