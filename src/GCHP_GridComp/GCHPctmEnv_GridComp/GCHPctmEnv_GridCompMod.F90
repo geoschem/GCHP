@@ -449,7 +449,7 @@ module GCHPctmEnv_GridComp
                                CF,                                             &
                                value=use_total_air_pressure_in_advection,      &
                                label='USE_TOTAL_AIR_PRESSURE_IN_ADVECTION:',   &
-                               Default=1,                                      &
+                               Default=0,                                      &
                                __RC__ )
       if ( use_total_air_pressure_in_advection > 0 ) then
          msg='Configured to use total air pressure in advection'
@@ -468,6 +468,8 @@ module GCHPctmEnv_GridComp
                                __RC__ )
       if ( correct_mass_flux_for_humidity > 0 ) then
          msg='Configured to correct native mass flux (if using) for humidity'
+      else
+         msg='Configured to not correct native mass flux (if using) for humidity'
       end if
       call lgr%info(trim(msg))
 
