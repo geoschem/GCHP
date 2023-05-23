@@ -162,6 +162,14 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddImportSpec(gc, &
+                              SHORT_NAME='PS2', &
+                              LONG_NAME='pressure_at_surface_after_advection', &
+                              UNITS='hPa', &
+                              DIMS=MAPL_DimsHorzOnly, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddImportSpec(gc, &
                               SHORT_NAME='SPHU1', &
                               LONG_NAME='specific_humidity_before_advection', &
                               UNITS='kg kg-1', &
@@ -625,7 +633,8 @@ module GCHPctmEnv_GridComp
       !================================
       ! prepare_ple_exports starts here
       !================================
-
+      ! NB: Input at ExtData is PS1 (before) and PS2 (after)
+      !     Input at FV3 is PLE0 (before) and PLE1 (after)
       call lgr%debug('Preparing FV3 inputs PLE0 and PLE1')
 
       ! Get imports (real4)
@@ -734,6 +743,8 @@ module GCHPctmEnv_GridComp
       ! prepare_sphu_export starts here
       !================================
 
+      ! NB: Input at ExtData is SPHU1 (before) and SPHU2 (after)
+      !     Input at FV3 is SPHU0 (before) and SPHU1 (after)
       call lgr%debug('Preparing FV3 input SPHU0')
 
       ! Get imports (real4)
