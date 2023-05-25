@@ -8,13 +8,19 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased 14.2.0]
-### Changed
-- Updated GEOS-Chem submodule to 14.2.0
-- Updated HEMCO submodule to 3.7.0
-- Updated version numbers in `CMakeLists.txt` and `docs/source/conf.py` to 14.2.0
-
 ### Fixed
-- Fix error in pressure level edge construction
+  - Fixed post-advection pressure edges (PLE1) passed to advection to be derived from the correct surface pressure
+
+### Added
+  - Added run-time option to use dry air pressure in advection
+  - Added run-time option to correct mass flux for humidity
+
+### Changed
+
+  - Updated GEOS-Chem submodule to 14.2.0
+  - Updated HEMCO submodule to 3.7.0
+  - Updated version numbers in `CMakeLists.txt` and `docs/source/conf.py` to 14.2.0
+  - Changed default air pressure in advection from total to dry
 
 ## [14.1.1] - 2023-03-03
 ### Added
