@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated `AUTHORS.txt` for GCHP 14.2.0
 - Updated `README.md` so that links point to http://geos-chem.org
 - Updated logo & badge links in `README.md`
+- Updated version number to 14.2.0
 
 ### Fixed
 - Typo in `docs/source/conf.py`, "_static" should be "_static/"
