@@ -8,7 +8,8 @@
 !   1. Advection (DYNAMICS)
 !   2. Traditional GEOS-Chem except for advection (GCHPchem)
 !   3. Cinderella component to derive variables for other comps (GCHPctmEnv)
-!
+!   4. Adding Skeleton component
+
 ! !NOTES:
 ! (1) For now, the dynamics module is rather primitive and based upon netCDF
 ! input fields for all met. variables (U,V,etc.). This module computes 
@@ -34,6 +35,7 @@ module GCHP_GridCompMod
   use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
   use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
   use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
+  use Skeleton_GridComp,   only : SkeletonSetServices  => SetServices
 
   implicit none
   private
@@ -55,7 +57,7 @@ module GCHP_GridCompMod
  
 !EOP
 
-  integer ::  ADV, CHEM, ECTM, MemDebugLevel
+  integer ::  ADV, CHEM, ECTM, SKELETON, MemDebugLevel
   class(Logger), pointer  :: lgr => null()
   
 
@@ -77,7 +79,7 @@ contains
 ! !DESCRIPTION:  The SetServices for the GCHP gridded component needs to 
 !   register its Initialize, Run, and Finalize.  It uses the MAPL_Generic 
 !   construct for defining state specifications and couplings among its 
-!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM) 
+!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON) 
 !   and run their respective SetServices.
 
 !EOP
@@ -164,7 +166,11 @@ contains
    ! Add dynamics
    ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
                        RC=STATUS)
-   _VERIFY(STATUS)
+
+   ! Add skeleton
+   SKELETON = MAPL_AddChild(GC, NAME='SKELETON',  SS=SkeletonSetServices,  &
+                       RC=STATUS)
+!   _VERIFY(STATUS)
 
 #ifdef ADJOINT
 #ifdef REVERSE_OPERATORS

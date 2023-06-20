@@ -29,6 +29,11 @@ add_subdirectory(GEOSChem_GridComp EXCLUDE_FROM_ALL)
 #---------------
 add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 
+#---------------
+# Add Skeleton
+#---------------
+add_subdirectory(Skeleton_GridComp EXCLUDE_FROM_ALL)
+
 #--------------------------------
 # Create the GCHP_GridComp target
 #--------------------------------
@@ -36,3 +41,4 @@ add_library(GCHP_GridComp STATIC
     GCHP_GridCompMod.F90
 )
 target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
+target_link_libraries(GCHP_GridComp PUBLIC Skeleton_GridComp   GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
