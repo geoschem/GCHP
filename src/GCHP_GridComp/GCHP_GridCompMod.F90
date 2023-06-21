@@ -166,11 +166,12 @@ contains
    ! Add dynamics
    ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
                        RC=STATUS)
+   _VERIFY(STATUS)
 
    ! Add skeleton
    SKELETON = MAPL_AddChild(GC, NAME='SKELETON',  SS=SkeletonSetServices,  &
                        RC=STATUS)
-!   _VERIFY(STATUS)
+   _VERIFY(STATUS)
 
 #ifdef ADJOINT
 #ifdef REVERSE_OPERATORS
