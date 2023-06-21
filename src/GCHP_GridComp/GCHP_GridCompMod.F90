@@ -9,6 +9,7 @@
 !   2. Traditional GEOS-Chem except for advection (GCHPchem)
 !   3. Cinderella component to derive variables for other comps (GCHPctmEnv)
 !   4. Adding Skeleton component
+!   4. Adding ACHEM
 
 ! !NOTES:
 ! (1) For now, the dynamics module is rather primitive and based upon netCDF
@@ -32,10 +33,11 @@ module GCHP_GridCompMod
   use ESMF
   use MAPL_Mod
   use pFlogger, only: logging, Logger
-  use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
-  use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
-  use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
-  use Skeleton_GridComp,   only : SkeletonSetServices  => SetServices
+  use CHEM_GridCompMod,      only : AtmosChemSetServices => SetServices
+  use AdvCore_GridCompMod,   only : AtmosAdvSetServices  => SetServices
+  use GCHPctmEnv_GridComp,   only : EctmSetServices      => SetServices
+  use Skeleton_GridComp,     only : SkeletonSetServices  => SetServices
+  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
 
   implicit none
   private
@@ -57,7 +59,7 @@ module GCHP_GridCompMod
  
 !EOP
 
-  integer ::  ADV, CHEM, ECTM, SKELETON, MemDebugLevel
+  integer ::  ADV, CHEM, ECTM, SKELETON, ACHEM, MemDebugLevel
   class(Logger), pointer  :: lgr => null()
   
 
@@ -79,7 +81,7 @@ contains
 ! !DESCRIPTION:  The SetServices for the GCHP gridded component needs to 
 !   register its Initialize, Run, and Finalize.  It uses the MAPL_Generic 
 !   construct for defining state specifications and couplings among its 
-!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON) 
+!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON, ACHEM) 
 !   and run their respective SetServices.
 
 !EOP
@@ -170,6 +172,11 @@ contains
 
    ! Add skeleton
    SKELETON = MAPL_AddChild(GC, NAME='SKELETON',  SS=SkeletonSetServices,  &
+                       RC=STATUS)
+   _VERIFY(STATUS)
+
+   ! Add achem
+   ACHEM = MAPL_AddChild(GC, NAME='GEOSACHEM',  SS=AchemSetServices,  &
                        RC=STATUS)
    _VERIFY(STATUS)
 
