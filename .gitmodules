@@ -33,4 +33,4 @@
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
 [submodule "src/GCHP_GridComp/GEOSachem"]
 	path = src/GCHP_GridComp/GEOSachem
-	url = https://github.com/GEOS-ESM/GEOSachem.git
+	url = https://github.com/ShreyaSharma2023/GEOSachem.git
