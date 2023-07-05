@@ -7,6 +7,11 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased 14.2.1]
+### Changed
+- `test` now points to `src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/test`
+
+
 ## [Unreleased 14.2.0]
 ### Fixed
   - Fixed post-advection pressure edges (PLE1) passed to advection to be derived from the correct surface pressure
