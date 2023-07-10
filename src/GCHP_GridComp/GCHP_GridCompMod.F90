@@ -10,6 +10,7 @@
 !   3. Cinderella component to derive variables for other comps (GCHPctmEnv)
 !   4. Adding Skeleton component
 !   4. Adding ACHEM
+!   5. Adding MAM
 
 ! !NOTES:
 ! (1) For now, the dynamics module is rather primitive and based upon netCDF
@@ -37,8 +38,9 @@ module GCHP_GridCompMod
   use AdvCore_GridCompMod,   only : AtmosAdvSetServices  => SetServices
   use GCHPctmEnv_GridComp,   only : EctmSetServices      => SetServices
   use Skeleton_GridComp,     only : SkeletonSetServices  => SetServices
-  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
-
+!  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
+  use MAM_GridCompMod,       only : MAMSetServices       => SetServices
+ 
   implicit none
   private
 
@@ -59,7 +61,7 @@ module GCHP_GridCompMod
  
 !EOP
 
-  integer ::  ADV, CHEM, ECTM, SKELETON, ACHEM, MemDebugLevel
+  integer ::  ADV, CHEM, ECTM, SKELETON, ACHEM, MAM, MemDebugLevel
   class(Logger), pointer  :: lgr => null()
   
 
@@ -81,7 +83,7 @@ contains
 ! !DESCRIPTION:  The SetServices for the GCHP gridded component needs to 
 !   register its Initialize, Run, and Finalize.  It uses the MAPL_Generic 
 !   construct for defining state specifications and couplings among its 
-!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON, ACHEM) 
+!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON, ACHEM, MAM) 
 !   and run their respective SetServices.
 
 !EOP
@@ -176,7 +178,12 @@ contains
    _VERIFY(STATUS)
 
    ! Add achem
-   ACHEM = MAPL_AddChild(GC, NAME='GEOSACHEM',  SS=AchemSetServices,  &
+!   ACHEM = MAPL_AddChild(GC, NAME='ACHEM',  SS=AchemSetServices,  &
+!                       RC=STATUS)
+!   _VERIFY(STATUS)
+
+   ! Add MAM
+   MAM = MAPL_AddChild(GC, NAME='MAM', SS=MAMSetServices, &
                        RC=STATUS)
    _VERIFY(STATUS)
 
@@ -234,12 +241,55 @@ contains
                                      SHORT_NAME = (/'TRADV'/), &
                                      CHILD = ADV,                &
                                      __RC__  )
+      
+!      CALL MAPL_AddConnectivity ( GC,                          &
+!                                  SHORT_NAME = (/ 'AREA  ',    &
+!                                                  'PLE2  ' /), &
+!                                  DST_ID   = ACHEM,            &
+!                                  SRC_ID = ADV,                &
+!                            __RC__ )
 
-    call MAPL_TimerAdd(GC, name="RUN", RC=STATUS)
-    _VERIFY(STATUS)
+!     CALL MAPL_AddConnectivity ( GC, &
+!          SHORT_NAME  = (/'AIRDENS ', 'DELP    ', 'CN_PRCP ', 'NCN_PRCP'/), &
+!          DST_ID = MAM, SRC_ID = ADV, __RC__  )
 
-    call MAPL_GenericSetServices    ( GC, RC=STATUS )
-    _VERIFY(STATUS)
+!     CALL MAPL_AddConnectivity ( GC, &
+!          SHORT_NAME  = (/'AIRDENS ', 'DELP    '/), &
+!          DST_ID = MAM, SRC_ID = ADV, __RC__  )
+
+#if 0
+     CALL MAPL_AddConnectivity ( GC, &
+        SRC_NAME  = (/'ACHEM::SO2     ', 'ACHEM::H2SO4   ', 'ACHEM::NH3     ', 'ACHEM::SOAG    ', 'pSO4_aq        ', 'pNH4_aq        ',   &
+                      'DDT_DMS_gas    ', 'DDT_MSA_gas    ', 'DDT_SO2_gas    ', 'DDT_H2SO4_gas  ', 'DDT_NH3_gas    ', 'DDT_SOAG_gas   ',   &
+                      'DDT_DMS_aq     ', 'DDT_MSA_aq     ', 'DDT_SO2_aq     ', 'DDT_H2SO4_aq   ', 'DDT_NH3_aq     ', 'DDT_SOAG_aq    ',   &
+                      '_DMS_gas       ', '_MSA_gas       ', '_SO2_gas       ', '_H2SO4_gas     ', '_NH3_gas       ', '_SOAG_gas      ',   &
+                      '_DMS_aq        ', '_MSA_aq        ', '_SO2_aq        ', '_H2SO4_aq      ', '_NH3_aq        ', '_SOAG_aq       '/), &
+        DST_NAME  = (/'SO2            ', 'H2SO4          ', 'NH3            ', 'SOA_GAS        ', 'pSO4_aq        ', 'pNH4_aq        ',   &
+                      'DDT_DMS_gas    ', 'DDT_MSA_gas    ', 'DDT_SO2_gas    ', 'DDT_H2SO4_gas  ', 'DDT_NH3_gas    ', 'DDT_SOA_GAS_gas',   &
+                      'DDT_DMS_aq     ', 'DDT_MSA_aq     ', 'DDT_SO2_aq     ', 'DDT_H2SO4_aq   ', 'DDT_NH3_aq     ', 'DDT_SOA_GAS_aq ',   &
+                      '_DMS_gas       ', '_MSA_gas       ', '_SO2_gas       ', '_H2SO4_gas     ', '_NH3_gas       ', '_SOA_GAS_gas   ',   &
+                      '_DMS_aq        ', '_MSA_aq        ', '_SO2_aq        ', '_H2SO4_aq      ', '_NH3_aq        ', '_SOA_GAS_aq    '/), &
+        DST_ID = MAM, SRC_ID = ACHEM, __RC__  )
+#endif
+ 
+     CALL MAPL_AddConnectivity ( GC, &
+        SRC_NAME  = (/'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &
+                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &     
+                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &
+                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &
+                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  '/), &
+        DST_NAME  = (/'SO2            ', 'H2SO4          ', 'NH3            ', 'SOA_GAS        ', 'pSO4_aq        ', 'pNH4_aq        ',   &
+                      'DDT_DMS_gas    ', 'DDT_MSA_gas    ', 'DDT_SO2_gas    ', 'DDT_H2SO4_gas  ', 'DDT_NH3_gas    ', 'DDT_SOA_GAS_gas',   &
+                      'DDT_DMS_aq     ', 'DDT_MSA_aq     ', 'DDT_SO2_aq     ', 'DDT_H2SO4_aq   ', 'DDT_NH3_aq     ', 'DDT_SOA_GAS_aq ',   &
+                      '_DMS_gas       ', '_MSA_gas       ', '_SO2_gas       ', '_H2SO4_gas     ', '_NH3_gas       ', '_SOA_GAS_gas   ',   &
+                      '_DMS_aq        ', '_MSA_aq        ', '_SO2_aq        ', '_H2SO4_aq      ', '_NH3_aq        ', '_SOA_GAS_aq    '/), &
+        DST_ID = MAM, SRC_ID = CHEM, __RC__  )
+ 
+     call MAPL_TimerAdd(GC, name="RUN", RC=STATUS)
+     _VERIFY(STATUS)
+
+     call MAPL_GenericSetServices    ( GC, RC=STATUS )
+     _VERIFY(STATUS)
 
 !EOP
 
