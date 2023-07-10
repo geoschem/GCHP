@@ -37,6 +37,3 @@
 [submodule "src/GCHP_GridComp/MAM"]
 	path = src/GCHP_GridComp/MAM
 	url = https://github.com/ShreyaSharma2023/MAM.git
-[submodule "src/GCHP_GridComp/GCHP_Aerosols"]
-	path = src/GCHP_GridComp/GCHP_Aerosols
-	url = https://github.com/ShreyaSharma2023/GCHP_Aerosols.git
