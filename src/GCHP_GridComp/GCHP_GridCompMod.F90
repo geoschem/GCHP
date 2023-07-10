@@ -11,6 +11,7 @@
 !   4. Adding Skeleton component
 !   4. Adding ACHEM
 !   5. Adding MAM
+!   6. Adding Aerosols
 
 ! !NOTES:
 ! (1) For now, the dynamics module is rather primitive and based upon netCDF
@@ -39,8 +40,8 @@ module GCHP_GridCompMod
   use GCHPctmEnv_GridComp,   only : EctmSetServices      => SetServices
   use Skeleton_GridComp,     only : SkeletonSetServices  => SetServices
 !  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
-  use MAM_GridCompMod,       only : MAMSetServices       => SetServices
- 
+!  use MAM_GridCompMod,       only : MAMSetServices       => SetServices
+  use Aerosols_GridComp,     only : AerosolsSetServices  => SetServices 
   implicit none
   private
 
@@ -61,7 +62,7 @@ module GCHP_GridCompMod
  
 !EOP
 
-  integer ::  ADV, CHEM, ECTM, SKELETON, ACHEM, MAM, MemDebugLevel
+  integer ::  ADV, CHEM, ECTM, SKELETON, ACHEM, MAM, AEROSOLS, MemDebugLevel
   class(Logger), pointer  :: lgr => null()
   
 
@@ -83,7 +84,7 @@ contains
 ! !DESCRIPTION:  The SetServices for the GCHP gridded component needs to 
 !   register its Initialize, Run, and Finalize.  It uses the MAPL_Generic 
 !   construct for defining state specifications and couplings among its 
-!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON, ACHEM, MAM) 
+!   children.  In addition, it creates the children GCs (ADV, CHEM, ECTM, SKELETON, ACHEM, MAM, AEROSOLS) 
 !   and run their respective SetServices.
 
 !EOP
@@ -182,8 +183,13 @@ contains
 !                       RC=STATUS)
 !   _VERIFY(STATUS)
 
-   ! Add MAM
-   MAM = MAPL_AddChild(GC, NAME='MAM', SS=MAMSetServices, &
+!   ! Add MAM
+!   MAM = MAPL_AddChild(GC, NAME='MAM', SS=MAMSetServices, &
+!                       RC=STATUS)
+!   _VERIFY(STATUS)
+
+   ! Add Aerosols
+   AEROSOLS = MAPL_AddChild(GC, NAME='AEROSOLS',  SS=AerosolsSetServices,  &
                        RC=STATUS)
    _VERIFY(STATUS)
 
