@@ -1,5 +1,5 @@
-List of Developers for GEOS-Chem, GCHP, HEMCO, and Related Software
-(24 Apr 2023)
+List of Developers for GEOS-Chem, HEMCO, and Related Software
+(11 Jul 2023)
 ===============================================================================
 
 ADAMS, Peter
@@ -9,6 +9,7 @@ AMOS, Helen
 ANGOT, Helene
 AUSMEEL, Stina
 AUVRAY, Marion
+BALASUS, Nicholas
 BARAY, Sabour
 BARKLEY, Michael
 BARRET, Steven
@@ -26,11 +27,11 @@ BRATTICH, Erika
 BREIDER, Tom
 BREWER, Jared
 BROWNE, Ellie
-BROWN, Benjamin-Steiner
+BROWN-STEINER, Benjamin
 BUKOSA, Beata
 BUTENHOFF, Christopher
-CADY, Karen-Pereira
-CAMERON, Philip-Smith
+CADY-PEREIRA, Karen
+CAMERON-SMITH, Philip
 CAMPBELL, Patrick
 CAO, Guofeng
 CAO, Hansen
@@ -38,7 +39,7 @@ CAO, Liangzhong
 CAO, Yi
 CAPPS, Shannon
 CAROUGE, Claire
-CARTER, Therese
+CARTER, Therese (Tess)
 CAZORLA, Maria
 CHALIYAKUNNEL, Sreelekha
 CHEN, Han
@@ -63,7 +64,7 @@ DENG, Feng
 DESOUZA, Priyanka
 DESSERVETTAZ, Max
 DEUTSCHER, Nicholas
-DI, Maurizio Pierro
+DI PIERRO, Maurizio
 DLAMINI, Thandolwethu 
 DOMMERGUE, Aurelien
 DOWNS, Will
@@ -74,7 +75,7 @@ ELLIS, Raluca
 ENBERG, Joseph
 ESTRADA, Lucas
 EVANS, Mathew
-FAIRLIE,
+FAIRLIE, T. Duncan
 FARINA, Sal
 FAYE, Vivian
 FEINBERG, Ari
@@ -84,13 +85,13 @@ FISCHER, Emily
 FISHER, Jenny
 FITE, Charley
 FLEMING, Eric
-FLO, Judit-Gaya
+FLO-GAYA, Judit
 FORD, Bonne
 FRANCIS, Timmy
 FREESE, Lyssa
 FRIEDMAN, Carey
 FRITZ, Thibaud
-FU,
+FU, Tzung-May
 FU, Joshua
 GANTT, Brett
 GE, Cui
@@ -129,9 +130,10 @@ JISKRA, Martin
 JOHNSON, Matthew
 JONES, Dylan
 JUNG, Jaegun
-KASIBHATLA, Prasad
-HUDMAN, Rynda Kay
+KASIBHATLA, 
+KAY, Rynda Hudman
 KELLER, Christoph
+KELP, Makoto
 KIKUCHI, Tetsuro
 KIM, Hyeonmin
 KIM, Sungshik
@@ -156,19 +158,19 @@ LEE, Meemong
 LEHMANN, Ralph
 LEIBENSPERGER, Eric
 LERICHE, Maud
-LEUNG,
+LEUNG, Fok-Yan
 LI, Bengang
 LI, Chi
 LI, Ke
 LI, Qinbin
 LI, Xianglan
 LI, Yanshun
-LIAO,
+LIAO, K.J.
 LIANG, Qing
 LIAO, Hong
 LIN, Haipeng
 LIN, Jintai
-LIN,
+LIN, Shian-Jiann
 LINFORD, John
 LIU, Hongyu
 LIU, Jane
@@ -200,7 +202,7 @@ MENG, Jun
 MESKHIDZE, Nicholas
 MIATSELSKAYA, Natallia
 MICKLEY, Loretta
-CHAN, Christopher Miller
+MILLER, Christopher Chan
 MILLET, Dylan
 MING, Kai
 MOCH, Jonathan
@@ -219,7 +221,7 @@ NENES, Athanasios
 NEVISON, Cynthia
 NIELSEN, Eric
 NOTHOLT, Justus
-O, Kate'Dell
+O'DELL, Kate
 OKAMOTO, Sachiko
 PAGE, Neil
 PAI, Sidhant
@@ -247,6 +249,7 @@ REINHART, Wes
 RIDLEY, David
 RIZZA, Umberto
 ROTHENBERG, Daniel
+ROY, Eric
 SAFIEDDINE, Sarah
 SANDU, Adrian
 SANTILLANA, Mauricio
@@ -308,6 +311,7 @@ VAL, Maria-Martin
 VAN, Aaron Donkelaar
 VAROTSOS, Kostas
 VINKEN, Geert
+VITT, Francis
 WAGSTROM, Kristina
 WALKER, Thomas
 WANG, James
