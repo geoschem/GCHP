@@ -40,7 +40,7 @@ module GCHP_GridCompMod
   use GCHPctmEnv_GridComp,   only : EctmSetServices      => SetServices
   use Skeleton_GridComp,     only : SkeletonSetServices  => SetServices
 !  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
-!  use MAM_GridCompMod,       only : MAMSetServices       => SetServices
+  use MAM_GridCompMod,       only : MAMSetServices       => SetServices
   use Aerosols_GridComp,     only : AerosolsSetServices  => SetServices 
   implicit none
   private
@@ -184,9 +184,9 @@ contains
 !   _VERIFY(STATUS)
 
 !   ! Add MAM
-!   MAM = MAPL_AddChild(GC, NAME='MAM', SS=MAMSetServices, &
-!                       RC=STATUS)
-!   _VERIFY(STATUS)
+   MAM = MAPL_AddChild(GC, NAME='MAM', SS=MAMSetServices, &
+                       RC=STATUS)
+   _VERIFY(STATUS)
 
    ! Add Aerosols
    AEROSOLS = MAPL_AddChild(GC, NAME='AEROSOLS',  SS=AerosolsSetServices,  &
@@ -279,11 +279,11 @@ contains
 #endif
  
      CALL MAPL_AddConnectivity ( GC, &
-        SRC_NAME  = (/'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &
-                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &     
-                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &
-                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ',   &
-                      'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  ', 'SO2AfterChem2  '/), &
+        SRC_NAME  = (/'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &
+                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &     
+                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &
+                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &
+                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        '/), &
         DST_NAME  = (/'SO2            ', 'H2SO4          ', 'NH3            ', 'SOA_GAS        ', 'pSO4_aq        ', 'pNH4_aq        ',   &
                       'DDT_DMS_gas    ', 'DDT_MSA_gas    ', 'DDT_SO2_gas    ', 'DDT_H2SO4_gas  ', 'DDT_NH3_gas    ', 'DDT_SOA_GAS_gas',   &
                       'DDT_DMS_aq     ', 'DDT_MSA_aq     ', 'DDT_SO2_aq     ', 'DDT_H2SO4_aq   ', 'DDT_NH3_aq     ', 'DDT_SOA_GAS_aq ',   &
