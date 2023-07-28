@@ -12,11 +12,11 @@ More detailed instructions on downloading, compiling, and running GCHP can be fo
 1. Clone GCHP
 -------------
 
-Download the source code:
+Download the source code. :literal:`--recurse-submodules` will automatically initialize and update all the submodules:
 
 .. code-block:: console
 
-   gcuser:~$ git clone https://github.com/geoschem/GCHP.git ~/GCHP
+   gcuser:~$ git clone --recurse-submodules https://github.com/geoschem/GCHP.git ~/GCHP
    gcuser:~$ cd ~/GCHP
 
 Upon download you will have the most recently released version. You can check what this is by printing the last commit in the git log and scanning the output for tag.
