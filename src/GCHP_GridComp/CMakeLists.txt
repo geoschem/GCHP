@@ -42,7 +42,7 @@ add_subdirectory(Skeleton_GridComp EXCLUDE_FROM_ALL)
 #---------------
 # Add MAM
 #---------------
-add_subdirectory(MAM EXCLUDE_FROM_ALL)
+#add_subdirectory(MAM EXCLUDE_FROM_ALL)
 
 #---------------
 # Add Aerosols
@@ -58,6 +58,6 @@ add_library(GCHP_GridComp STATIC
 target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
 target_link_libraries(GCHP_GridComp PUBLIC Skeleton_GridComp   GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
 #target_link_libraries(GCHP_GridComp PUBLIC GEOSachem           GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
-target_link_libraries(GCHP_GridComp PUBLIC MAM                 GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
+#target_link_libraries(GCHP_GridComp PUBLIC MAM                 GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
 target_link_libraries(GCHP_GridComp PUBLIC Aerosols_GridComp   GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
 
