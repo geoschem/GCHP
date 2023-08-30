@@ -14,7 +14,7 @@ packages:
     hdf5:
         variants: ~mpi
     esmf:
-        version: [8.0.1]
+        version: [8.5.0]
         variants: ~pio~pnetcdf~xerces
         compiler: [intel, gcc]
     netcdf-c:
