@@ -38,28 +38,57 @@ Installing ESMF
 If you have all of the needed libraries except ESMF then you can download and build ESMF yourself.
 The ESMF git repository is available to clone from `github.com/esmf-org/esmf <https://github.com/esmf-org/esmf>`_. Use :code:`git tag` to browse versions available and then :code:`git checkout tags/tag_name` to checkout the version. 
 
-Once downloaded, browse file :file:`ESMF/README` for information about build requirements.
-ESMF requires that you define environment variables :file:`ESMF_COMPILER`, :file:`ESMF_COMM`, and :file:`ESMF_DIR` (path to clone), and also export environment variables :file:`CC`, :file:`CXX`, :file:`FC`, and :file:`MPI_ROOT`.
+.. code-block:: console
+
+   git clone https://github.com/esmf-org/esmf ESMF
+   cd ESMF
+   git tag
+   git checkout tags/v8.4.1
+
+If you have previously downloaded ESMF you can use your same clone to checkout and build a new ESMF version. Use the same steps as above minus the first step of cloning.
+
+Once you have downloaded ESMF and checked out the version you would like to build, browse the file
+:file:`ESMF/README.md` to familiarize yourself with ESMF documentation. You do not need to visit the documentation
+for doing a basic build of ESMF following this tutorial. However, if you are interested in learning more about
+ESMF and its options then you can use this guide.
+
+ESMF requires that you define environment variables :file:`ESMF_COMPILER`, :file:`ESMF_COMM`, and :file:`ESMF_DIR`,
+and also export environment variables :file:`CC`, :file:`CXX`, :file:`FC`, and :file:`MPI_ROOT`.
 Set up an environment file that loads the needed libraries and also defines these environment variables.
-Here is an example of what the variable exports might look line in your environment file:
+If you already have a GEOS-Chem environment file set up then you can copy it or repurpose it by including
+the environment variables needed for ESMF. Here is an example of what the library load and variable exports
+might look line in your environment file. This example uses GNU compilers and OpenMPI, but there are notes in
+the comments on how to use Intel instead.
 
 .. code-block:: console
 
-   export CC=gcc
-   export CXX=g++
-   export FC=gfortran
-   export MPI_ROOT=${MPI_HOME}
-   export ESMF_COMPILER=gfortran
-   export ESMF_COMM=openmpi
-   export ESMF_DIR=/home/ESMF/ESMF_8_0_1
+   module purge
+   module load gcc/10.2.0-fasrc01             # GNU compiler collection (C, C++, Fortran)
+   module load openmpi/4.1.0-fasrc01          # MPI
+   module load netcdf-c/4.8.0-fasrc01         # Netcdf-C
+   module load netcdf-fortran/4.5.3-fasrc01   # Netcdf-Fortran
+   module load cmake/3.25.2-fasrc01           # CMake
 
-You can create multiple ESMF builds, for example if you want to try different compilers. To set yourself up to allow this also export environment variable :file:`ESMF_INSTALL_PREFIX` and define it as a subdirectory within :file:`ESMF_DIR`. For example:
+   export CC=gcc                         # C compiler (use icx for Intel)
+   export CXX=g++                        # C++ compiler (se icx for Intel)
+   export FC=gfortran                    # Fortran compiler (use ifort for Intel)
+   export MPI_ROOT=${MPI_HOME}           # Path to MPI library
+   export ESMF_COMPILER=gfortran         # Fortran compiler (use intel for Intel)
+   export ESMF_COMM=openmpi              # MPI (use intelmpi for IntelMPI)
+   export ESMF_DIR=/home/ESMF/ESMF       # Path to ESMF repository within a generic directory called ESMF
+
+You can create multiple ESMF builds. This is useful if you want to use different libraries for the same
+version of ESMF, or if you want to build different ESMF versions. To set yourself up to allow multiple builds
+you should also export environment variable :file:`ESMF_INSTALL_PREFIX` and define it as a subdirectory
+within :file:`ESMF_DIR`. Include details about that particular build to distinguish it from others. For example:
 
 .. code-block:: console
 
-   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_gfortran10.2_openmpi4.1
+   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_ESMF8.4.1_gfortran10.2_openmpi4.1
 
-To prepare your environment file for use with GCHP as well simply add the following:
+Using this install in GCHP will require setting :file:`ESMF_ROOT` to the install directory. Add the following
+line to your ESMF environment file if you plan on repurposing it for use with GCHP. Otherwise remember to add
+it to your GCHP environment file along with the assignment of :file:`ESMF_INSTALL_PREFIX`. 
 
 .. code-block:: console
 
@@ -69,12 +98,36 @@ Once you are ready to build execute the following commands:
 
 .. code-block:: console
 
-   $ source path_to/your/env/file
+   $ source path/to/your/env/file
    $ cd $ESMF_DIR
-   $ make &> compile.log
+   $ make -j &> compile.log
 
 Once compilation completes check the end of :file:`compile.log` to see if compilation was successful.
-If it was a success then continue as follows:
+You may run into known errors with compiling certain ESMF versions with GNU and Intel compilers. If you
+run into a problem with GNU you can try adding this to your environment file, resourcing it, and then
+rebuilding.
+
+.. code-block:: console
+
+   # ESMF may not build with GCC without the following work-around
+   # for a type mismatch error (https://trac.macports.org/ticket/60954)
+   if [[ "x${ESMF_COMPILER}" == "xgfortran" ]]; then
+      export ESMF_F90COMPILEOPTS="-fallow-argument-mismatch -fallow-invalid-boz"
+   fi
+
+If you run into a problem with Intel compilers then try the following.
+
+.. code-block:: console
+
+   # Make sure /usr/bin comes first in the search path, so that the build
+   # will find /usr/bin/gcc compiler, which ESMF uses for preprocessing.
+   # Also unset the ESMF_F90COMPILEOPTS variable, which is only needed for GNU.
+   if [[ "x${ESMF_COMPILER}" == "xintel" ]]; then
+      export PATH="/usr/bin:${PATH}"
+      unset ESMF_F90COMPILEOPTS
+   fi
+
+Once you have a successful run then install ESMF using this command:
 
 .. code-block:: console
 
@@ -94,19 +147,24 @@ Archive your compile and install logs to that directory.
 Calling make builds ESMF and calling make install places the build into your install directory.
 In that folder the build files are placed within subdirectories such as bin and lib, among others.
 The install directory is not deleted when you clean ESMF source code with :code:`make distclean` in the top-level ESMF directory.
-Therefore you can clean and rebuild ESMF with different combinations of libraries in advance of needing them to build and run GCHP.
+Therefore you can clean and rebuild ESMF with different combinations of libraries and versions in advance of needing them to build and run GCHP.
 Just remember to clean the source code and source the environment file you intend to use prior to creating a new build.
-You also must specify a different :code:`${ESMF_INSTALL_PREFIX}` for each unique build so as not to overwrite others.
+Make sure you specify a different :code:`${ESMF_INSTALL_PREFIX}` for each unique build so as not to overwrite others.
+
+Below is a complete summary of build steps, including cleanup at the end and moving logs files and your environment
+file to the install directory for archiving. This is a complete list of command line steps assuming you have a functional
+environment file with correct install path and have checked out the version of ESMF you wish to build.
 
 .. code-block:: console
 
-$ cd $ESMF_DIR
-$ make distclean
-$ source path_to_your_env_file_with_unique_ESMF_INSTALL_PREFIX
-$ make &> compile.log
-$ install $> install.log
-$ mv compile.log $ESMF_INSTALL_PREFIX
-$ mv install.log $ESMF_INSTALL_PREFIX
+   $ cd $ESMF_DIR
+   $ make distclean
+   $ source path/to/env/file/with/unique/ESMF_INSTALL_PREFIX
+   $ make &> compile.log
+   $ install $> install.log
+   $ mv compile.log $ESMF_INSTALL_PREFIX
+   $ mv install.log $ESMF_INSTALL_PREFIX
+   $ cp /path/to/your/env/file $ESMF_INSTALL_PREFIX
 
 .. _hardware_requirements:
 
