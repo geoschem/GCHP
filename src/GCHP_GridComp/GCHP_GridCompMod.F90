@@ -39,7 +39,9 @@ module GCHP_GridCompMod
   use AdvCore_GridCompMod,   only : AtmosAdvSetServices  => SetServices
   use GCHPctmEnv_GridComp,   only : EctmSetServices      => SetServices
   use Skeleton_GridComp,     only : SkeletonSetServices  => SetServices
-!  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
+#ifdef __achem__
+  use GEOSachem_GridCompMod, only : AchemSetServices     => SetServices
+#endif
   use MAM_GridCompMod,       only : MAMSetServices       => SetServices
   use Aerosols_GridComp,     only : AerosolsSetServices  => SetServices 
   implicit none
@@ -178,10 +180,12 @@ contains
                        RC=STATUS)
    _VERIFY(STATUS)
 
+#ifdef __achem__
    ! Add achem
-!   ACHEM = MAPL_AddChild(GC, NAME='ACHEM',  SS=AchemSetServices,  &
-!                       RC=STATUS)
-!   _VERIFY(STATUS)
+   ACHEM = MAPL_AddChild(GC, NAME='ACHEM',  SS=AchemSetServices,  &
+                       RC=STATUS)
+   _VERIFY(STATUS)
+#endif
 
 !   ! Add MAM
    MAM = MAPL_AddChild(GC, NAME='MAM', SS=MAMSetServices, &
@@ -247,24 +251,33 @@ contains
                                      SHORT_NAME = (/'TRADV'/), &
                                      CHILD = ADV,                &
                                      __RC__  )
-      
-!      CALL MAPL_AddConnectivity ( GC,                          &
-!                                  SHORT_NAME = (/ 'AREA  ',    &
-!                                                  'PLE2  ' /), &
-!                                  DST_ID   = ACHEM,            &
-!                                  SRC_ID = ADV,                &
-!                            __RC__ )
+
+#ifdef __achem__
+      CALL MAPL_AddConnectivity ( GC,                          &
+                                  SHORT_NAME = (/ 'AREA  '/),    &
+                                  DST_ID   = ACHEM,            &
+                                  SRC_ID = ADV,                &
+                            __RC__ )
+
+      CALL MAPL_AddConnectivity ( GC,                          &
+                                  SRC_NAME = (/'PLE_MAM  '/),  &
+                                  DST_NAME = (/'PLE      '/),  &
+                                  DST_ID   = ACHEM,            &
+                                  SRC_ID   = CHEM,             &
+                            __RC__ )
+#endif
+
 
 !     CALL MAPL_AddConnectivity ( GC, &
 !          SHORT_NAME  = (/'AIRDENS ', 'DELP    ', 'CN_PRCP ', 'NCN_PRCP'/), &
 !          DST_ID = MAM, SRC_ID = ADV, __RC__  )
 
       CALL MAPL_AddConnectivity (GC, &
-         SRC_NAME = (/'DELP_MAM', 'PLE_MAM '/), &
-         DST_NAME = (/'DELP    ', 'PLE     '/), &
+         SRC_NAME = (/'DELP_MAM     ', 'PLE_MAM      ', 'AIRDENS_MAM  '/), &
+         DST_NAME = (/'DELP         ', 'PLE          ', 'AIRDENS      '/), &
          DST_ID = MAM, SRC_ID = CHEM, __RC__ )
 
-#if 0
+#ifdef __achem__
      CALL MAPL_AddConnectivity ( GC, &
         SRC_NAME  = (/'ACHEM::SO2     ', 'ACHEM::H2SO4   ', 'ACHEM::NH3     ', 'ACHEM::SOAG    ', 'pSO4_aq        ', 'pNH4_aq        ',   &
                       'DDT_DMS_gas    ', 'DDT_MSA_gas    ', 'DDT_SO2_gas    ', 'DDT_H2SO4_gas  ', 'DDT_NH3_gas    ', 'DDT_SOAG_gas   ',   &
@@ -277,20 +290,14 @@ contains
                       '_DMS_gas       ', '_MSA_gas       ', '_SO2_gas       ', '_H2SO4_gas     ', '_NH3_gas       ', '_SOA_GAS_gas   ',   &
                       '_DMS_aq        ', '_MSA_aq        ', '_SO2_aq        ', '_H2SO4_aq      ', '_NH3_aq        ', '_SOA_GAS_aq    '/), &
         DST_ID = MAM, SRC_ID = ACHEM, __RC__  )
-#endif
- 
+#else
+#if 0 
      CALL MAPL_AddConnectivity ( GC, &
-        SRC_NAME  = (/'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &
-                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &     
-                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &
-                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ',   &
-                      'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        '/), &
-        DST_NAME  = (/'SO2            ', 'H2SO4          ', 'NH3            ', 'SOA_GAS        ', 'pSO4_aq        ', 'pNH4_aq        ',   &
-                      'DDT_DMS_gas    ', 'DDT_MSA_gas    ', 'DDT_SO2_gas    ', 'DDT_H2SO4_gas  ', 'DDT_NH3_gas    ', 'DDT_SOA_GAS_gas',   &
-                      'DDT_DMS_aq     ', 'DDT_MSA_aq     ', 'DDT_SO2_aq     ', 'DDT_H2SO4_aq   ', 'DDT_NH3_aq     ', 'DDT_SOA_GAS_aq ',   &
-                      '_DMS_gas       ', '_MSA_gas       ', '_SO2_gas       ', '_H2SO4_gas     ', '_NH3_gas       ', '_SOA_GAS_gas   ',   &
-                      '_DMS_aq        ', '_MSA_aq        ', '_SO2_aq        ', '_H2SO4_aq      ', '_NH3_aq        ', '_SOA_GAS_aq    '/), &
+        SRC_NAME  = (/'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        ', 'SO2_MAM        '/), &
+        DST_NAME  = (/'SO2            ', 'H2SO4          ', 'NH3            ', 'SOA_GAS        ', 'pSO4_aq        ', 'pNH4_aq        '/), &
         DST_ID = MAM, SRC_ID = CHEM, __RC__  )
+#endif
+#endif
  
      call MAPL_TimerAdd(GC, name="RUN", RC=STATUS)
      _VERIFY(STATUS)
@@ -637,6 +644,7 @@ contains
        _VERIFY(STATUS)
     endif
 
+    
 #ifdef ADJOINT
     ELSE
        if (MAPL_Am_I_Root()) THEN
@@ -803,6 +811,71 @@ contains
 
     ENDIF
 #endif
+
+#ifdef __achem__
+    ! ACHEM
+    !------------------
+
+    if ( MemDebugLevel > 0 ) THEN
+       call ESMF_VMBarrier(VM, RC=STATUS)
+       _VERIFY(STATUS)
+       call MAPL_MemUtilsWrite(VM, &
+                  'GCHP, before ACHEM: ', RC=STATUS )
+       _VERIFY(STATUS)
+    endif
+
+    call MAPL_TimerOn ( STATE, GCNames(ACHEM) )
+    call ESMF_GridCompRun ( GCS(ACHEM),               &
+                            importState = GIM(ACHEM), &
+                            exportState = GEX(ACHEM), &
+                            clock       = CLOCK,     &
+                            userRC      = STATUS );
+    _VERIFY(STATUS)
+    call MAPL_GenericRunCouplers (STATE, ACHEM, CLOCK, RC=STATUS );
+    _VERIFY(STATUS)
+    call MAPL_TimerOff(STATE,GCNames(ACHEM))
+
+    if ( MemDebugLevel > 0 ) THEN
+       call ESMF_VMBarrier(VM, RC=STATUS)
+       _VERIFY(STATUS)
+       call MAPL_MemUtilsWrite(VM, &
+                  'GCHP, after  ACHEM: ', RC=STATUS )
+       _VERIFY(STATUS)
+    endif
+#endif
+
+    ! MAM
+    !------------------
+
+    if ( MemDebugLevel > 0 ) THEN
+       call ESMF_VMBarrier(VM, RC=STATUS)
+       _VERIFY(STATUS)
+       call MAPL_MemUtilsWrite(VM, &
+                  'GCHP, before MAM: ', RC=STATUS )
+       _VERIFY(STATUS)
+    endif
+
+    call MAPL_TimerOn ( STATE, GCNames(MAM) )
+    call ESMF_GridCompRun ( GCS(MAM),               &
+                            importState = GIM(MAM), &
+                            exportState = GEX(MAM), &
+                            clock       = CLOCK,     &
+                            userRC      = STATUS );
+    _VERIFY(STATUS)
+    call MAPL_GenericRunCouplers (STATE, MAM, CLOCK, RC=STATUS );
+    _VERIFY(STATUS)
+    call MAPL_TimerOff(STATE,GCNames(MAM))
+
+    if ( MemDebugLevel > 0 ) THEN
+       call ESMF_VMBarrier(VM, RC=STATUS)
+       _VERIFY(STATUS)
+       call MAPL_MemUtilsWrite(VM, &
+                  'GCHP, after  MAM: ', RC=STATUS )
+       _VERIFY(STATUS)
+    endif
+
+
+
 
     call MAPL_TimerOff(STATE,"RUN")
     call MAPL_TimerOff(STATE,"TOTAL")
