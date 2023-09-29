@@ -26,7 +26,7 @@ To build and run GCHP your compute :term:`environment` needs the following softw
 
 * HDF5
 * NetCDF (with C, C++, and Fortran support)
-* Earth System Modeling Framework (ESMF) version ≥ 8.1.0
+* Earth System Modeling Framework (ESMF) version 8.4.2 recommended. Problems with 8.1 and prior have been reported.
 
 Your system administrator should be able to tell you if this software is already available on your cluster, and if so, how to activate it.
 If it is not already available, they might be able to build it for you.
