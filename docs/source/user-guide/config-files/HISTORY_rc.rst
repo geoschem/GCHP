@@ -40,12 +40,20 @@ and :ref:`\<DEFINE COLLECTIONS\> <defining-collections>` sections are given belo
 Defining Grid Labels
 --------------------
 
-You can specify custom grids for you output. For example, a regional 0.05°x0.05° grid covering
+You can specify custom grids for your output. For example, a regional 0.05°x0.05° grid covering
 North America. This way your collections are regridded online. There are two advantages to doing
-this
+this:
 
 #. It eliminates the need to regrid your simulation data in a post-processing step.
 #. It saves disk space if you are interested in regional output.
+
+Beware that outputting data on a different grid assumes the data is independent of horizontal
+cell size. The regridding routines are area-conserving and thus regridded values will only
+make sense for data that is area-independent. Examples of data units that are area-independent
+are mixing ratios (e.g. kg/kg or mol/mol) and emissions rates per area (e.g. kg/m2/s). Examples
+of data units that are NOT area-independent are kg/s and m2, or any other unit that implicitly is
+per grid cell area. This sort of unit is most common in the meteorology diagnostics, such as
+Met_AREAM2 and Met_AD. The values of these arrays will be incorrect in non-native grid output.
 
 You can define as many grids as you want. A collection can define :code:`grid_label` to select
 a custom grid. If a collection does not define :code:`grid_label` the simulation's grid is assumed.
