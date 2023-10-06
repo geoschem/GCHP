@@ -7,25 +7,30 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased 14.2.1]
+## [14.2.1] - 2023-10-10
 ### Changed
 - `test` now points to `src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/test`
 - Hard-coded ESMF logging option removed from GCHPctm.F90
 
-## [Unreleased 14.2.0]
-### Fixed
-  - Fixed post-advection pressure edges (PLE1) passed to advection to be derived from the correct surface pressure
-
+## [14.2.0] - 2023-10-05
 ### Added
-  - Added run-time option to use dry air pressure in advection
-  - Added run-time option to correct mass flux for humidity
+- Added run-time option to use dry air pressure in advection
+- Added run-time option to correct mass flux for humidity
+- Added `.readthedocs.yaml` to configure ReadTheDocs builds
 
 ### Changed
+- Updated GEOS-Chem submodule to 14.2.0
+- Updated HEMCO submodule to 3.7.0
+- Updated version numbers in `CMakeLists.txt` and `docs/source/conf.py` to 14.2.0
+- Changed default air pressure in advection from total to dry
+- Updated `AUTHORS.txt` for GCHP 14.2.0
+- Updated `README.md` so that links point to http://geos-chem.org
+- Updated logo & badge links in `README.md`
+- Updated version number to 14.2.0
 
-  - Updated GEOS-Chem submodule to 14.2.0
-  - Updated HEMCO submodule to 3.7.0
-  - Updated version numbers in `CMakeLists.txt` and `docs/source/conf.py` to 14.2.0
-  - Changed default air pressure in advection from total to dry
+### Fixed
+- Fixed post-advection pressure edges (PLE1) passed to advection to be derived from the correct surface pressure
+- Fixed typo in `docs/source/conf.py`, "_static" should be "_static/"
 
 ## [14.1.1] - 2023-03-03
 ### Added
