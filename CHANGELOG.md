@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - `test` now points to `src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/test`
 - Hard-coded ESMF logging option removed from GCHPctm.F90
+- Updated version numbers and documentation
 
 ## [14.2.0] - 2023-10-05
 ### Added
