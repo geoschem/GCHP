@@ -5,30 +5,33 @@ Set up AWS ParallelCluster
 
 .. important::
 
-    AWS ParallelCluster and FSx for Lustre costs several hundred dollars per month to use. 
+    AWS ParallelCluster and FSx for Lustre costs hundreds or thousands of dollars per month to use. 
     See `FSx for Lustre Pricing <https://aws.amazon.com/fsx/lustre/pricing/>`_ and
     `EC2 Pricing <https://aws.amazon.com/ec2/pricing/on-demand/>`_ for details.
 
 
-This page has instructions on setting up AWS ParallelCluster for running GCHP simulations.
-AWS ParallelCluster is a service that lets you create your own HPC cluster.
-Using GCHP on AWS ParallelCluster is similar to using GCHP on any other HPC, so these instructions focus on AWS ParallelCluster setup, and the other GCHP documentation like :ref:`building_gchp`, :ref:`downloading_input_data`, and :ref:`running_gchp` is appropriate for using GCHP on AWS ParallelCluster.
+AWS ParallelCluster is a service that lets you create your own HPC cluster. Using GCHP on AWS ParallelCluster is similar to using GCHP on any other HPC. 
+We offer up-to-date Amazon Machine Images (AMIs) with GCHP's dependencies built and GCHP compiled through `AMI list <https://github.com/yidant/GCHP-cloud/blob/main/aws/ami.md>`_. 
+These images contain pre-built GCHP source code and the tools for creating a GCHP run directory.
+This page has instructions on using the AMIs to create your own ParallelCluster. 
+You can also choose to set up AWS ParallelCluster for running GCHP simulations yourself, and the other GCHP documentation like :ref:`Build GCHP's dependencies <spackguide>`, :ref:`downloading_gchp`, :ref:`building_gchp`, :ref:`downloading_input_data`, and :ref:`running_gchp` is appropriate for using GCHP on AWS ParallelCluster.
 
-The workflow for getting started with GCHP simulations using AWS ParallelCluster is
+The workflow for getting started with GCHP simulations using AWS ParallelCluster based on our public AMIs is
 
-#. Create an FSx for Lustre file system (*described on this page*)
-#. Configure AWS CLI (*described on this page*)
-#. Configure AWS ParallelCluster (*described on this page*)
-#. :ref:`Build GCHP's dependencies <building_gchp_dependencies>` on your AWS ParallelCluster
+#. Create an FSx for Lustre file system for input data (:ref:`described on this page <create_fsx_for_lustre>`)
+#. Configure AWS CLI (:ref:`described on this page <aws_cli_setup>`)
+#. Configure AWS ParallelCluster (:ref:`described on this page <creating_your_pcluster>`)
+#. Create AWS ParallelCluster with GCHP public AMIs (:ref:`described on this page <creating_your_pcluster>`)
 #. Follow the normal GCHP User Guide
 
-   a. :ref:`downloading_gchp`
-   #. :ref:`building_gchp`
-   #. :ref:`creating_a_run_directory`
+   a. :ref:`creating_a_run_directory`
    #. :ref:`downloading_input_data`
-   #. :ref:`running_gchp`
+  
+#. Running GCHP on ParallelCluster (:ref:`described on this page <create_fsx_for_lustre>`)
 
-These instructions were written using AWS ParallelCluster 3.0.1. 
+These instructions were written using AWS ParallelCluster 3.7.0. 
+
+.. _create_fsx_for_lustre:
 
 1. Create an FSx for Lustre file system
 ---------------------------------------
@@ -92,6 +95,7 @@ Create a cluster config file by running the :command:`pcluster configure` comman
 
    $ pcluster configure --config cluster-config.yaml
 
+For instructions on :literal:`pcluster configure`, refer to the official instructions `Configuring AWS ParallelCluster <https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3-configuring.html>`_.
 
 The following settings are recommended:
 
@@ -105,8 +109,11 @@ The following settings are recommended:
   Execution nodes automatically spinup and shutdown according when there are jobs in your queue.
 
 Now you should have a file name :file:`cluster-config.yaml`. 
-This the configuration file with setting for a cluster. 
-Before starting your cluster with the :command:`pcluster create-cluster` command, you need to modify :file:`cluster-config.yaml` so that your FSx for Lustre file system is mounted to your cluster.
+This is the configuration file with setting for a cluster. 
+
+Before starting your cluster with the :command:`pcluster create-cluster` command, you can modify :file:`cluster-config.yaml` to create cluster based on our AMIs. We provide the available AMI ID through `AMI list <https://github.com/yidant/GCHP-cloud/blob/main/aws/ami.md>`_.
+
+You also need to modify :file:`cluster-config.yaml` so that your FSx for Lustre file system is mounted to your cluster.
 Use the following :file:`cluster-config.yaml` as a template for these changes.
 
 .. code-block:: yaml
@@ -114,6 +121,7 @@ Use the following :file:`cluster-config.yaml` as a template for these changes.
    Region: us-east-1  # [replace with] the region with your FSx for Lustre file system
    Image:
      Os: alinux2
+     CustomAmi: ami-AAAAAAAAAAAAAAAAA # [replace with] the AMI ID you want to use
    HeadNode:
      InstanceType: c5n.large  # smallest c5n node to minimize costs when head-node is up
      Networking:
@@ -161,7 +169,7 @@ When you are ready, run the :command:`pcluster create-cluster` command.
 
    $ pcluster create-cluster --cluster-name pcluster --cluster-configuration cluster-config.yaml
 
-It may take 30 minutes or an hour for your cluster's status to change to :literal:`CREATE_COMPLETE`. 
+It may take several minutes up to an hour for your cluster's status to change to :literal:`CREATE_COMPLETE`. 
 You can check the status of you cluster with the following command.
 
 .. code-block:: console
@@ -176,4 +184,15 @@ Once your cluster's status is :literal:`CREATE_COMPLETE`, run the :command:`pclu
 
 
 At this point, your cluster is set up and you can use it like any other HPC. 
-Your next steps will be :ref:`building_gchp_dependencies` followed by the normal instructions found in the User Guide.
+Now you can create a run directory by running the :literal:`createRunDir.sh` command. Your next steps will be following the normal instructions found in the User Guide.
+
+.. _running_gchp_on_parallelcluster:
+
+4. Running GCHP on ParallelCluster
+--------------------------------------------
+
+AWS ParallelCluster supports Slurm and AWS Batch job schedulers. Your cluster is set to use Slurm scheduler according to the configuration file. 
+It might require the root permission to run Slurm commands or restart Slurm. 
+Before you submit your job, you can start a shell as superuser by running :literal:`sudo -s`. 
+
+You can follow :ref:`running_gchp` to run GCHP with Slurm scheduler. 
