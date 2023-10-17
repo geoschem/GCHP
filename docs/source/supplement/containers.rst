@@ -57,7 +57,7 @@ respectively, in the run directory creation prompts.
 
 .. code-block:: console
 
-   $ singularity exec -B DATA_DIR:/ExtData -B WORK_DIR:/workdir gchp.sif /opt/geos-chem/bin/createRunDir.sh
+   $ singularity exec -B DATA_DIR:/ExtData -B WORK_DIR:/workdir gchp.sif /bin/bash -c ". ~/.bashrc && /opt/geos-chem/bin/createRunDir.sh"
 
 
 Once the run directory is created, it will be available at `WORK_DIR` on your host machine. ``cd`` to `WORK_DIR`.
