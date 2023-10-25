@@ -135,7 +135,7 @@ find_package(NetCDF REQUIRED)
 find_package(MPI REQUIRED)
 execute_process (COMMAND ${CMAKE_CXX_COMPILER} --print-file-name=libstdc++.so OUTPUT_VARIABLE stdcxx OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process (COMMAND ${CMAKE_CXX_COMPILER} --print-file-name=libgcc.a OUTPUT_VARIABLE libgcc OUTPUT_STRIP_TRAILING_WHITESPACE)
-set(ESMF_LIBRARIES ${ESMF_LIBRARY} ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES} ${MPI_CXX_LIBRARIES} rt ${stdcxx} ${libgcc})
+set(ESMF_LIBRARIES ${ESMF_LIBRARY} ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES} ${MPI_CXX_LIBRARIES} rt dl ${stdcxx} ${libgcc})
 set(ESMF_INCLUDE_DIRS ${ESMF_HEADERS_DIR} ${ESMF_MOD_DIR})
 
 # Check if ESMF is built with OpenMP. If so, link OpenMP
@@ -167,9 +167,7 @@ if(NOT TARGET esmf)
 	)
 	target_link_libraries(esmf 
 		INTERFACE 
-			${NETCDF_LIBRARIES} 
-			${MPI_Fortran_LIBRARIES} ${MPI_CXX_LIBRARIES} 
-			rt ${stdcxx} ${libgcc}
+			${ESMF_LIBRARIES}
 	)
 	target_include_directories(esmf INTERFACE ${ESMF_INCLUDE_DIRS})
 	add_library(ESMF ALIAS esmf)

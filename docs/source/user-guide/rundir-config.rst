@@ -8,6 +8,10 @@ As noted earlier, the many configuration files in GCHP can be overwhelming but y
 
 ---------------------------------------------------------------------------------------------------
 
+.. note::
+
+   If there is topic not covered on this page that you would like to see added please create an issue on the `GCHP issues page <https://github.com/geoschem/GCHP/issues>`_ with your request.
+
 Compute resources
 -----------------
 
@@ -97,6 +101,15 @@ If you do not want to rename your restart file then you can create a symbolic li
 
 Please note that unlike GC-Classic, GCHP does not use a separate HEMCO restart file. All HEMCO restart variables are included in the main GCHP restart.
 
+Enable restart file to have missing species
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Most simulations by default do not allow missing species in the restart file.
+The model will exit with an error if species are not found.
+However, there is a switch in :file:`setCommonRunSetting.sh` to disable this behavior.
+This toggle is located in the section on infrequently changed settings under the header :file:`REQUIRE ALL SPECIES IN INITIAL RESTART FILE`.
+Setting the switch to :file:`NO` will use background values set in :file:`species_database.yml` as initial values for species that are missing. 
+
 Turn on/off emissions inventories
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -157,7 +170,7 @@ Outputs
 Output diagnostics data on a lat-lon grid
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-See documentation in the :file:`HISTORY.rc` config file for instructions on how to output diagnostic collection on lat-lon grids, as well as the configuration files section at the top of this page for more information on that file. If outputting on a lat-lon grid you may also output regional data instead of global.
+See documentation in the :file:`HISTORY.rc` config file for instructions on how to output diagnostic collection on lat-lon grids, as well as the configuration files section at the top of this page for more information on that file. If outputting on a lat-lon grid you may also output regional data instead of global. Make sure that whatever grid you choose is listed under :file:`GRID_LABELS` and is not commented out in :file:`HISTORY.rc`.
 
 Output restart files at regular frequency
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -198,4 +211,11 @@ Generate monthly mean diagnostics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can toggle monthly mean diagnostics on/off from within :file:`setCommonRunSettings.sh` in the "DIAGNOSTICS" section if you also set auto-update of diagnostics it that file to on. All time-averaged diagnostic collections will then automatically be configured to compute monthly mean. Alternatively, you can edit :file:`HISTORY.rc` directly and set the "monthly" field to value 1 for each collection you wish to output monthly diagnostics for. 
+
+Prevent overwriting diagnostic files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default all GCHP run directories are configured to allow overwriting diagnostics files present in :file:`OutputDir` over the course a simulation.
+You may disable this feature by setting :file:`Allow_Overwrite=.false.` at the top of configuration file :file:`HISTORY.rc`.
+
 

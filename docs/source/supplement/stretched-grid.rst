@@ -43,7 +43,7 @@ covers the refion that you want to refine.
    If the figure above is not showing up properly, please :doc:`open an issue <reference/SUPPORT>`.
 
 Next you need to choose a cubed-sphere size. The cubed-sphere size must be an even integer (e.g.,
-C90, C92, C94, etc.). Remeber that the resolution of the target face is enhanced by approximately the
+C90, C92, C94, etc.). Remember that the resolution of the target face is enhanced by approximately the
 stretch-factor.
 
 
@@ -57,50 +57,15 @@ requires a restart file with a C180 grid. Likewise, a stretched-grid simulation 
 file with the same stretched-grid (i.e., an identical cubed-sphere size, stretch-factor, target longitude,
 and target latitude).
 
-You can regrid an existing restart file to a stretched-grid with GCPy's :program:`gcpy.file_regrid`
-program. Below is an example of regridding a C90 cubed-sphere restart file to a C48 stretched-grid
-with a stretch factor of 3, a target longitude of 260.0, and a target latitude of 40.0. See the
-GCPy documentation for this program's exact usage, and for installation instructions.
+You can regrid an existing restart file to a stretched-grid using the GEOS-Chem python package GCPy.
+See the `Regridding <https://gcpy.readthedocs.io/en/stable/Regridding.html>`_ section of the GCPy
+documentation for instructions. Once you have created a restart file for your simulation, you can move
+on to updating your simulation's configuration files.
 
-.. code-block:: console
+.. note::
 
-   $ python -m gcpy.file_regrid                                  \
-                  -i GEOSChem.Restart.20190701_0000z.c90.nc4   \
-                  --dim_format_in checkpoint                     \
-                  -o sg_restart_c48_3_260_40.nc                  \
-                  --cs_res_out 48                                \
-                  --sg_params_out 3.0 260.0 40.0                 \
-                  --dim_format_out checkpoint 
+    A stretched grid restart file is available for download if you would like to quickly get set up to run a stretched grid simulation. See the `GEOSCHEM_RESTARTS/GC_14.0.0 <http://geoschemdata.wustl.edu/ExtData/GEOSCHEM_RESTARTS/GC_14.0.0/>`_ directory in the GEOS-Chem data repository.
 
-Description of arguments:
-
-.. option:: -i GEOSChem.Restart.20190701_0000z.c90.nc
-
-   Specifies the input restart file is :file:`GEOSChem.Restart.20190701_0000z.c90.nc4` (in the current working directory).
-
-
-.. option:: --dim_format_in checkpoint
-
-   Specifies that the input file is in the "checkpoint" format. GCHP restart files use the "checkpoint" format.
-
-.. option:: -o sg_restart_c48_3_260_40.nc
-
-   Specifies that the output file should be named :file:`sg_restart_c48_3_260_40.nc`.
-
-.. option:: --cs_res_out 48 
-
-   Specifies that the output grid has a cubed-sphere size 48 (C48).
-
-.. option:: --sg_params_out 3.0 260.0 40.0
-
-   Specifies that the output grid's stretched-grid parameters in the order stretch factor (3.0), target longitude (260.0), target latitude (40.0).
-
-.. option:: --dim_format_out checkpoint 
-
-   Specifies that the output file should be in the "checkpoint" format. GCHP restart files must be in the "checkpoint" format.
-
-Once you have created a restart file for your simulation, you can move on to updating your
-simulation's configuration files.
 
 Configure run directory
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -129,14 +94,14 @@ Modify the section of :file:`setCommonRunSettings.sh` that controls the simulati
    TARGET_LAT=40.0
    TARGET_LON=260.0
 
-Execute :program:`./setCommonRunSettings.sh` to update to update your run directory's configuration files.
+Execute :program:`./setCommonRunSettings.sh` to update your run directory's configuration files.
 
 .. code-block:: console
 
    $ ./setCommonRunSettings.sh
 
 You will also need to configure the run directory to use the stretched grid restart file. Update :file:`cap_restart` to match the date of your restart file. This will also be the start date of the run.
-Copy or symbolically link to your restart file in the :literal:`Restarts` subdirectory with the proper filename format. The format includes global resolution but not stretched grid resolution so it is a good idea to symbolically link to the original if you want to preserve the original file's specification of stretched grid in its name. 
+Copy or symbolically link to your restart file in the :literal:`Restarts` subdirectory with the proper filename format. The format includes global resolution but not stretched grid resolution. To avoid confusion about what grid the file contains you can symbolically link to a file with stretched grid parameters in its filename. 
 Run :literal:`setRestartLink.sh` to set symbolic link :file:`gchp_restart.nc4` to point to your restart file based on start date in :file:`cap_restart` and global grid resolution in :file:`setCommonRunSettings.sh`. This is also included as a pre-run step in all example run scripts provided in :file:`runScriptSamples`.
 
 Tutorial: Eastern United States
@@ -187,7 +152,8 @@ Requirements
 Before continuing with the tutorial check that you have all pre-requisites:
 
 * You are able to run global GCHP simulations using MERRA2 data for July 2019
-* You have python packages GCPy >= 1.0.0 and cartopy >= 0.19
+* You have the latest version of GEOS-Chem python package GCPy
+* You have python package cartopy with version >= 0.19
 
 Create run directory
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -201,23 +167,9 @@ Create restart file
 
 You will need to create a restart file with a horizontal resolution that matches your chosen stretched-grid resolution. 
 Unlike other input data, GCHP ingests the restart file with no online regridding. Using a restart file with a horizontal grid that does not match the run grid will result in a run-time error. 
-To create a restart file for a stretched-grid simulation you can regrid a restart file with a uniform grid using GCPy. Using one of the initial restart files that comes with the GCHP run directory is handy.
-
-.. code-block:: console
-
-   $ python -m gcpy.file_regrid                           \
-        -i GEOSChem.Restart.20190701_0000z.c48.nc4      \
-        --dim_format_in checkpoint                        \
-        --dim_format_out checkpoint                       \
-        --cs_res_out 60                                   \
-        --sg_params_out 3.6 275 37                        \
-        -o initial_GEOSChem_rst.EasternUS_SG_fullchem.nc
-
-This creates :file:`initial_GEOSChem_rst.EasternUS_SG_fullchem.nc`, which is the
-new restart file for your simulation.
-
-.. note::
-   Regridding a C48 files using GCPy takes about a minute to run. If you regrid an even larger restart file (e.g., C180) it may take significantly longer.
+To create a restart file for a stretched-grid simulation you can regrid a restart file with a uniform grid using GCPy. Follow
+instructions on how to create a GCHP stretched grid restart file in the `GCPy documentation <https://gcpy.readthedocs.io/en/stable/Regridding.html>`_.
+For this tutorial regrid the c48 fullchem restart file for July 1, 2019 that comes with a GCHP fullchem run directory (:file:`GEOSChem.Restart.20190701_0000z.c48.nc4`). Grid resolution is 60, stretch factor is 3.6, target longitude is 275, and target latitude is 37. Name the output file :file:`initial_GEOSChem_rst.EasternUS_SG_fullchem.c60.s3.6_37N_275E.nc`.
 
 Configure run directory
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -229,8 +181,8 @@ Make the following modifications to :file:`setCommonRunSettings.sh`:
 * Set diagnostic frequency to 24 hours (daily)
 * Set diagnostic duration to 24 hours (daily)
 * Update the compute resources as you like. This simulation's computational
-  demands are about :math:`1.5\times` that of a C48 or 2°x2.5° simulation.
-* Change global grid resolutio to 60
+  demands are about 50% more than a C48 or 2°x2.5° simulation.
+* Change global grid resolution to 60
 * Change :literal:`STRETCH_GRID` to :literal:`ON`
 * Change :literal:`STRETCH_FACTOR` to :literal:`3.6`
 * Change :literal:`TARGET_LAT` to :literal:`37.0`
@@ -245,34 +197,33 @@ Next, execute :file:`setCommonRunSettings.sh` to apply the updates to the variou
 
    $ ./setCommonRunSettings.sh
 
-Before running GCHP you also need to configure the model to use your stretched-grid restart file. Move or copy your restart file to the :file:`Restarts` subdirectory. Then change the symbolic link :file:`GEOSChem.Restart.20190701_0000z.c48.nc4` to point to your stretched-grid restart file while keeping the name of the link the same. You could also rename your restart file to this format but this would remove valuable information about the content of the file from the filename. Symbolically linking is a better way to preserve the information to avoid errors. You can check that you did this correctly by running :file:`setRestartLink.sh` in the run directory.
+Before running GCHP you also need to configure the model to use your stretched-grid restart file. Move or copy your restart file to the :file:`Restarts` subdirectory. Then change the symbolic link :file:`GEOSChem.Restart.20190701_0000z.c48.nc4` to point to your stretched-grid restart file while keeping the name of the link the same.
+
+.. code-block:: console
+
+   $ ln -nsf initial_GEOSChem_rst.EasternUS_SG_fullchem.c60.s3.6_37N_275E.nc GEOSChem.Restart.20190701_0000z.c48.nc4
+
+You could also rename your restart file to this format but this would remove valuable information about the content of the file from the filename. Symbolically linking is a better way to preserve the information to avoid errors. You can check that you did this correctly by running :file:`setRestartLink.sh` in the run directory.
 
 Run GCHP
 ^^^^^^^^
 
-To run GCHP you can use the example run script for running interactively located at :file:`runScriptSamples/gchp.local.run` as long as you have enough resources available locally, e.g. 30 cores on 1 node. Copy it to the main level of your run directory and then execute it. If you want to use more resources you can submit as a batch job to your schedule.
+To run GCHP you can use the example run script for running interactively located at :file:`runScriptSamples/gchp.local.run` as long as you have enough resources available locally, e.g. 30 cores on 1 node. Copy it to the main level of your run directory and then execute it. If you want to use more resources you can submit as a batch job to your scheduler.
 
 .. code-block:: console
 
    $ ./gchp.local.run
 
-Log output of the run should be printed to both screen and log file :file:`gchp.20190701_000000z.log`. Check that your run was successful by inspecting the log and looking for output in the :file:`OutputDir` subdirectory.
+Log output of the run will be sent to log file :file:`gchp.20190701_0000z.log`. Check that your run was successful by inspecting the log and looking for output in the :file:`OutputDir` subdirectory.
 
 .. _sg_plotting_example:
 
 Plot the output
 ^^^^^^^^^^^^^^^
 
-Append grid-box corners:
-
-
-.. code-block:: console
-
-   $ python -m gcpy.append_grid_corners \
-        --sg_params 3.6 275 37 \
-        OutputDir/GCHP.SpeciesConc.20190707_1200z.nc4
-
-Plot ozone at model level 22:
+Plotting stretched grid is simple using Python.
+Below is an example plotting ozone at model level 22.
+All libraries are available if using a python environment compatible with GCPy.
 
 .. code-block:: python
 
@@ -280,11 +231,11 @@ Plot ozone at model level 22:
     import cartopy.crs as ccrs
     import xarray as xr
 
-    # Load 24-hr average concentrations for 2019-07-07
-    ds = xr.open_dataset('GCHP.SpeciesConc.20190707_1200z.nc4')
+    # Load 24-hr average concentrations for 2019-07-01
+    ds = xr.open_dataset('GCHP.DefautlCollection.20190701_0000z.nc4')
 
     # Get Ozone at level 22
-    ozone_data = ds['SpeciesConc_O3'].isel(time=0, lev=22).squeeze()
+    ozone_data = ds['SpeciesConcVV_O3'].isel(time=0, lev=22).squeeze()
 
     # Setup axes
     ax = plt.axes(projection=ccrs.EqualEarth())

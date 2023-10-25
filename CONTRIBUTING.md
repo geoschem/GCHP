@@ -2,7 +2,7 @@
 
 Thank you for looking into contributing to GEOS-Chem! GEOS-Chem is a grass-roots model that relies on contributions from community members like you. Whether you're new to GEOS-Chem or a longtime user, you're a valued member of the community, and we want you to feel empowered to contribute.
 
-Updates to the GEOS-Chem model benefit both you and the [entire GEOS-Chem community](https://geoschem.github.io/geos-chem-people-projects-map/).  You benefit through [coauthorship and citations](https://geos-chem.seas.harvard.edu/geos-new-developments).  Priority development needs are identified at GEOS-Chem users' meetings with updates between meetings based on [GEOS-Chem Steering Committee (GCSC)](https://geos-chem.seas.harvard.edu/geos-steering-cmte) input through [Working Groups](https://geos-chem.seas.harvard.edu/geos-working-groups).
+Updates to the GEOS-Chem model benefit both you and the [entire GEOS-Chem community](https://geoschem.github.io/people.html).  You benefit through [coauthorship and citations](https://geoschem.github.io/new-developments.html).  Priority development needs are identified at GEOS-Chem users' meetings with updates between meetings based on [GEOS-Chem Steering Committee (GCSC)](https://geoschem.github.io/steering-committee.html) input through [Working Groups](https://geoschem.github.io/working-groups.html).
 
 ## We use GitHub and ReadTheDocs
 We use GitHub to host the GCHP source code, to track issues, user questions, and feature requests, and to accept pull requests: [https://github.com/geoschem/GCHP](https://github.com/geoschem/GCHP). Please help out as you can in response to issues and user questions.
@@ -36,7 +36,7 @@ As the author you are responsible for:
   7. Test your update thoroughly and make sure that it works.  For structural updates we recommend performing a difference test (i.e. testing against the prior version) in order to ensure that identical results are obtained).
   8. Review the coding conventions and checklists for code and data updates listed below.
   9. Create a [pull request in GitHub](https://help.github.com/articles/creating-a-pull-request/).
-  10. The [GEOS-Chem Support Team](https://wiki.geos-chem.org/GEOS-Chem_Support_Team) will add your updates into the development branch for an upcoming GEOS-Chem version.  They will also validate your updates with [benchmark simulations](https://wiki.geos-chem.org/GEOS-Chem_benchmarking).
+  10. The [GEOS-Chem Support Team](https://geoschem.github.io/support-team.html) will add your updates into the development branch for an upcoming GEOS-Chem version.  They will also validate your updates with [benchmark simulations](http://wiki.geos-chem.org/GEOS-Chem_benchmarking).
   11. If the benchmark simulations reveal a problem with your update, the GCST will request that you take further corrective action.
 
 ### Coding conventions

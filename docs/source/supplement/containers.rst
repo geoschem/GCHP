@@ -8,6 +8,14 @@ The instructions below show how to create a run directory and run GCHP using `Si
 , which can be installed using instructions at the previous link or through Spack.
 Singularity is a container software that is preferred over Docker for many HPC applications due to security issues.
 Singularity can automatically convert and use Docker images.
+You can choose to use Docker or Singularity depending on the support of the cluster. 
+
+The workflow for running GCHP using containers is
+
+#. Pull an image (:ref:`described on this page <create_run_directory_using_singularity>`)
+#. Create a run directory (:ref:`use pre-built tools <create_run_directory_using_singularity>` or follow :ref:`creating_a_run_directory`)
+#. Download input data (:ref:`described on this page <download_data_using_dry_run>` and :ref:`downloading_input_data`)
+#. Running GCHP (:ref:`use pre-built tools <setting_up_and_running_gchp_using_singularity>` or follow :ref:`running_gchp`)
 
 Software requirements
 ---------------------
@@ -17,8 +25,6 @@ There are only two software requirements for running GCHP using a Singularity co
 * Singularity itself
 * An MPI implementation that matches the type and major/minor version of the MPI implementation inside of the container
 
-The current images use OpenMPI 4.0.1 internally, which has been confirmed to work with external installations of OpenMPI 4.0.2-4.0.5.
-
 
 Performance
 -----------
@@ -27,16 +33,17 @@ Because we do not include optimized infiniband libraries within the provided Doc
 Container-based benchmarks deployed on Harvard's Cannon cluster using up to 360 cores at c90 (~1x1.25) resolution averaged 15% slower than equivalent non-container runs. Performance may worsen at a higher core count and resolution.
 If this performance hit is not a concern, these containers are the quickest way to setup and run GCHP.
 
+.. _create_run_directory_using_singularity:
 
-Setting up and running GCHP using Singularity
+Pulling an image and creating run directory using Singularity
 ---------------------------------------------
 
 Available GCHP images are listed `on Docker Hub <https://hub.docker.com/r/geoschem/gchp/tags?page=1&ordering=last_updated>`__.
-The following command pulls the image of GCHP 13.0.2 and converts it to a Singularity image named `gchp.sif` in your current directory.
+The following command pulls the image of GCHP 14.2.0 and converts it to a Singularity image named `gchp.sif` in your current directory.
 
 .. code-block:: console
 
-   $ singularity pull gchp.sif docker://geoschem/gchp:13.0.2
+   $ singularity pull gchp.sif docker://geoschem/gchp:14.2.0
 
 
 If you do not already have GCHP data directories, create a directory where you will later store data files.
@@ -50,11 +57,15 @@ respectively, in the run directory creation prompts.
 
 .. code-block:: console
 
-   $ singularity exec -B DATA_DIR:/ExtData -B WORK_DIR:/workdir gchp.sif /opt/geos-chem/bin/createRunDir.sh
+   $ singularity exec -B DATA_DIR:/ExtData -B WORK_DIR:/workdir gchp.sif /bin/bash -c ". ~/.bashrc && /opt/geos-chem/bin/createRunDir.sh"
 
 
 Once the run directory is created, it will be available at `WORK_DIR` on your host machine. ``cd`` to `WORK_DIR`.
 
+.. _setting_up_and_running_gchp_using_singularity:
+
+Setting up and running GCHP using Singularity
+---------------------------------------------
 
 To avoid having to specify the locations of your data and run directories (RUN_DIR) each time you execute a command in the singularity container,
 we will add these to an environment file called `~/.container_run.rc` and point the `gchp.env` symlink to this environment file.
@@ -63,8 +74,8 @@ We will also load MPI in this environment file (edit the first line below as app
 .. code-block:: console
 
    $ echo "module load openmpi/4.0.3" > ~/.container_run.rc
-   $ echo "export SINGULARITY_BINDPATH=\"DATA_DIR:/ExtData, RUN_DIR:/rundir\"" >> ~/.container_run.rc 
-   $ ./setEnvironment.sh ~/.container_run.rc
+   $ echo "export SINGULARITY_BINDPATH=\"DATA_DIR:/ExtData,RUN_DIR:/rundir\"" >> ~/.container_run.rc 
+   $ ./setEnvironmentLink.sh ~/.container_run.rc
    $ source gchp.env
    
 
@@ -73,7 +84,7 @@ We will now move the pre-built `gchp` executable and example run scripts to the 
 
 .. code-block:: console
 
-   $ rm runScriptSamples #remove broken link
+   $ rm runScriptSamples # remove broken link
    $ singularity exec ../gchp.sif cp /opt/geos-chem/bin/gchp /rundir
    $ singularity exec ../gchp.sif cp -rf /gc-src/run/runScriptSamples/ /rundir
 
@@ -84,7 +95,7 @@ We'll call this script `internal_exec`.
 
 .. code-block:: console
 
-   $ echo ". /init.rc" > ./internal_exec
+   $ echo -e "if [ -e \"/init.rc\" ] ; then\n\t. /init.rc\nfi" > ./internal_exec # no need for versions after 13.4.1
    $ echo "cd /rundir" >> ./internal_exec
    $ echo "./gchp" >> ./internal_exec
    $ chmod +x ./internal_exec
@@ -104,7 +115,7 @@ You can now setup your run configuration as normal using `setCommonRunSettings.s
 If you already have GCHP data directories, congratulations! You've completed all the steps you need to run GCHP in a container.
 If you still need to download data directories, read on.
 
-
+.. _download_data_using_dry_run:
 
 Downloading data directories using GEOS-Chem Classic's dry-run option
 ---------------------------------------------------------------------

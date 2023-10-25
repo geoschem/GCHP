@@ -1,6 +1,21 @@
 #include "MAPL_Generic.h"
-
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !MODULE: GCHPctmEnv_GridCompMod
+!
+! !DESCRIPTION: Cinderella component to compute derived variables to pass to
+! advection
+!\\
+!\\
+! !INTERFACE:
+!
 module GCHPctmEnv_GridComp
+!
+! !USES:
+!
    use ESMF
    use MAPL_Mod
    use FV_StateMod, only : fv_computeMassFluxes, fv_getVerticalMassFlux
@@ -10,56 +25,145 @@ module GCHPctmEnv_GridComp
    
    implicit none
    private
-   
-   public SetServices
-   
+!
+! !PUBLIC MEMBER FUNCTIONS:
+!
+   public  :: SetServices
+!
+! !PRIVATE MEMBER FUNCTIONS:
+!
+   private :: Initialize
+   private :: Run
+   private :: prepare_ple_exports
+   private :: prepare_sphu_export
+   private :: prepare_massflux_exports
+   private :: calculate_ple
+!
+! !PUBLIC DATA MEMBERS:
+!
+   logical, public :: import_mass_flux_from_extdata = .false.
+!
+! !PRIVATE DATA MEMBERS:
+!
    integer, parameter :: r8     = 8
    integer, parameter :: r4     = 4
    
    logical :: meteorology_vertical_index_is_top_down
-   logical :: import_mass_flux_from_extdata = .false.
+   integer :: use_total_air_pressure_in_advection
+   integer :: correct_mass_flux_for_humidity
    
    class(Logger), pointer :: lgr => null()
-   
-   public import_mass_flux_from_extdata
-   
+!
+! !REMARKS:
+!  This file was adapted from a GEOS file developed at NASA GMAO.
+!                                                                             .
+!  NOTES:
+!  - The abbreviation "PET" stands for "Persistent Execution Thread".
+!    It is a synomym for CPU.
+!
+! !REVISION HISTORY:
+!  06 Dec 2009 - A. da Silva - Initial version this file was adapted from
+!  08 Sep 2014 - M. Long - Modification to calculate pressure at vertical
+!                          grid edges from hybrid coordinates
+!  24 Jan 2019 - E. Lundgren - Modification for compatibility with ESMF v7.1.0r
+!  See https://github.com/geoschem/geos-chem for history since GCHP version 12.5
+!
+!EOP
+!------------------------------------------------------------------------------
+!BOC
    contains
-   
+!EOC
 
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: SetServices -- Sets ESMF services for this component
+!
+! !INTERFACE:
+!
    subroutine SetServices(GC, RC)
+!
+! !INPUT/OUTPUT PARAMETERS
+!
       type(ESMF_GridComp), intent(INOUT) :: GC  ! gridded component
+!
+! !OUTPUT PARAMETERS
+!
       integer, intent(OUT)               :: RC  ! return code
+!
+! !DESCRIPTION:
+!   The SetServices for the CTM needs to register its Initialize and Run.
+!   It uses the MAPL_Generic construct for defining state specs.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+      integer           :: STATUS
+      type(ESMF_Config) :: CF
 
-      integer :: STATUS
-      type (ESMF_Config) :: CF
-      character(len=ESMF_MAXSTR) :: COMP_NAME
+      character(len=ESMF_MAXSTR) :: COMP_NAME, msg
       character(len=ESMF_MAXSTR) :: IAm = 'SetServices'
+
+      !================================
+      ! SetServices starts here
+      !================================
       
-      ! Get my name and set-up traceback handle
+      ! Get gridded component name and set-up traceback handle
+      ! -----------------------------------------------------------------
       call ESMF_GridCompGet(GC, NAME=COMP_NAME, CONFIG=CF, RC=STATUS)
       _VERIFY(STATUS)
       Iam = trim(COMP_NAME) // TRIM(Iam)
-      
       lgr => logging%get_logger('GCHPctmEnv')
       
-      call ESMF_ConfigGetAttribute(CF,value=import_mass_flux_from_extdata, &
-      label='IMPORT_MASS_FLUX_FROM_EXTDATA:', Default=.false., __RC__)
+      ! Get whether to import mass fluxes from ExtData or derive from winds
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute(CF,                                     &
+                                   value=import_mass_flux_from_extdata,    &
+                                   label='IMPORT_MASS_FLUX_FROM_EXTDATA:', &
+                                   Default=.false.,                        &
+                                   __RC__)
       if (import_mass_flux_from_extdata) then
-         call lgr%info('Configured to import mass fluxes from ''ExtData''')
+         msg = 'Configured to import mass fluxes from ''ExtData'''
       else
-         call lgr%info('Configured to calculate and export mass flux and courant numbers')
+         msg = 'Configured to derive and export mass flux and courant numbers'
       end if
+      call lgr%info(msg)
       
       ! Register services for this component
-      call MAPL_GridCompSetEntryPoint(gc, ESMF_METHOD_INITIALIZE, Initialize, RC=STATUS)
+      ! -----------------------------------------------------------------
+      call MAPL_GridCompSetEntryPoint(gc, ESMF_METHOD_INITIALIZE, Initialize, &
+                                      RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_GridCompSetEntryPoint(gc, ESMF_METHOD_RUN, Run, RC=STATUS)
       _VERIFY(STATUS)
       
+      ! Define Import state
+      ! -----------------------------------------------------------------
       call lgr%debug('Adding import specs')
       call MAPL_AddImportSpec(gc, &
                               SHORT_NAME='PS1', &
-                              LONG_NAME='pressure_at_surface_before_advection', &
+                              LONG_NAME='pressure_at_surface_before_advection',&
+                              UNITS='hPa', &
+                              DIMS=MAPL_DimsHorzOnly, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddImportSpec(gc, &
+                              SHORT_NAME='PS2', &
+                              LONG_NAME='pressure_at_surface_after_advection',&
+                              UNITS='hPa', &
+                              DIMS=MAPL_DimsHorzOnly, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddImportSpec(gc, &
+                              SHORT_NAME='PS2', &
+                              LONG_NAME='pressure_at_surface_after_advection', &
                               UNITS='hPa', &
                               DIMS=MAPL_DimsHorzOnly, &
                               VLOCATION=MAPL_VLocationEdge, &
@@ -73,31 +177,21 @@ module GCHPctmEnv_GridComp
                               VLOCATION=MAPL_VLocationCenter, &
                               RC=STATUS)
       _VERIFY(STATUS)
-      if (.not. import_mass_flux_from_extdata) then
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='UA', &
-                                 LONG_NAME='eastward_wind_on_A-Grid', &
-                                 UNITS='m s-1', &
-                                 STAGGERING=MAPL_AGrid, &
-                                 ROTATION=MAPL_RotateLL, & 
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         _VERIFY(STATUS)
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='VA', &
-                                 LONG_NAME='northward_wind_on_A-Grid', &
-                                 UNITS='m s-1', &
-                                 STAGGERING=MAPL_AGrid, &
-                                 ROTATION=MAPL_RotateLL, &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         _VERIFY(STATUS)
-      else
+      call MAPL_AddImportSpec(gc, &
+                              SHORT_NAME='SPHU2', &
+                              LONG_NAME='specific_humidity_after_advection',  &
+                              UNITS='kg kg-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+
+      ! Different imports depending on where mass fluxes will come from
+      if ( import_mass_flux_from_extdata ) then
+
          call MAPL_AddImportSpec(gc, &
                                  SHORT_NAME='MFXC', &
-                                 LONG_NAME='pressure_weighted_xward_mass_flux', &
+                                 LONG_NAME='pressure_weighted_xward_mass_flux',&
                                  UNITS='Pa m+2 s-1', &
                                  DIMS=MAPL_DimsHorzVert, &
                                  VLOCATION=MAPL_VLocationCenter, &
@@ -105,7 +199,7 @@ module GCHPctmEnv_GridComp
          VERIFY_(STATUS)
          call MAPL_AddImportSpec(gc, &
                                  SHORT_NAME='MFYC', &
-                                 LONG_NAME='pressure_weighted_yward_mass_flux', &
+                                 LONG_NAME='pressure_weighted_yward_mass_flux',&
                                  UNITS='Pa m+2 s-1', &
                                  DIMS=MAPL_DimsHorzVert, &
                                  VLOCATION=MAPL_VLocationCenter, &
@@ -127,8 +221,34 @@ module GCHPctmEnv_GridComp
                                  VLOCATION=MAPL_VLocationCenter, &
                                  RC=STATUS)
          VERIFY_(STATUS)
-      end if
+
+      else
+
+         call MAPL_AddImportSpec(gc, &
+                                 SHORT_NAME='UA', &
+                                 LONG_NAME='eastward_wind_on_A-Grid', &
+                                 UNITS='m s-1', &
+                                 STAGGERING=MAPL_AGrid, &
+                                 ROTATION=MAPL_RotateLL, &
+                                 DIMS=MAPL_DimsHorzVert, &
+                                 VLOCATION=MAPL_VLocationCenter, &
+                                 RC=STATUS)
+         _VERIFY(STATUS)
+         call MAPL_AddImportSpec(gc, &
+                                 SHORT_NAME='VA', &
+                                 LONG_NAME='northward_wind_on_A-Grid', &
+                                 UNITS='m s-1', &
+                                 STAGGERING=MAPL_AGrid, &
+                                 ROTATION=MAPL_RotateLL, &
+                                 DIMS=MAPL_DimsHorzVert, &
+                                 VLOCATION=MAPL_VLocationCenter, &
+                                 RC=STATUS)
+         _VERIFY(STATUS)
+
+      endif
       
+      ! Define Export State
+      ! -----------------------------------------------------------------
       call lgr%debug('Adding export specs')
       call MAPL_AddExportSpec(gc, &
                               SHORT_NAME='SPHU0', &
@@ -141,7 +261,7 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &
                               SHORT_NAME='PLE0', &
-                              LONG_NAME='pressure_at_layer_edges_before_advection', &
+                              LONG_NAME='pressure_at_layer_edges_before_advection',&
                               UNITS='Pa', &
                               PRECISION=ESMF_KIND_R8, &
                               DIMS=MAPL_DimsHorzVert, &
@@ -156,6 +276,24 @@ module GCHPctmEnv_GridComp
                               DIMS=MAPL_DimsHorzVert, &
                               VLOCATION=MAPL_VLocationEdge, &
                               RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc,                                    &
+                              SHORT_NAME = 'DryPLE0',                &
+                              LONG_NAME  = 'dry_pressure_at_layer_edges_before_advection',&
+                              UNITS      = 'Pa',                     &
+                              PRECISION  = ESMF_KIND_R8,             &
+                              DIMS       = MAPL_DimsHorzVert,        &
+                              VLOCATION  = MAPL_VLocationEdge,       &
+                              RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc,                                   &
+                              SHORT_NAME = 'DryPLE1',                &
+                              LONG_NAME  = 'dry_pressure_at_layer_edges_after_advection',&
+                              UNITS      = 'Pa',                     &
+                              PRECISION  = ESMF_KIND_R8,             &
+                              DIMS       = MAPL_DimsHorzVert,        &
+                              VLOCATION  = MAPL_VLocationEdge,       &
+                              RC=STATUS  )
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &
                               SHORT_NAME='CX', &
@@ -202,7 +340,9 @@ module GCHPctmEnv_GridComp
                               VLOCATION=MAPL_VLocationEdge, &
                               RC=STATUS)
       _VERIFY(STATUS)
-      
+
+      ! Set profiling timers
+      !-------------------------
       call lgr%debug('Adding timers')
       call MAPL_TimerAdd(gc, name="INITIALIZE", RC=STATUS)
       _VERIFY(STATUS)
@@ -210,121 +350,233 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       
       call lgr%debug('Calling MAPL_GenericSetServices')
+
+      ! Create children's gridded components and invoke their SetServices
+      ! -----------------------------------------------------------------
       call MAPL_GenericSetServices(gc, RC=STATUS)
       _VERIFY(STATUS)
       
       _RETURN(ESMF_SUCCESS)
       
    end subroutine SetServices
-
-
+!EOC
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !IROUTINE: Initialize -- Initialized method for composite the CTMder
+!
+! !INTERFACE:
+!
    subroutine Initialize(GC, IMPORT, EXPORT, CLOCK, RC)
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
       type(ESMF_GridComp), intent(inout) :: GC     ! Gridded component 
       type(ESMF_State),    intent(inout) :: IMPORT ! Import state
       type(ESMF_State),    intent(inout) :: EXPORT ! Export state
       type(ESMF_Clock),    intent(inout) :: CLOCK  ! The clock
+!
+! !OUTPUT PARAMETERS:
+!
       integer, optional,   intent(out)   :: RC     ! Error code
-
-      ! Locals
-      __Iam__('Initialize')
+!
+! !DESCRIPTION:
+!  The Initialize method of the CTM Derived Gridded Component.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+      integer                    :: comm
       character(len=ESMF_MAXSTR) :: COMP_NAME
+      character(len=ESMF_MAXSTR) :: msg
+      type(ESMF_Config)          :: CF
+      type(ESMF_Grid)            :: esmfGrid
+      type(ESMF_VM)              :: VM
+
+      type(MAPL_MetaComp), pointer  :: ggState ! MAPL Generic State
       REAL, POINTER, DIMENSION(:,:) :: cellArea
-      type(ESMF_Grid) :: esmfGrid
-      type (ESMF_VM) :: VM
-      type(MAPL_MetaComp), pointer :: ggState      ! GEOS Generic State
-      type (ESMF_Config) :: CF
-      integer :: comm
+
+      !================================
+      ! Initialize starts here
+      !================================
+
+      __Iam__('Initialize')
       
-      !  Get my name and set-up traceback handle
+      !  Get this gridded component name and set-up traceback handle
+      ! -----------------------------------------------------------------
       call ESMF_GridCompGet(GC, NAME=COMP_NAME, CONFIG=CF, VM=VM, RC=STATUS)
       _VERIFY(STATUS)
       Iam = TRIM(COMP_NAME)//"::Initialize"
       
-      !  Initialize GEOS Generic
+      !  Initialize MAPL_Generic
+      ! -----------------------------------------------------------------
       call MAPL_GenericInitialize(gc, IMPORT, EXPORT, clock, RC=STATUS)
       _VERIFY(STATUS)
       
-      !  Get my internal MAPL_Generic state
+      !  Get internal MAPL_Generic state
+      ! -----------------------------------------------------------------
       call MAPL_GetObjectFromGC(GC, ggState, RC=STATUS)
       _VERIFY(STATUS)
-      
+
+      ! Turn on timers
+      ! -----------------------------------------------------------------
       call MAPL_TimerOn(ggSTATE, "TOTAL")
       call MAPL_TimerOn(ggSTATE, "INITIALIZE")
       
-      ! Get the grid related information
+      ! Get grid-related information
+      ! -----------------------------------------------------------------
       call ESMF_GridCompGet(GC, GRID=esmfGrid, rc=STATUS)
       _VERIFY(STATUS)
       
-      call ESMF_ConfigGetAttribute(CF,value=meteorology_vertical_index_is_top_down, &
-      label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:', Default=.false., __RC__)
+      ! Get whether meteorology vertical index is top down (native fields)
+      ! or bottom up (GEOS-Chem processed fields)
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute( &
+                               CF,                                             &
+                               value=meteorology_vertical_index_is_top_down,   &
+                               label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:',&
+                               Default=.false.,                                &
+                               __RC__ )
       if (meteorology_vertical_index_is_top_down) then
-         call lgr%info('Configured to expect ''top-down'' meteorological data from ''ExtData''')
+         msg='Configured to expect ''top-down'' meteorological data'// &
+             ' from ''ExtData'''
       else
-         call lgr%info('Configured to expect ''bottom-up'' meteorological data from ''ExtData''')
+         msg='Configured to expect ''bottom-up'' meteorological'// &
+             ' data from ''ExtData'''
       end if
-      
+      call lgr%info(trim(msg))
+
+      ! Get whether to use total or dry air pressure in advection
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute( &
+                               CF,                                             &
+                               value=use_total_air_pressure_in_advection,      &
+                               label='USE_TOTAL_AIR_PRESSURE_IN_ADVECTION:',   &
+                               Default=0,                                      &
+                               __RC__ )
+      if ( use_total_air_pressure_in_advection > 0 ) then
+         msg='Configured to use total air pressure in advection'
+      else
+         msg='Configured to use dry air pressure in advection'
+      end if
+      call lgr%info(trim(msg))
+
+      ! Get whether to correct mass flux for humidity (convert total to dry)
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute( &
+                               CF,                                             &
+                               value=correct_mass_flux_for_humidity,           &
+                               label='CORRECT_MASS_FLUX_FOR_HUMIDITY:',        &
+                               Default=1,                                      &
+                               __RC__ )
+      if ( correct_mass_flux_for_humidity > 0 ) then
+         msg='Configured to correct native mass flux (if using) for humidity'
+      else
+         msg='Configured to not correct native mass flux (if using) for humidity'
+      end if
+      call lgr%info(trim(msg))
+
+      ! Turn off timers
+      ! -----------------------------------------------------------------
       call MAPL_TimerOff(ggSTATE,"INITIALIZE")
       call MAPL_TimerOff(ggSTATE,"TOTAL")
       
       _RETURN(ESMF_SUCCESS)
       
-   end subroutine
-
-
+   end subroutine Initialize
+!EOC
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !INTERFACE:
+!
    subroutine Run(GC, IMPORT, EXPORT, CLOCK, RC)
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
       type(ESMF_GridComp), intent(inout) :: GC     ! Gridded component 
       type(ESMF_State),    intent(inout) :: IMPORT ! Import state
       type(ESMF_State),    intent(inout) :: EXPORT ! Export state
       type(ESMF_Clock),    intent(inout) :: CLOCK  ! The clock
+!
+! !OUTPUT PARAMETERS:
+!
       integer, optional,   intent(out) :: RC       ! Error code
+!
+! !DESCRIPTION:
+! The Run method of the derived variables CTM Gridded Component.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+      integer                      :: STATUS
+      integer                      :: ndt
+      character(len=ESMF_MAXSTR)   :: IAm = "Run"
+      character(len=ESMF_MAXSTR)   :: COMP_NAME
+      type(MAPL_MetaComp), pointer :: ggState
+      type(ESMF_Grid)              :: esmfGrid
+      real(r8)                     :: dt
+      real(r8), pointer            :: PLE(:,:,:) ! Edge pressures
 
-      ! Locals
-      character(len=ESMF_MAXSTR) :: IAm = "Run"
-      integer :: STATUS
-      character(len=ESMF_MAXSTR) :: COMP_NAME
-      type (MAPL_MetaComp), pointer :: ggState
-      type (ESMF_Grid) :: esmfGrid
-
-      ! Locals
-      real(r8), pointer  :: PLE(:,:,:) ! Edge pressures
-      integer :: ndt
-      real(r8) :: dt
-      
+      ! Saved variables
       logical, save :: firstRun = .true.
       
 #ifdef ADJOINT
       integer :: reverseTime
 #endif
+
+      !================================
+      ! Run starts here
+      !================================
       
-      ! Get the target components name and set-up traceback handle.
+      ! Get this component's name and set-up traceback handle.
       call ESMF_GridCompGet(GC, name=COMP_NAME, Grid=esmfGrid, RC=STATUS)
       _VERIFY(STATUS)
       Iam = trim(COMP_NAME) // TRIM(Iam)
       
-      ! Get my internal MAPL_Generic state
+      ! Get internal MAPL_Generic state
       call MAPL_GetObjectFromGC(GC, ggState, RC=STATUS)
       _VERIFY(STATUS)
-      
+
+      ! Turn on timers
       call MAPL_TimerOn(ggState,"TOTAL")
       call MAPL_TimerOn(ggState,"RUN")
       
-      ! Get the time-step
-      call MAPL_GetResource(ggState, ndt, 'RUN_DT:', default=0, RC=STATUS)
+      ! Retrieve timestep [s] and store as real
+      call MAPL_GetResource( ggState,   &
+                             ndt,       &
+                             'RUN_DT:', &
+                             default=0, &
+                             RC=STATUS )
       _VERIFY(STATUS)
       dt = ndt
       
 #ifdef ADJOINT
-      call MAPL_GetResource(ggState, reverseTime, 'REVERSE_TIME:', default=0, RC=STATUS)
+      ! Modifications for running time backwards in adjoint
+      call MAPL_GetResource( ggState,         &
+                             reverseTime,     &
+                             'REVERSE_TIME:', &
+                             default=0,       &
+                             RC=STATUS )
       _VERIFY(STATUS)
-      IF(MAPL_Am_I_Root()) THEN
-         WRITE(*,*) ' GIGCenv REVERSE_TIME: ', reverseTime
-      ENDIF
+      IF(MAPL_Am_I_Root()) WRITE(*,*) ' GIGCenv REVERSE_TIME: ', reverseTime
       IF(reverseTime .eq. 1) THEN
          WRITE(*,*) ' GIGCenv swapping timestep sign.'
          dt = -dt
       ENDIF
 #endif
-      
+
+      ! Compute the exports
       call prepare_ple_exports(IMPORT, EXPORT, PLE, RC=STATUS)
       _VERIFY(STATUS)
       call prepare_sphu_export(IMPORT, EXPORT, RC=STATUS)
@@ -332,77 +584,183 @@ module GCHPctmEnv_GridComp
       call prepare_massflux_exports(IMPORT, EXPORT, PLE, dt, RC=STATUS)
       _VERIFY(STATUS)
 
+      ! Turn off timers
       call MAPL_TimerOff(ggState,"RUN")
       call MAPL_TimerOff(ggState,"TOTAL")
       
       _RETURN(ESMF_SUCCESS)
-   end subroutine
 
-
+   end subroutine Run
+!EOC
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !INTERFACE:
+!
    subroutine prepare_ple_exports(IMPORT, EXPORT, PLE, RC)
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
       type(ESMF_State), intent(inout)  :: IMPORT
       type(ESMF_State), intent(inout)  :: EXPORT
+!
+! !OUTPUT PARAMETERS:
+!
       real(r8), intent(out), pointer   :: PLE(:,:,:) ! Edge pressures
-      integer, optional, intent(out)   :: RC
-
-      ! Locals
-      real, pointer, dimension(:,:)       ::  PS1_IMPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: PLE0_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: PLE1_EXPORT => null()
-      integer :: num_levels
+      integer,  intent(out), optional  :: RC
+!
+! !DESCRIPTION: Compute pressure edge exports for use in advection.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+      integer :: LM
       integer :: STATUS
+      real,     pointer, dimension(:,:)   ::  PS1_IMPORT    => null()
+      real,     pointer, dimension(:,:)   ::  PS2_IMPORT    => null()
+      real,     pointer, dimension(:,:,:) :: SPHU1_IMPORT    => null()
+      real,     pointer, dimension(:,:,:) :: SPHU2_IMPORT    => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE0_EXPORT    => null()
+      real(r8), pointer, dimension(:,:,:) :: PLE1_EXPORT    => null()
+      real(r8), pointer, dimension(:,:,:) :: DryPLE0_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: DryPLE1_EXPORT => null()
 
-      call lgr%debug('Preparing FV3 inputs PLE0, and PLE1')
+      !================================
+      ! prepare_ple_exports starts here
+      !================================
+      ! NB: Input at ExtData is PS1 (before) and PS2 (after)
+      !     Input at FV3 is PLE0 (before) and PLE1 (after)
+      call lgr%debug('Preparing FV3 inputs PLE0 and PLE1')
 
+      ! Get imports (real4)
       call MAPL_GetPointer(IMPORT, PS1_IMPORT,    'PS1', RC=STATUS)
       _VERIFY(STATUS)
+      call MAPL_GetPointer(IMPORT, PS2_IMPORT,    'PS2', RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_GetPointer(IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_GetPointer(IMPORT, SPHU2_IMPORT,  'SPHU2', RC=STATUS)
+      _VERIFY(STATUS)
 
+      ! Get exports (real8) and initialize
       call MAPL_GetPointer(EXPORT, PLE0_EXPORT,  'PLE0',  RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_GetPointer(EXPORT, PLE1_EXPORT,  'PLE1',  RC=STATUS)
       _VERIFY(STATUS)
-
-      num_levels = size(PLE0_EXPORT,3) - 1
-
       PLE0_EXPORT(:,:,:)  = 0.0d0
       PLE1_EXPORT(:,:,:)  = 0.0d0
 
-      ! Calculate PLE[01]_EXPORT (for FV3, thus, export with top-down index)
-      call calculate_ple(PS1_IMPORT, PLE0_EXPORT)    ! output is bottom-up, units are hPa
-      PLE0_EXPORT = 100.0d0*PLE0_EXPORT              ! convert hPa to Pa
-      PLE0_EXPORT = PLE0_EXPORT(:,:,num_levels:0:-1) ! flip
-      PLE1_EXPORT = PLE0_EXPORT                      ! copy PLE0 to PLE1
+      if ( use_total_air_pressure_in_advection < 1 ) then
+         call MAPL_GetPointer(EXPORT, DryPLE0_EXPORT,  'DryPLE0',  RC=STATUS)
+         _VERIFY(STATUS)
+         call MAPL_GetPointer(EXPORT, DryPLE1_EXPORT,  'DryPLE1',  RC=STATUS)
+         _VERIFY(STATUS)
+         DryPLE0_EXPORT(:,:,:)  = 0.0d0
+         DryPLE1_EXPORT(:,:,:)  = 0.0d0
+      endif
 
-      PLE=>PLE0_EXPORT
+      ! Set number of levels
+      LM = size(PLE0_EXPORT,3) - 1
+
+      ! Compute pressure edge exports from surface pressure and
+      ! then convert from hPa to Pa and vertically flip so that level index
+      ! is top-down (level 1 is TOA). The transformation is needed because
+      ! calculate_ple returns bottom-up pressure as in [hPa] and advection
+      ! expects top-down pressure in [Pa].
+
+      ! Compute PLE0 from PS1 (naming mismatch between FV3 GEOS-Chem)
+      call calculate_ple(PS1_IMPORT, PLE0_EXPORT)
+      PLE0_EXPORT = 100.0d0 * PLE0_EXPORT
+      PLE0_EXPORT = PLE0_EXPORT(:,:,LM:0:-1)
+
+      ! Compute PLE1 from PS2 (naming mismatch between FV3 GEOS-Chem )
+      call calculate_ple(PS2_IMPORT, PLE1_EXPORT)
+      PLE1_EXPORT = 100.0d0 * PLE1_EXPORT
+      PLE1_EXPORT = PLE1_EXPORT(:,:,LM:0:-1)
+
+      ! Also compute dry pressures if using dry pressure in advection
+      if ( use_total_air_pressure_in_advection < 1 ) then
+
+         call calculate_ple(PS1_IMPORT, DryPLE0_EXPORT, SPHU1_IMPORT )
+         DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
+         DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
+
+         call calculate_ple(PS2_IMPORT, DryPLE1_EXPORT, SPHU2_IMPORT )
+         DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
+         DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
+
+      endif
+
+      ! Set PLE output which will be used to compute mass fluxes in FV3
+      if ( use_total_air_pressure_in_advection > 0 ) then
+         PLE => PLE0_EXPORT
+      else
+         PLE => DryPLE0_Export
+      endif
 
       _RETURN(ESMF_SUCCESS)
-   end subroutine
 
-
+  end subroutine prepare_ple_exports
+!EOC
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !INTERFACE:
+!
    subroutine prepare_sphu_export(IMPORT, EXPORT, RC)
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
       type(ESMF_State), intent(inout) :: IMPORT
       type(ESMF_State), intent(inout) :: EXPORT
+!
+! !OUTPUT PARAMETERS:
+!
       integer, optional, intent(out)  :: RC
       integer :: LM
-
-      ! Locals
-      real, pointer, dimension(:,:,:)     :: SPHU1_IMPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
+!
+! !DESCRIPTION: Set SPHU export for advection. This is only done if using
+! total rather than dry pressure in advection.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
       integer :: STATUS
+      real,     pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
 
+      !================================
+      ! prepare_sphu_export starts here
+      !================================
+
+      ! NB: Input at ExtData is SPHU1 (before) and SPHU2 (after)
+      !     Input at FV3 is SPHU0 (before) and SPHU1 (after)
       call lgr%debug('Preparing FV3 input SPHU0')
 
-      call MAPL_GetPointer(IMPORT, SPHU1_IMPORT,  'SPHU1', RC=STATUS)
+      ! Get imports (real4)
+      call MAPL_GetPointer(IMPORT, SPHU1_IMPORT, 'SPHU1', RC=STATUS)
       _VERIFY(STATUS)
-      
+
+      ! Get exports (real8) and initialize to 0
       call MAPL_GetPointer(EXPORT, SPHU0_EXPORT, 'SPHU0', RC=STATUS)
       _VERIFY(STATUS)
-
       SPHU0_EXPORT(:,:,:) = 0.0d0
 
+      ! Set number of levels
       LM = size(SPHU1_IMPORT, 3)
 
-      ! Calculate SPHU0_EXPORT (for FV3, thus, export with top-down index)
+      ! Set export as copy of import casted to real8 and set vertical index
+      ! as top-down (level 1 corresponds to TOA)
       if (meteorology_vertical_index_is_top_down) then 
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
@@ -410,30 +768,70 @@ module GCHPctmEnv_GridComp
       end if
 
       _RETURN(ESMF_SUCCESS)
-   end subroutine
 
+   end subroutine prepare_sphu_export
+!EOC
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !INTERFACE:
+!
    subroutine prepare_massflux_exports(IMPORT, EXPORT, PLE, dt, RC)
-      type(ESMF_State), intent(inout) :: IMPORT
-      type(ESMF_State), intent(inout) :: EXPORT
+!
+! !INPUT PARAMETERS:
+!
       real(r8), intent(in), pointer   :: PLE(:,:,:) ! Edge pressures
       real(r8), intent(in)            :: dt
+!
+! !INPUT/OUTPUT PARAMETERS:
+!
+      type(ESMF_State), intent(inout) :: IMPORT
+      type(ESMF_State), intent(inout) :: EXPORT
+!
+! OUTPUT PARAMETERS:
+!
       integer, optional, intent(out)  :: RC       ! Error code
-
-      real, pointer, dimension(:,:,:)     :: UA_IMPORT  => null()
-      real, pointer, dimension(:,:,:)     :: VA_IMPORT  => null()
-      real(r8), pointer, dimension(:,:,:) :: CX_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: CY_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: MFX_EXPORT => null()
-      real(r8), pointer, dimension(:,:,:) :: MFY_EXPORT => null() 
-      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
-
-      real, pointer, dimension(:,:,:) :: temp3_r4  => null()
-      real, pointer, dimension(:,:,:) :: UC => null()
-      real, pointer, dimension(:,:,:) :: VC => null()
-      real(r8), pointer, dimension(:,:,:) :: UCr8 => null()
-      real(r8), pointer, dimension(:,:,:) :: VCr8 => null()
+!
+! !DESCRIPTION:
+! Set mass flux and courant exports needed for offline advection. How this
+! is done is dependent upon whether importing them via ExtData or computing
+! from winds.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
       integer :: is, ie, js, je, lm
       integer :: STATUS
+
+      ! Pointers to exports
+      real(r8), pointer, dimension(:,:,:) :: MFX_EXPORT => null()
+      real(r8), pointer, dimension(:,:,:) :: MFY_EXPORT => null() 
+      real(r8), pointer, dimension(:,:,:) :: CX_EXPORT  => null()
+      real(r8), pointer, dimension(:,:,:) :: CY_EXPORT  => null()
+      real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT  => null()
+
+      ! Pointers to imports
+      real,     pointer, dimension(:,:,:) :: UA_IMPORT  => null()
+      real,     pointer, dimension(:,:,:) :: VA_IMPORT  => null()
+
+      ! Pointer to diagnostic export
+      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
+
+      ! Pointers to local arrays
+      real,     pointer, dimension(:,:,:) :: temp3d_r4 => null()
+      real,     pointer, dimension(:,:,:) :: UC        => null()
+      real,     pointer, dimension(:,:,:) :: VC        => null()
+      real(r8), pointer, dimension(:,:,:) :: UCr8      => null()
+      real(r8), pointer, dimension(:,:,:) :: VCr8      => null()
+
+      !=====================================
+      ! prepare_massflux_exports starts here
+      !=====================================
 
       call lgr%debug('Preparing FV3 input MFX, MFY, CX, and CY')
 
@@ -441,6 +839,7 @@ module GCHPctmEnv_GridComp
       js = lbound(PLE, 2); je = ubound(PLE, 2)
       lm = size(PLE, 3) - 1
 
+      ! Get exports (real8)
       call MAPL_GetPointer(EXPORT, MFX_EXPORT, 'MFX', RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_GetPointer(EXPORT, MFY_EXPORT, 'MFY', RC=STATUS)
@@ -449,23 +848,59 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       call MAPL_GetPointer(EXPORT, CY_EXPORT, 'CY', RC=STATUS)
       _VERIFY(STATUS)
-      if (.not. import_mass_flux_from_extdata) then
+
+      if ( import_mass_flux_from_extdata ) then
+
+         ! Get SPHU0 export set in prepare_sphu_export
+         if ( correct_mass_flux_for_humidity > 0 ) then
+            call MAPL_GetPointer(EXPORT, SPHU0_EXPORT, 'SPHU0', RC=STATUS)
+            _VERIFY(STATUS)
+         endif
+
+         ! Get imports (real4) and copy to exports, converting to real8
+         call MAPL_GetPointer(IMPORT, temp3d_r4, 'MFXC',  RC=STATUS)
+         _VERIFY(STATUS)
+         if ( correct_mass_flux_for_humidity > 0 ) then
+            MFX_EXPORT = dble(temp3d_r4) / ( 1.d0 - SPHU0_EXPORT )
+         else
+            MFX_EXPORT = dble(temp3d_r4)
+         endif
+
+         call MAPL_GetPointer(IMPORT, temp3d_r4, 'MFYC',  RC=STATUS)
+         _VERIFY(STATUS)
+         if ( correct_mass_flux_for_humidity > 0 ) then
+            MFY_EXPORT = dble(temp3d_r4) / ( 1.d0 - SPHU0_EXPORT )
+         else
+            MFY_EXPORT = dble(temp3d_r4)
+         endif
+
+         call MAPL_GetPointer(IMPORT, temp3d_r4, 'CXC',  RC=STATUS)
+         _VERIFY(STATUS)
+         CX_EXPORT = dble(temp3d_r4)
+
+         call MAPL_GetPointer(IMPORT, temp3d_r4, 'CYC',  RC=STATUS)
+         _VERIFY(STATUS)
+         CY_EXPORT = dble(temp3d_r4)
+
+      else
+
+         ! Get wind imports (real4, A-grid)
          call MAPL_GetPointer(IMPORT, UA_IMPORT, 'UA', RC=STATUS)
          _VERIFY(STATUS)
          call MAPL_GetPointer(IMPORT, VA_IMPORT, 'VA', RC=STATUS)
          _VERIFY(STATUS)
          
-         ! Temporaries
-         ALLOCATE(UC(is:ie,js:je,lm), STAT=STATUS); 
+         ! Allocate local arrays for C-grid, both real4 and real8
+         ALLOCATE( UC   (is:ie, js:je, lm), STAT=STATUS);
          _VERIFY(STATUS)
-         ALLOCATE(VC(is:ie,js:je,lm), STAT=STATUS); 
+         ALLOCATE( VC   (is:ie, js:je, lm), STAT=STATUS);
          _VERIFY(STATUS)
-         ALLOCATE(UCr8(is:ie,js:je,lm), STAT=STATUS); 
+         ALLOCATE( UCr8 (is:ie, js:je, lm), STAT=STATUS);
          _VERIFY(STATUS)
-         ALLOCATE(VCr8(is:ie,js:je,lm), STAT=STATUS); 
+         ALLOCATE( VCr8 (is:ie, js:je, lm), STAT=STATUS);
          _VERIFY(STATUS)
          
-         ! Prepare inputs to fv_computeMassFluxes
+         ! Copy imports to local arrays so that vertical index is top down
          if (meteorology_vertical_index_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
             VC(:,:,:) = VA_IMPORT(:,:,:)
@@ -474,10 +909,10 @@ module GCHPctmEnv_GridComp
             VC(:,:,:) = VA_IMPORT(:,:,LM:1:-1)
          end if
          
-         ! Restagger winds (A-grid to C-grid)
-         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.) ! real4 only
+         ! Restagger winds (A-grid to C-grid) (requires real4)
+         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
          
-         ! Convert real4->real8 for fv_computeMassFluxes 
+         ! Store as real8 for input to FV3 subroutine to compute mass fluxes
          UCr8  = dble(UC)
          VCr8  = dble(VC)
          
@@ -493,51 +928,83 @@ module GCHPctmEnv_GridComp
          firstRun = .false.
 #endif
          
-         ! Deallocate temporaries
+         ! Deallocate local arrays
          DEALLOCATE(UC, VC, UCr8, VCr8)
-      else
-         ! Convert MF[XY]C and C[XY]C imports to real8 exports
-         call MAPL_GetPointer(IMPORT, temp3_r4, 'MFXC',  RC=STATUS)
-         _VERIFY(STATUS)
-         MFX_EXPORT = dble(temp3_r4)
-         
-         call MAPL_GetPointer(IMPORT, temp3_r4, 'MFYC',  RC=STATUS)
-         _VERIFY(STATUS)
-         MFY_EXPORT = dble(temp3_r4)
-         
-         call MAPL_GetPointer(IMPORT, temp3_r4, 'CXC',  RC=STATUS)
-         _VERIFY(STATUS)
-         CX_EXPORT = dble(temp3_r4)
-         
-         call MAPL_GetPointer(IMPORT, temp3_r4, 'CYC',  RC=STATUS)
-         _VERIFY(STATUS)
-         CY_EXPORT = dble(temp3_r4)
+
       end if
 
-      ! Vertical motion diagnostics
-      call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', RC=STATUS)
-      _VERIFY(STATUS)
-      
+      ! Set vertical motion diagnostic if enabled in HISTORY.rc
       if (associated(UpwardsMassFlux)) then
+         call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
+                              RC=STATUS)
+         _VERIFY(STATUS)
          call lgr%debug('Calculating diagnostic export UpwardsMassFlux')
 
          ! Get vertical mass flux
          call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
+
          ! Flip vertical so that GCHP diagnostic is positive="up"
          UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)/dt
       end if
 
-      _RETURN(ESMF_SUCCESS)
-   end subroutine
-   
+      ! nullify pointers
+      MFX_EXPORT      => null()
+      MFY_EXPORT      => null()
+      CX_EXPORT       => null()
+      CY_EXPORT       => null()
+      SPHU0_EXPORT    => null()
+      UA_IMPORT       => null()
+      VA_IMPORT       => null()
+      UpwardsMassFlux => null()
+      temp3d_r4       => null()
+      UC              => null()
+      VC              => null()
+      UCr8            => null()
+      VCr8            => null()
 
-   subroutine calculate_ple(PS, PLE)
-      real(r4), intent(in)    :: PS(:,:)    ! Surface pressure [hPa]
-      real(r8), intent(out)   :: PLE(:,:,:) ! Edge pressure    [hPa]
-      integer, parameter      :: num_levels = 72
-      integer, parameter      :: num_edges = num_levels + 1
-      real(r8)                :: AP(num_edges), BP(num_edges)
-      integer                 :: L
+      _RETURN(ESMF_SUCCESS)
+
+   end subroutine prepare_massflux_exports
+!EOC
+!-------------------------------------------------------------------------
+!         GEOS-Chem High Performance Global Chemical Transport Model
+!-------------------------------------------------------------------------
+!BOP
+!
+! !INTERFACE:
+!
+   subroutine calculate_ple(PS, PLE, SPHU)
+!
+! !INPUT PARAMETERS:
+!
+      real(r4), intent(in)           :: PS(:,:)     ! Surface pressure [hPa]
+      real(r4), intent(in), OPTIONAL :: SPHU(:,:,:) ! Specific humidity [kg/kg]
+!
+! !INPUT PARAMETERS:
+!
+      real(r8), intent(out)          :: PLE(:,:,:)  ! Edge pressure    [hPa]
+!
+! !DESCRIPTION:
+! Compute edge pressures from surface pressure and grid parameters. This
+! subroutine is currently hard-coded for 72 levels only and returns pressure
+! with vertical index bottom-up (level 1 is surface) in units of hPa.
+!
+!EOP
+!-------------------------------------------------------------------------
+!BOC
+!
+! !LOCAL VARIABLES:
+!
+      ! NOTE: Want to make number of levels configurable
+      integer, parameter  :: num_levels = 72
+      integer, parameter  :: num_edges = num_levels + 1
+      real(r8)            :: AP(num_edges), BP(num_edges)
+      real(r8)            :: PEdge_Bot, PEdge_Top, PSDry
+      integer             :: I, J, L, is, ie, js, je, lm
+
+      !================================
+      ! calculate_ple starts here
+      !================================
       
       AP = 1d0
       BP = 0d0
@@ -585,11 +1052,48 @@ module GCHPctmEnv_GridComp
               0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
               0.000000d+00, 0.000000d+00, 0.000000d+00, 0.000000d+00, &
               0.000000d+00 /)
+
       
-      ! Calculate level edges
-      Do L=1,num_edges
-         PLE(:,:,L) = (AP(L) + (BP(L) * dble(PS(:,:))))
-      End Do
-   end subroutine
+      ! Calculate bottom-up level edge pressures [hPa]
+      if ( .not. PRESENT( SPHU ) ) then
+
+         ! Total pressure
+         do L=1,num_edges
+            PLE(:,:,L) = AP(L) + ( BP(L) * dble(PS(:,:)) )
+         enddo
+
+      else
+
+         ! Dry pressure
+         is = lbound(PS,1)
+         ie = ubound(PS,1)
+         js = lbound(PS,2)
+         je = ubound(PS,2)
+         LM = size  (SPHU,3)
+         do J=js,je
+         do I=is,ie
+
+            ! Start with TOA pressure
+            PSDry = AP(LM+1)
+
+            ! Stack up dry delta-P to get surface dry pressure
+            do L=1,LM
+               PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
+               PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )
+               PSDry = PSDry &
+                       + ( ( PEdge_Bot - Pedge_Top ) * ( 1.d0 - SPHU(I,J,L) ) )
+            enddo
+
+            ! Work back up from the surface to get dry level edges
+            do L=1,LM+1
+               PLE(I,J,L) = AP(L) + ( BP(L) * dble(PSDry) )
+            enddo
+         enddo
+         enddo
+      endif
+
+
+   end subroutine calculate_ple
+!EOC
    
 end module GCHPctmEnv_GridComp
