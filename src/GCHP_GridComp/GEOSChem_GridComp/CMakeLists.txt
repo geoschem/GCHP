@@ -10,6 +10,10 @@ set(RRTMG OFF CACHE BOOL
 set(LUO_WETDEP OFF CACHE BOOL
   "Switch to build the Luo et al (2020) wetdep scheme into GEOS-Chem"
 )
+set(CLOUDJ OFF CACHE BOOL
+  "Switch to build the Cloud-J photolysis library"
+)
+
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -19,6 +23,11 @@ set(TOMAS                   FALSE)
 set(GCHP                    TRUE)
 set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
+
+# Add directories to build
+if(${CLOUDJ})
+  add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
+endif()
 add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure build properties for GEOS-Chem
@@ -28,6 +37,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<BOOL:${ADJOINT}>:ADJOINT>
   $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
+  $<$<BOOL:${CLOUDJ}>:CLOUDJ>
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
@@ -128,3 +138,4 @@ gc_pretty_print(VARIABLE APM IS_BOOLEAN)
 gc_pretty_print(VARIABLE RRTMG IS_BOOLEAN)
 gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
+gc_pretty_print(VARIABLE CLOUDJ IS_BOOLEAN)
