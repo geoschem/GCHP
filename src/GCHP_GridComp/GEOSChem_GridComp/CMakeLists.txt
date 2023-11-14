@@ -10,10 +10,6 @@ set(RRTMG OFF CACHE BOOL
 set(LUO_WETDEP OFF CACHE BOOL
   "Switch to build the Luo et al (2020) wetdep scheme into GEOS-Chem"
 )
-set(CLOUDJ OFF CACHE BOOL
-  "Switch to build the Cloud-J photolysis library"
-)
-
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -25,9 +21,6 @@ set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
 
 # Add directories to build
-if(${CLOUDJ})
-  add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
-endif()
 add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure build properties for GEOS-Chem
