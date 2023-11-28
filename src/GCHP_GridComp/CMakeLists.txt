@@ -9,9 +9,6 @@ set(HEMCO_EXTERNAL_CONFIG  TRUE  ) # Not HEMCO standalone
 set(GC_EXTERNAL_CONFIG     TRUE  ) # Not GEOS-Chem Classic
 set(MAPL_ESMF              TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
 set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/Apps/mapl_acg.pl)
-set(CLOUDJ OFF CACHE BOOL
-  "Switch to build the Cloud-J photolysis library"
-)
 
 #---------------
 # Add FV3
@@ -21,9 +18,7 @@ add_subdirectory(FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
 #---------------
 # Add Cloud-J
 #---------------
-if(${CLOUDJ})
-  add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
-endif()
+add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
 
 #---------------
 # Add HEMCO

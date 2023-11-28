@@ -10,6 +10,9 @@ set(RRTMG OFF CACHE BOOL
 set(LUO_WETDEP OFF CACHE BOOL
   "Switch to build the Luo et al (2020) wetdep scheme into GEOS-Chem"
 )
+set(FASTJX OFF CACHE BOOL
+  "Switch to use legacy FAST-JX photolysis in GEOS-Chem"
+)
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -30,7 +33,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<BOOL:${ADJOINT}>:ADJOINT>
   $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
-  $<$<BOOL:${CLOUDJ}>:CLOUDJ>
+  $<$<BOOL:${FASTJX}>:FASTJX>
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
@@ -131,4 +134,4 @@ gc_pretty_print(VARIABLE APM IS_BOOLEAN)
 gc_pretty_print(VARIABLE RRTMG IS_BOOLEAN)
 gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
-gc_pretty_print(VARIABLE CLOUDJ IS_BOOLEAN)
+gc_pretty_print(VARIABLE FASTJX IS_BOOLEAN)
