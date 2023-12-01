@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Updated GEOS-Chem submodule to 14.3.0
 
+## [14.2.3] - 2023-12-01
+### Added
+- Script `.release/changeVersionNumbers.sh` to change version numbers before a new GCHP release
+
 ## [14.2.2] - 2023-10-23
 ### Changed
 - Updated GEOS-Chem submodule to 14.2.2
