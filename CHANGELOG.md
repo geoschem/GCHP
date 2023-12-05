@@ -8,8 +8,16 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased 14.3.0] - TBD
+### Changed
+- Updated GEOS-Chem submodule to 14.3.0
+
 ### Added
 - Added Cloud-J as submodule within GCHP_GridComp directory
+- Added compile option FASTJX to use legacy Fast-JX to compute J-values in GEOS-Chem instead of Cloud-J (required for mercury simulation)
+
+## [14.2.3] - 2023-12-01
+### Added
+- Script `.release/changeVersionNumbers.sh` to change version numbers before a new GCHP release
 
 ## [14.2.2] - 2023-10-23
 ### Changed
