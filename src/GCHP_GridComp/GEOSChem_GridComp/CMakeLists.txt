@@ -7,6 +7,9 @@ set(USE_REAL8 ON CACHE BOOL
 set(RRTMG OFF CACHE BOOL
   "Switch to build RRTMG as a component of GEOS-Chem"
 )
+set(TOMAS OFF CACHE BOOL
+  "Switch to build TOMAS as a component of GEOS-Chem"
+)
 set(LUO_WETDEP OFF CACHE BOOL
   "Switch to build the Luo et al (2020) wetdep scheme into GEOS-Chem"
 )
@@ -15,7 +18,6 @@ set(LUO_WETDEP OFF CACHE BOOL
 set(GC_EXTERNAL_CONFIG      TRUE)
 set(GTMM                    FALSE)
 set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
-set(TOMAS                   FALSE)
 set(GCHP                    TRUE)
 set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
@@ -27,6 +29,9 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<BOOL:${USE_REAL8}>:USE_REAL8> $<$<BOOL:${RRTMG}>:RRTMG>
   $<$<BOOL:${ADJOINT}>:ADJOINT>
   $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
+  $<$<BOOL:${TOMAS}>:TOMAS>
+  $<$<STREQUAL:${TOMAS_BINS},15>:TOMAS15>
+  $<$<STREQUAL:${TOMAS_BINS},40>:TOMAS40>
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
 )
 
@@ -125,6 +130,7 @@ gc_pretty_print(VARIABLE MECH OPTIONS "fullchem" "carbon" "custom")
 gc_pretty_print(VARIABLE OMP IS_BOOLEAN)
 gc_pretty_print(VARIABLE USE_REAL8 IS_BOOLEAN)
 gc_pretty_print(VARIABLE APM IS_BOOLEAN)
+gc_pretty_print(VARIABLE TOMAS IS_BOOLEAN)
 gc_pretty_print(VARIABLE RRTMG IS_BOOLEAN)
 gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)

@@ -8,8 +8,12 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased 14.3.0] - TBD
+### Added
+- Added capability for TOMAS simulations in GCHP
+
 ### Changed
 - Updated GEOS-Chem submodule to 14.3.0
+- Updated HEMCO submodule to 3.8.0
 
 ## [14.2.3] - 2023-12-01
 ### Added
@@ -82,7 +86,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Removed memory leaks in GEOS-Chem and HEMCO submodule code
 - Units for State_Diag%RxnRate diagnostic are now `molec cm-3 s-1` instead of `s-1`
-
 
 ## [14.0.1] - 2022-10-31
 ### Changed
