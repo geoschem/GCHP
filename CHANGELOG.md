@@ -40,7 +40,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Fixed post-advection pressure edges (PLE1) passed to advection to be derived from the correct surface pressure
 - Fixed typo in `docs/source/conf.py`, "_static" should be "_static/"
->>>>>>> origin/main
 
 ## [14.1.1] - 2023-03-03
 ### Added
