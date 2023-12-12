@@ -31,3 +31,6 @@
 [submodule "docs/geos-chem-shared-docs"]
 	path = docs/source/geos-chem-shared-docs
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
+[submodule "src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J"]
+	path = src/GCHP_GridComp/Cloud-J
+	url = https://github.com/geoschem/Cloud-J

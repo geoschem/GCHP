@@ -3,16 +3,22 @@
 #---------------
 # Set cmake logicals needed for subprojects
 #---------------
-set(FV_PRECISION          R8    ) # FV3 precision is R8
-set(HEMCO_EXTERNAL_CONFIG TRUE  ) # Not HEMCO standalone
-set(GC_EXTERNAL_CONFIG    TRUE  ) # Not GEOS-Chem Classic
-set(MAPL_ESMF             TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
+set(FV_PRECISION           R8    ) # FV3 precision is R8
+set(CLOUDJ_EXTERNAL_CONFIG TRUE  ) # Not Cloud-J standalone
+set(HEMCO_EXTERNAL_CONFIG  TRUE  ) # Not HEMCO standalone
+set(GC_EXTERNAL_CONFIG     TRUE  ) # Not GEOS-Chem Classic
+set(MAPL_ESMF              TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
 set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/Apps/mapl_acg.pl)
 
 #---------------
 # Add FV3
 #---------------
 add_subdirectory(FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
+
+#---------------
+# Add Cloud-J
+#---------------
+add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
 
 #---------------
 # Add HEMCO
