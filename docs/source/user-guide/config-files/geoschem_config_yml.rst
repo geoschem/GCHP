@@ -2,7 +2,7 @@ geoschem_config.yml
 ===================
 
 Information about the :file:`geoschem_config.yml` file is the same as for GEOS-Chem Classic with a few exceptions. 
-See the :file:`geoschem_config.yml` file wiki page for an overview of the file.
+See the GEOS-Chem ReadTheDocs configuration files section for an overview of the file.
 
 The :file:`geoschem_config.yml` file used in GCHP is different in the following ways:
 
