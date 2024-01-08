@@ -10,14 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased 14.3.0] - TBD
 ### Added
 - Added capability for TOMAS simulations in GCHP
+- Added Cloud-J as submodule within GCHP_GridComp directory
+- Added compile option FASTJX to use legacy Fast-JX to compute J-values in GEOS-Chem instead of Cloud-J (required for mercury simulation)
 
 ### Changed
 - Updated GEOS-Chem submodule to 14.3.0
 - Updated HEMCO submodule to 3.8.0
 
-### Added
-- Added Cloud-J as submodule within GCHP_GridComp directory
-- Added compile option FASTJX to use legacy Fast-JX to compute J-values in GEOS-Chem instead of Cloud-J (required for mercury simulation)
+### Fixed
+- Avoid semicolon in `CMAKE_ Fortran_FLAGS` variable when additional flags are passed to `cmake`
 
 ## [14.2.3] - 2023-12-01
 ### Added
