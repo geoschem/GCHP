@@ -41,7 +41,7 @@ All of them involve sending additional print statements to the log files.
 
 #. Activate GEOS-Chem verbose output by editing
    :file:`geoschem_config.yml` as shown below.  This will tell
-   GEOS-Chem to send extra printout to the `gchp.YYYYMMDD_hhmmz.log`
+   GEOS-Chem to send extra printout to the :file:`gchp.YYYYMMDD_hhmmz.log`
    file.
 
    .. code-block:: yaml
@@ -57,7 +57,7 @@ All of them involve sending additional print statements to the log files.
 
 #. Activate GEOS-Chem verbose output by editing
    :file:`HEMCO_Config.rc` as shown below.  This will tell
-   HEMCO to send extra printout to the `gchp.YYYYMMDD_hhmmz.log`
+   HEMCO to send extra printout to the :file:`gchp.YYYYMMDD_hhmmz.log`
    file.
 
    .. code-block:: kconfig
