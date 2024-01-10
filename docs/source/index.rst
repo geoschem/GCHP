@@ -83,6 +83,8 @@ use Spack to install GCHP's dependencies if needed.
    supplement/stretched-grid.rst
    supplement/satellite-overpass.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
+   geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
+   geos-chem-shared-docs/supplemental-guides/coards-guide.rst
    geos-chem-shared-docs/supplemental-guides/customize-guide.rst
    geos-chem-shared-docs/supplemental-guides/error-guide.rst
    geos-chem-shared-docs/supplemental-guides/debug-guide.rst
