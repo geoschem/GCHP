@@ -15,7 +15,7 @@ The most basic configuration problem occurs if you forget to run :literal:`git s
 after cloning the GCHP repository. Check that you did this correctly. Other configuration problems usually have to do
 with libraries. Check that you have libraries loaded and that they meet the requirements for GCHP. Also check
 the logs printed to the build directory, in particular :literal:`CMakeCache.txt`. That file lists the directories
-of the libraries that are used. Check that these paths are what your intend to use. Sometimes on compute clusters
+of the libraries that are used. Check that these paths are what you intend to use. Sometimes on compute clusters
 there can be multiple instances of the same library loaded, such as when using a spack-built library when the
 cluster already has a different version of the same library. Check the library paths carefully to look for
 inconsistencies.
@@ -26,7 +26,8 @@ Build-time errors
 
 Usually build-time errors are self-explanatory, with an error message indicating the file, line number, and reason
 for the error. Sometimes you need to do some digging in the build log to find where the error is. Searching for string
-" error " usually hones in on the problem fast. Read the error message carefully and then find the file and line
+" error " (note the space before and after) usually hones in on the problem fast. Read the error message carefully and then
+find the file and line
 number specified. If it is not clear what the error is even from the error message then you can try doing a string search
 on the GCHP GitHub issues page, or on the web in general. If the error is occuring with an out-of-the-box GCHP version
 then the issue is likely a library. Check that your libraries meet the requirements of GCHP as specified on
@@ -39,10 +40,10 @@ Run-time errors
 
 The first step in debugging run-time errors is always to look at the logs. First check the :literal:`gchp.*.log`
 (* is the start time of the run) to see how far the run got. It is possible the error was trapped by HEMCO or GEOS-Chem
-in which case there will be error messages explaining the problem. Also check the standard error log. If running on a job
+in which case there will likey be error messages explaining the problem. Also check the standard error log. If running on a job
 scheduler this would be a separate file from the main GCHP log file. The error should include a traceback of the error,
 meaning filenames and line numbers where the error occurred, moving up the call stack from deepest to highest. Go to the
-first file listed and find the line number. Also read the error message in the traceback. Try to determine in the error
+first file listed and find the line number. Also read the error message in the traceback. Try to determine if the error
 is in GEOS-Chem, HEMCO, MAPL, or somewhere else. If the error is in MAPL then you should check output file
 :literal:`allPEs.log`. This log provides basic information on the MAPL run, which includes general GCHP infrastructure setup
 as well as model I/O.
@@ -59,7 +60,7 @@ exception.
 Enable maximum print output for GEOS-Chem and HEMCO
 ---------------------------------------------------
 
-If the error is in GEOS-Chem or HEMCO you can also enable additional prints to the main GCHP log within
+To more information about the execution within GEOS-Chem and HEMCO you can enable additional prints to the main GCHP log within
 :literal:`geoschem_config.yml` and :literal:`HEMCO_Config.rc`.
 
 #. Activate GEOS-Chem verbose output by editing
@@ -104,17 +105,18 @@ appear in every file.
 Enable maximum print output for MAPL
 ------------------------------------
 
-If you see :literal:`ExtData` in the error traceback then the problem has to do with input files. This is a common error when
-adding new input files to the model. If there is not enough information in :literal:`allPEslog` to determine what the input file
-problem is, then enable additional MAPL prints. This is mostly recommended for input file issues because MAPL ExtData is
+If you see :literal:`ExtData` in the error traceback then the problem has to do with input files. It is common to run into
+errors when adding new input files because of strict rules for import files within MAPL.
+If there is not enough information in :literal:`allPEs.log` to determine what the input file
+problem is then you should enable additional MAPL prints and rerun. This is mostly recommended for input file issues
+because MAPL ExtData is
 where most of the debug logging statements are currently implemented. However, problems elsewhere in MAPL might have useful
 debugging error messages as well. You can also go into the code and add your own by searching for examples with string
 :literal:`lgr%debug`. Contact the GEOS-Chem Support Team if you need help deciphering the resulting log output.
 
-#. Activate the :literal:`CAP.EXTDATA` and literal:`MAPL` debug loggers by
+#. Activate the :literal:`CAP.EXTDATA` and :literal:`MAPL` debug loggers by
    editing the :file:`logging.yml` configuration file as shown below.
-   This will tell GCHP to send debug priontout from MAPL and
-   ExtData to the :file:`allPEs.log` file.
+   This will send all MAPL debug-level logging prints to the :file:`allPEs.log` file.
 
    .. code-block:: yaml
 
@@ -132,16 +134,16 @@ debugging error messages as well. You can also go into the code and add your own
              level: WARNING     <=== Change this to DEBUG
              root_level: INFO   <=== Change this to DEBUG
 
-None of these options require recompiling. Be aware that all of them will slow down your simulation.  Be sure to set
-them back to the default values after you are finished debugging.
-
 Read the code
 -------------
 
 If log error messages are not helpful in determining the problem then you may be able to solve it by reading the
-code. Follow the traceback to find the file and line number where the code crashed. Read the code above it to try
+code. Follow the traceback to find the file and line number where the code crashed. You can find the location of
+files in GCHP by using the unix find command from the top-level source code directory,
+e.g. :literal:`find . -name aerosol_mod.F90` Once you find the file and the line where the model fails, read
+the code above it to try
 to get a sense of the context of where it crashed. This will give clues as to why it had a problem and may give you
-ideas of what to try to fix it. You can also add your own debug code, recompile, and run.
+ideas of what to do to try to fix it. You can also add your own debug code, recompile, and run.
 
 Inspecting memory
 -----------------
@@ -159,3 +161,9 @@ and GEOS-Chem. Within GEOS-Chem, total and swap memory will also be
 printed before and after subroutines to run GEOS-Chem, perform
 chemistry, and apply emissions. For more information about inspecting
 memory see the output files section of this user guide.
+
+Inspecting timing
+-----------------
+
+Model timing information is printed out at the end of each GCHP run. Check the end of the GCHP log for a breakdown
+of component timing. 
