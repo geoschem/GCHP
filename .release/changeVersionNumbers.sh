@@ -10,7 +10,7 @@
 #
 # !DESCRIPTION: Bash script to change the version numbers in the appropriate
 #  files in the GCHP directory structure.  Run this before releasing
-#  a new GCHP Classic version.
+#  a new GCHP version.
 #\\
 #\\
 # !CALLING SEQUENCE:
@@ -76,7 +76,7 @@ function main() {
     for file in ${files[@]}; do
         replace "${pattern}" "${version}" "${file}"
         [[ $? -ne 0 ]] && exitWithError "${file}"
-        echo "GCClassic version updated to ${version} in ${file}"
+        echo "GCHP version updated to ${version} in ${file}"
     done
 
     #========================================================================
@@ -91,13 +91,14 @@ function main() {
     files=(                                                          \
         "CHANGELOG.md"                                               \
         "src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md" \
+        "src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/KPP/fullchem/CHANGELOG_fullchem.md" \
     )
 
     # Replace version numbers in files
     for file in ${files[@]}; do
 	replace "${pattern}" "\[${version}\] - ${date}" "${file}"
         [[ $? -ne 0 ]] && exitWithError "${file}"
-        echo "GCClassic version updated to ${version} in ${file}"
+        echo "GCHP version updated to ${version} in ${file}"
     done
 
     # Return to the starting directory
