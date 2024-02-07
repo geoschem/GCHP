@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Avoid semicolon in `CMAKE_ Fortran_FLAGS` variable when additional flags are passed to `cmake`
+- Updated debugging guide with clearer examples
 
 ## [14.2.3] - 2023-12-01
 ### Added

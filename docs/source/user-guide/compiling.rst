@@ -309,7 +309,10 @@ HEMCO_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
     Same as :literal:`GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>`, but for HEMCO.
 
 RRTMG
-    Switch to enable/disable the RRTMG component.
+    Switch to enable the RRTMG component. Set value to :literal:`y` to turn on.
+
+FASTJX
+    Switch to enable the legacy FAST-JX v7.0 photolysis mechanism. Set value :literal:`y` to turn on FAST-JX and turn off Cloud-J.
 
 OMP
    Switch to enable/disable OpenMP multithreading. As is standard in CMake (see `if documentation <https://cmake.org/cmake/help/latest/command/if.html>`_) valid values are :literal:`ON`, :literal:`YES`, :literal:`Y`, :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
