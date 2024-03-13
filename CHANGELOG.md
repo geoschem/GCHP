@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Now print container name being read by ExtData when `CAP.EXTDATA` is set to `DEBUG` in `logging.yml`
 
+### Fixed
+- Fixed bug where SPHU used to construct PLE for advection was vertically inverted if using raw GMAO meteorology files
+
 ## [14.3.0] - 2024-02-07
 ### Added
 - Added capability for TOMAS simulations in GCHP
