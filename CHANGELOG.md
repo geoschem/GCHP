@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Fixed bug where SPHU used to construct PLE for advection was vertically inverted if using raw GMAO meteorology files
+- Fixed bug in UpwardsMassFlux diagnostic that was causing all values to be zero
 
 ## [14.3.0] - 2024-02-07
 ### Added
