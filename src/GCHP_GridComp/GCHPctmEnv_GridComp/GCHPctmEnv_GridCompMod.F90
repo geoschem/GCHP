@@ -944,10 +944,10 @@ module GCHPctmEnv_GridComp
       end if
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
+      call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
+           NotFoundOK=.TRUE., RC=STATUS)
+      _VERIFY(STATUS)
       if (associated(UpwardsMassFlux)) then
-         call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
-                              RC=STATUS)
-         _VERIFY(STATUS)
          call lgr%debug('Calculating diagnostic export UpwardsMassFlux')
 
          ! Get vertical mass flux
