@@ -11,12 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Now print container name being read by ExtData when `CAP.EXTDATA` is set to `DEBUG` in `logging.yml`
 - Added new pre-processer setting GCHP_WRAPPER for use in submodules
+- Added PLEadv export to FV3 submodule for inclusion in GCHP HISTORY.rc files
 
 ### Changed
 - Now use short names for submodules (i.e. without the path) in `.gitmodules`
 
 ### Fixed
 - Fixed bug where SPHU used to construct PLE for advection was vertically inverted if using raw GMAO meteorology files
+- Fixed bug in UpwardsMassFlux diagnostic that was causing all values to be zero
 
 ## [14.3.0] - 2024-02-07
 ### Added
