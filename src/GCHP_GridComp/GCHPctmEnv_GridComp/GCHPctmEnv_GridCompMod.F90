@@ -686,11 +686,21 @@ module GCHPctmEnv_GridComp
       ! Also compute dry pressures if using dry pressure in advection
       if ( use_total_air_pressure_in_advection < 1 ) then
 
-         call calculate_ple(PS1_IMPORT, DryPLE0_EXPORT, SPHU1_IMPORT )
+         call calculate_ple(          &
+              PS=PS1_IMPORT,          &
+              PLE=DryPLE0_EXPORT,     &
+              SPHU=SPHU1_IMPORT,      &
+              topDownMet=meteorology_vertical_index_is_top_down )
+
          DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
          DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
 
-         call calculate_ple(PS2_IMPORT, DryPLE1_EXPORT, SPHU2_IMPORT )
+         call calculate_ple(          &
+              PS=PS2_IMPORT,          &
+              PLE=DryPLE1_EXPORT,     &
+              SPHU=SPHU2_IMPORT,      &
+              topDownMet=meteorology_vertical_index_is_top_down )
+
          DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
          DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
 
@@ -934,10 +944,10 @@ module GCHPctmEnv_GridComp
       end if
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
+      call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
+           NotFoundOK=.TRUE., RC=STATUS)
+      _VERIFY(STATUS)
       if (associated(UpwardsMassFlux)) then
-         call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
-                              RC=STATUS)
-         _VERIFY(STATUS)
          call lgr%debug('Calculating diagnostic export UpwardsMassFlux')
 
          ! Get vertical mass flux
@@ -973,12 +983,13 @@ module GCHPctmEnv_GridComp
 !
 ! !INTERFACE:
 !
-   subroutine calculate_ple(PS, PLE, SPHU)
+   subroutine calculate_ple(PS, PLE, SPHU, topDownMet )
 !
 ! !INPUT PARAMETERS:
 !
       real(r4), intent(in)           :: PS(:,:)     ! Surface pressure [hPa]
       real(r4), intent(in), OPTIONAL :: SPHU(:,:,:) ! Specific humidity [kg/kg]
+      logical,  intent(in), OPTIONAL :: topDownMet  ! True if meteorology level 1 is TOA
 !
 ! !INPUT PARAMETERS:
 !
@@ -1070,26 +1081,57 @@ module GCHPctmEnv_GridComp
          js = lbound(PS,2)
          je = ubound(PS,2)
          LM = size  (SPHU,3)
-         do J=js,je
-         do I=is,ie
 
-            ! Start with TOA pressure
-            PSDry = AP(LM+1)
+         if ( topDownMet ) then
 
-            ! Stack up dry delta-P to get surface dry pressure
-            do L=1,LM
-               PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
-               PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )
-               PSDry = PSDry &
-                       + ( ( PEdge_Bot - Pedge_Top ) * ( 1.d0 - SPHU(I,J,L) ) )
+           do J=js,je
+           do I=is,ie
+
+              ! Start with TOA pressure
+              PSDry = AP(LM+1)
+
+              ! Stack up dry delta-P to get surface dry pressure
+              ! Vertically flip humidity if using top-down meteorology (raw GMAO files)
+              do L=1,LM
+                 PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
+                 PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )
+                 PSDry = PSDry &
+                         + ( ( PEdge_Bot - Pedge_Top ) * ( 1.d0 - SPHU(I,J,LM-L+1) ) )
+              enddo
+
+              ! Work back up from the surface to get dry level edges
+              do L=1,LM+1
+                 PLE(I,J,L) = AP(L) + ( BP(L) * dble(PSDry) )
+              enddo
+
+           enddo
+           enddo
+
+         else
+
+            do J=js,je
+            do I=is,ie
+
+               ! Start with TOA pressure
+               PSDry = AP(LM+1)
+
+               ! Stack up dry delta-P to get surface dry pressure
+               do L=1,LM
+                  PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
+                  PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )
+                  PSDry = PSDry &
+                          + ( ( PEdge_Bot - Pedge_Top ) * ( 1.d0 - SPHU(I,J,L) ) )
+               enddo
+
+               ! Work back up from the surface to get dry level edges
+               do L=1,LM+1
+                  PLE(I,J,L) = AP(L) + ( BP(L) * dble(PSDry) )
+               enddo
+            enddo
             enddo
 
-            ! Work back up from the surface to get dry level edges
-            do L=1,LM+1
-               PLE(I,J,L) = AP(L) + ( BP(L) * dble(PSDry) )
-            enddo
-         enddo
-         enddo
+         endif
+
       endif
 
 
