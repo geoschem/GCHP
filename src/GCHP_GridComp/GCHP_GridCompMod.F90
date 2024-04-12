@@ -277,6 +277,13 @@ contains
          DST_NAME = (/'DELP         ', 'PLE          ', 'AIRDENS      '/), &
          DST_ID = MAM, SRC_ID = CHEM, __RC__ )
 
+#if 0
+      CALL MAPL_AddConnectivity (GC, &
+         SRC_NAME = (/'DELP_MAM     ', 'PLE_MAM      '/), &
+         DST_NAME = (/'DELP         ', 'PLE          '/), &
+         DST_ID = MAM, SRC_ID = CHEM, __RC__ )
+#endif
+
 #ifdef __achem__
      CALL MAPL_AddConnectivity ( GC, &
         SRC_NAME  = (/'ACHEM::SO2     ', 'ACHEM::H2SO4   ', 'ACHEM::NH3     ', 'ACHEM::SOAG    ', 'pSO4_aq        ', 'pNH4_aq        ',   &

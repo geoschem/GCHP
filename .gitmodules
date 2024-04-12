@@ -18,7 +18,7 @@
 	url = https://github.com/geoschem/FVdycoreCubed_GridComp.git
 [submodule "src/GCHP_GridComp/GEOSChem_GridComp/geos-chem"]
 	path = src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
-	url = https://github.com/geoschem/geos-chem.git
+	url = git@github.com:ShreyaSharma2023/geos-chem.git
 [submodule "src/GCHP_GridComp/HEMCO_GridComp/HEMCO"]
 	path = src/GCHP_GridComp/HEMCO_GridComp/HEMCO
 	url = https://github.com/geoschem/HEMCO.git
@@ -33,10 +33,10 @@
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
 [submodule "src/GCHP_GridComp/GEOSachem"]
 	path = src/GCHP_GridComp/GEOSachem
-	url = https://github.com/ShreyaSharma2023/GEOSachem.git
+	url = git@github.com:ShreyaSharma2023/GEOSachem.git
 [submodule "src/GCHP_GridComp/MAM"]
 	path = src/GCHP_GridComp/MAM
-	url = https://github.com/ShreyaSharma2023/MAM.git
+	url = git@github.com:ShreyaSharma2023/MAM.git
 [submodule "src/GCHP_GridComp/GCHP_Aerosols"]
 	path = src/GCHP_GridComp/GCHP_Aerosols
-	url = https://github.com/ShreyaSharma2023/GCHP_Aerosols.git
+	url = git@github.com:ShreyaSharma2023/GCHP_Aerosols.git
