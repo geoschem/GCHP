@@ -24,7 +24,7 @@ add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
 #---------------
 # Add HEMCO
 #---------------
-add_subdirectory(HEMCO_GridComp EXCLUDE_FROM_ALL)
+add_subdirectory(HEMCO EXCLUDE_FROM_ALL)
 
 #---------------
 # Add GEOS-Chem

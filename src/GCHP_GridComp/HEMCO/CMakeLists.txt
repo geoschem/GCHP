@@ -1,4 +1,4 @@
-# HEMCO_GridComp/CMakeLists.txt
+# HEMCO/CMakeLists.txt
 
 add_subdirectory(HEMCO EXCLUDE_FROM_ALL)
 
