@@ -34,3 +34,6 @@
 [submodule "Cloud-J"]
 	path = src/GCHP_GridComp/Cloud-J
 	url = https://github.com/geoschem/Cloud-J
+[submodule "HETP"]
+	path = src/GCHP_GridComp/HETP
+	url = https://github.com/geoschem/HETerogeneous-vectorized-or-Parallel.git
