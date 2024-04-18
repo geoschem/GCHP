@@ -6,6 +6,7 @@
 set(FV_PRECISION           R8    ) # FV3 precision is R8
 set(GCHP_WRAPPER           TRUE  ) # GCHP model configuration
 set(CLOUDJ_EXTERNAL_CONFIG TRUE  ) # Not Cloud-J standalone
+set(HETP_EXTERNAL_CONFIG   TRUE  ) # Not HETP standalone test
 set(HEMCO_EXTERNAL_CONFIG  TRUE  ) # Not HEMCO standalone
 set(GC_EXTERNAL_CONFIG     TRUE  ) # Not GEOS-Chem Classic
 set(MAPL_ESMF              TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
@@ -20,6 +21,11 @@ add_subdirectory(FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
 # Add Cloud-J
 #---------------
 add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
+
+#---------------
+# Add HETP
+#---------------
+add_subdirectory(HETP EXCLUDE_FROM_ALL)
 
 #---------------
 # Add HEMCO
