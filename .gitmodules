@@ -20,7 +20,7 @@
 	path = src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
 	url = https://github.com/geoschem/geos-chem.git
 [submodule "HEMCO"]
-	path = src/GCHP_GridComp/HEMCO/HEMCO
+	path = src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO
 	url = https://github.com/geoschem/HEMCO.git
 [submodule "yaFyaml"]
 	path = src/yaFyaml
@@ -32,8 +32,8 @@
 	path = docs/source/geos-chem-shared-docs
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
 [submodule "Cloud-J"]
-	path = src/GCHP_GridComp/Cloud-J
+	path = src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J
 	url = https://github.com/geoschem/Cloud-J
 [submodule "HETP"]
-	path = src/GCHP_GridComp/HETP
+	path = src/GCHP_GridComp/GEOSChem_GridComp/HETP
 	url = https://github.com/geoschem/HETerogeneous-vectorized-or-Parallel.git
