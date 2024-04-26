@@ -19,6 +19,9 @@ set(FASTJX OFF CACHE BOOL
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
+set(CLOUDJ_EXTERNAL_CONFIG  TRUE) # Not Cloud-J standalone
+set(HETP_EXTERNAL_CONFIG    TRUE) # Not HETP standalone test
+set(HEMCO_EXTERNAL_CONFIG   TRUE) # Not HEMCO standalone
 set(GTMM                    FALSE)
 set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
 set(GCHP                    TRUE)
@@ -26,6 +29,9 @@ set(MODEL_GCHP              TRUE)
 set(MODEL_GCHPCTM           TRUE)
 
 # Add directories to build
+add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
+add_subdirectory(HETP EXCLUDE_FROM_ALL)
+add_subdirectory(HEMCO EXCLUDE_FROM_ALL)
 add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure build properties for GEOS-Chem
