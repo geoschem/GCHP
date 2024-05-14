@@ -4,35 +4,24 @@
 # Set cmake logicals needed for subprojects
 #---------------
 set(FV_PRECISION           R8    ) # FV3 precision is R8
-set(CLOUDJ_EXTERNAL_CONFIG TRUE  ) # Not Cloud-J standalone
-set(HEMCO_EXTERNAL_CONFIG  TRUE  ) # Not HEMCO standalone
+set(GCHP_WRAPPER           TRUE  ) # GCHP model configuration
 set(GC_EXTERNAL_CONFIG     TRUE  ) # Not GEOS-Chem Classic
 set(MAPL_ESMF              TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
 set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/Apps/mapl_acg.pl)
 
-#---------------
-# Add FV3
-#---------------
+#-------------------------------------------
+# Add DYNAMICS gridded component (advection)
+#-------------------------------------------
 add_subdirectory(FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
 
-#---------------
-# Add Cloud-J
-#---------------
-add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
-
-#---------------
-# Add HEMCO
-#---------------
-add_subdirectory(HEMCO_GridComp EXCLUDE_FROM_ALL)
-
-#---------------
-# Add GEOS-Chem
-#---------------
+#-------------------------------------------
+# Add GCHPchem gridded component (GEOS-Chem)
+#-------------------------------------------
 add_subdirectory(GEOSChem_GridComp EXCLUDE_FROM_ALL)
 
-#---------------
-# Add GCHPctmEnv
-#---------------
+#----------------------------------------------------
+# Add GCHPctmEnv gridded component (pre-advection)
+#----------------------------------------------------
 add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 
 #--------------------------------

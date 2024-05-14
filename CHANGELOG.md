@@ -2,7 +2,9 @@
 
 This file documents all notable changes to the GCHP wrapper repository starting in version 14.0.0. See also CHANGELOG files for individual submodules, such as:
 - src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md
-- src/GCHP_GridComp/HEMCO_GridComp/HEMCO/CHANGELOG.md
+- src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/CHANGELOG.md
+- src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J/CHANGELOG.md
+- src/GCHP_GridComp/GEOSChem_GridComp/HETP/CHANGELOG.md
 - src/MAPL/CHANGELOG.md
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -10,10 +12,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased] - TBD
 ### Added
 - RTD docs now includes Supplemental Guide "Archiving Output with the History diagnostics"
+- GitHub Action config file `.github/workflows/stale.yml`, which replaces StaleBot
+- Added git submodule HETP for aerosol thermodynamics in GEOS-Chem
 
 ### Changed
 - Updated Python package versions for ReadTheDocs in `docs/requirements.txt`
 - Now request Python 3.12 for ReadTheDocs builds in `.readthedocs.yaml`
+- Updated GEOS-Chem submodule to 14.4.0
+- Updated HEMCO submodule to 3.9.0
+- Changed subdirectory name HEMCO_GridComp to HEMCO since not its own gridded component
+- Moved HEMCO and Cloud-J submodules from GCHP_GridComp to GCHP_GridComp/GEOSChem_GridComp where they are used
+
+### Removed
+- GitHub config files `.github/stale.yml` and `.github/no-response.yml`
+
+## [14.3.1] - 2024-04-02
+### Added
+- Now print container name being read by ExtData when `CAP.EXTDATA` is set to `DEBUG` in `logging.yml`
+- Added new pre-processer setting GCHP_WRAPPER for use in submodules
+- Added PLEadv export to FV3 submodule for inclusion in GCHP HISTORY.rc files
+- Added git submodule for HETP aerosol thermodynamics
+
+### Changed
+- Updated GEOS-Chem submodule to 14.3.1
+- Updated HEMCO submodule to 3.8.1
+- Now use short names for submodules (i.e. without the path) in `.gitmodules`
+
+### Fixed
+- Fixed bug where SPHU used to construct PLE for advection was vertically inverted if using raw GMAO meteorology files
+- Fixed bug in UpwardsMassFlux diagnostic that was causing all values to be zero
 
 ## [14.3.0] - 2024-02-07
 ### Added

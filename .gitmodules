@@ -1,36 +1,39 @@
-[submodule "src/MAPL"]
+[submodule "MAPL"]
 	path = src/MAPL
 	url = https://github.com/geoschem/MAPL
-[submodule "src/GMAO_Shared"]
+[submodule "GMAO_Shared"]
 	path = src/GMAO_Shared
 	url = https://github.com/geoschem/GMAO_Shared
 [submodule "ESMA_cmake"]
 	path = ESMA_cmake
 	url = https://github.com/geoschem/ESMA_cmake
-[submodule "src/gFTL-shared"]
+[submodule "gFTL-shared"]
 	path = src/gFTL-shared
 	url = https://github.com/geoschem/gFTL-shared.git
-[submodule "src/FMS"]
+[submodule "FMS"]
 	path = src/FMS
 	url = https://github.com/geoschem/FMS.git
-[submodule "src/GCHP_GridComp/FVdycoreCubed_GridComp"]
+[submodule "FVdycoreCubed_GridComp"]
 	path = src/GCHP_GridComp/FVdycoreCubed_GridComp
 	url = https://github.com/geoschem/FVdycoreCubed_GridComp.git
-[submodule "src/GCHP_GridComp/GEOSChem_GridComp/geos-chem"]
+[submodule "geos-chem"]
 	path = src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
 	url = https://github.com/geoschem/geos-chem.git
-[submodule "src/GCHP_GridComp/HEMCO_GridComp/HEMCO"]
-	path = src/GCHP_GridComp/HEMCO_GridComp/HEMCO
+[submodule "HEMCO"]
+	path = src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO
 	url = https://github.com/geoschem/HEMCO.git
-[submodule "src/yaFyaml"]
+[submodule "yaFyaml"]
 	path = src/yaFyaml
 	url = https://github.com/geoschem/yaFyaml.git
-[submodule "src/pFlogger"]
+[submodule "pFlogger"]
 	path = src/pFlogger
 	url = https://github.com/geoschem/pFlogger.git
-[submodule "docs/geos-chem-shared-docs"]
+[submodule "geos-chem-shared-docs"]
 	path = docs/source/geos-chem-shared-docs
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
-[submodule "src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J"]
-	path = src/GCHP_GridComp/Cloud-J
+[submodule "Cloud-J"]
+	path = src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J
 	url = https://github.com/geoschem/Cloud-J
+[submodule "HETP"]
+	path = src/GCHP_GridComp/GEOSChem_GridComp/HETP
+	url = https://github.com/geoschem/HETerogeneous-vectorized-or-Parallel.git
