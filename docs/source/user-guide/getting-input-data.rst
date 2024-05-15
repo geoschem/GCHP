@@ -6,7 +6,7 @@ Download Input Data
 Input data for GEOS-Chem is available at http://geoschemdata.wustl.edu/ExtData/.
 
 The bashdatacatalog is the recommended for downloading and managing your GEOS-Chem input data. Refer to 
-the bashdatacatalog's `Instructions for GEOS-Chem Users <https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_.
+the bashdatacatalog's `Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_.
 Below is a brief summary of using the bashdatacatalog for aquiring GCHP input data.
 
 Install the bashdatacatalog
@@ -16,7 +16,7 @@ Install the bashdatacatalog with the following command. Follow the prompts and r
 
 .. code-block:: console
 
-   gcuser:~$ bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/install.sh)
+   gcuser:~$ bash <(curl -s https://raw.githubusercontent.com/geoschem/bashdatacatalog/main/install.sh)
 
 .. note:: You can rerun this command to upgrade to the latest version.
 
@@ -96,6 +96,6 @@ Here, ``-f xargs-curl`` means the output file list should be formatted for pipin
 See Also
 --------
 
-* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
-* `bashdatacatalog - List of useful commands <https://github.com/LiamBindle/bashdatacatalog/wiki/3.-Useful-Commands>`_
+* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
+* `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`_
 * `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs/>`_
