@@ -4,10 +4,6 @@
 Run the model
 =============
 
-.. note::
-   Another useful resource for instructions on running GCHP is our `YouTube tutorial <https://www.youtube.com/watch?v=K6frcfCjpds>`_.
-
-
 This page presents the basic information needed to run GCHP as well as how to verify a successful run and reuse a run directory. 
 A pre-run checklist is included here for easy reference. Please read the rest of this page to understand these steps.
 
@@ -20,7 +16,7 @@ Prior to running GCHP, always run through the following checklist to ensure ever
 2. Executable :file:`gchp` is present.
 3. All symbolic links are valid (no broken links)
 4. Settings are correct in :file:`setCommonRunSettings.sh`
-5. :file:`setRestartLink.sh` runs without error (ensures restart file is available)
+5. :file:`setRestartLink.sh` runs without error (ensures restart file is available for date in :file:`cap_restart`)
 6. If running via a job scheduler, totals cores are the same in :file:`setCommonRunSettings.sh` and the run script
 7. If running interactively, you have available locally the total cores in :file:`setCommonRunSettings.sh`
 
@@ -40,8 +36,7 @@ These commands include:
 3. Source config file :file:`setCommonRunSettings.sh` to update commonly changed run settings
 4. Set restart file symbolic link :file:`gchp_restart.nc4` to target file in :file:`Restarts` subdirectory for configured start date and grid resolution
 5. Check that :file:`cap_restart` now contains end date of your run
-6. Move the output restart file to the :file:`Restarts` subdirectory
-7. Rename the output restart file to include run start date and grid resolution (format :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`)
+6. Rename the output restart file to include run start date and grid resolution (format :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`)
 
 Run interactively
 ^^^^^^^^^^^^^^^^^
@@ -90,7 +85,7 @@ If your computational cluster uses a different job scheduler, check with your IT
 Verify a successful run
 -----------------------
 
-Standard output and standard error will be sent to a file specific to your scheduler, e.g. :file:`slurm-jobid.out`, unless you configured your run script to send it to a different log file. Variable :literal:`log` is defined in the template run script as :file:`gchp.YYYYMMDD_HHmmSSz.log` if you wish to use it. The date string in the log filename is the start date of your simulation as configured in :file:`cap_restart`. This log is automatically used if you execute the interactive run script example :file:`gchp.local.run`.
+GEOS-Chem standard output and standard error will be sent to a file specific to your scheduler, e.g. :file:`slurm-jobid.out`, unless you configured your run script to send it to a different log file. Variable :literal:`log` is defined in the template run script as :file:`gchp.YYYYMMDD_HHmmSSz.log` if you wish to use it. The date string in the log filename is the start date of your simulation as configured in :file:`cap_restart`. This log is automatically used if you execute the interactive run script example :file:`gchp.local.run`. GCHP produces another output log file called :file:`allPEs.log` which is produced by the MAPL library logger for debugging purposes. Several other logs are output for informational purposes only but generally are not useful for debugging.
 
 There are several ways to verify that your run was successful. Here are just a few:
 
@@ -101,17 +96,20 @@ There are several ways to verify that your run was successful. Here are just a f
 5. The job scheduler log does not contain any error messages.
 6. Output file :file:`allPEs.log` does not contain any error messages.
 
-If it looks like something went wrong, scan through the log files to determine where there may have been an error. Here are a few debugging tips:
+If it looks like something went wrong, scan through the log files to determine where there may have been an error. There are several debug strategies depending on what you find. Below is a summary of steps to take to debug GCHP runs. See also :ref:`debugging <debugging>` for additional guidance.
 
+* Find the first error message in the GCHP log file to see if it tells you what is wrong.
+* Find the first line of the traceback for the error and find the file and line number listed to see if it gives a hint about what is wrong. 
 * Review all of your configuration files to ensure you have proper setup, especially :file:`setCommonRunSettings.sh`.
 * "MAPL_Cap" or "CAP" errors in the run log typically indicate an error with your start time and/or duration. Check :file:`cap_restart` and :file:`setCommonRunSettings.sh`.
-* "MAPL_ExtData" or "ExtData" errors in the run log indicate an error with your input files. Check :file:`HEMCO_Config.rc` and :file:`ExtData.rc`.
+* "MAPL_ExtData" or "ExtData" errors in the run log indicate an error with your input files. Check :file:`HEMCO_Config.rc` and :file:`ExtData.rc` for errors..
 * "MAPL_HistoryGridComp" or "History" errors in the run log are related to your configured diagnostics. Check :file:`HISTORY.rc`.
-* Change the warnings and verbose options in :file:`HEMCO_Config.rc` to 3 and rerun
-* Change the :literal:`root_level` settings for :literal:`CAP.ExtData` in :file:`logging.yml` to :literal:`DEBUG` and rerun
-* Recompile the model with cmake option :literal:`-DCMAKE_BUILD_TYPE=Debug` and rerun.
+* If the problem is a segmentation fault then rebuild the model with cmake option :literal:`-DCMAKE_BUILD_TYPE=Debug` and rerun.
+* If the problem appears to be in HEMCO then change the warnings and verbose options in :file:`HEMCO_Config.rc` to true and rerun
+* If the problem appears to be in GEOS-Chem then change the verbose activate option in :file:`geoschem_config.yml` to true and rerun
+* If the problem appears to be in MAPL ExtData then change the :literal:`root_level` settings for :literal:`CAP.ExtData` in :file:`logging.yml` to :literal:`DEBUG` and rerun
 
-If you cannot figure out where the problem is then please create a GCHP GitHub issue.
+If you still cannot figure out where the problem is then please create a GCHP GitHub issue and include all config and log files for your run.
 
 Reuse a run directory
 ---------------------
