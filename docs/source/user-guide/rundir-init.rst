@@ -83,16 +83,16 @@ If creating a full chemistry run directory you will be given additional options.
 Choose meteorology source
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Enter the integer number that is next to the input meteorology source you would like to use. The primary difference between GEOS-FP and GEOS-FP native data is that the GEOS-FP native data includes the option to use C720 mass fluxes or derived winds. 
+Enter the integer number that is next to the input meteorology source you would like to use. Note that choosing GEOS-FP or GEOS-IT will result in additional questions to refine the meteorology inputs you would like to use from the dataset.
 
 .. code-block:: none
 
    -----------------------------------------------------------
    Choose meteorology source:
    -----------------------------------------------------------
-     1. MERRA2 (Recommended)
+     1. MERRA-2 (Recommended)
      2. GEOS-FP
-     3. GEOS-FP native data
+     3. GEOS-IT (Beta release)
    >>>
 
 Enter run directory path
@@ -133,3 +133,25 @@ This is useful for trouble-shooting as well as tracking run directory feature ch
    -----------------------------------------------------------
    Do you want to track run directory changes with git? (y/n)
    -----------------------------------------------------------
+   >>>
+
+You will then see a message printed to screen about the run directory created and brief instructions for us. For example:
+
+.. code-block:: none
+   Initialized empty Git repository in /n/home/gchp_merra2_fullchem/.git/
+   
+   
+   -----------------------------------------------------------
+   Created /n/home/gchp_merra2_fullchem
+   
+     -- This run directory is set up for simulation start date 20190701
+     -- Restart files for this date at different grid resolutions are in the
+        Restarts subdirectory
+     -- To update start time, edit configuration file cap_restart and
+        add or symlink file Restarts/GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc
+        where YYYYMMDD_HHmm is start date and time
+     -- Edit other commonly changed run settings in setCommonRunSettings.sh
+     -- See build/README for compilation instructions
+     -- Example run scripts are in the runScriptSamples subdirectory
+     -- For more information visit the GCHP user guide at
+        https://readthedocs.org/projects/gchp/

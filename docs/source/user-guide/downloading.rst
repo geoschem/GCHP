@@ -4,14 +4,14 @@
 Download the model
 ##################
 
-The GCHP source code is hosted at https://github.com/geoschem/GCHP. Clone
-the repository:
+The GCHP source code is hosted at https://github.com/geoschem/GCHP. To clone
+the repository and checkout all git submodules for the latest release:
 
 .. code-block:: console
 
    gcuser:~$ git clone --recurse-submodules https://github.com/geoschem/GCHP.git GCHP
 
-The GCHP repository has submodules (other repositories that are
+The GCHP repository has git submodules (other repositories that are
 nested inside the GCHP repository) that aren't automatically retrieved
 when you do :command:`git clone`.  The :literal:`--recurse-submodules`
 option tells Git to finish retrieving the source code for each
@@ -25,43 +25,41 @@ scientifically-validated version of the code and is easily
 citable. You can find the list of past and present GCHP releases `here
 <https://github.com/geoschem/GCHP/releases>`_.
 
-.. tip::
+Alternatively you may clone the GCHP repository, checkout the version you are interested
+in, and then checkout the git submodules. If you know that you will use an older version of
+GCHP this method will save time.
 
-   To use an older GCHP version (e.g. 14.0.0), follow
-   these additional steps:
+.. code-block:: console
 
-   .. code-block:: console
-
-      gcuser:~/GCHP$ git checkout tags/14.0.0                  # Points HEAD to the tag "14.0.0"
-      gcuser:~/GCHP$ git branch version_14.0.0                 # Creates a new branch at tag "14.0.0"
-      gcuser:~/GCHP$ git checkout version_14.0.0               # Checks out the version_14.0.0 branch
-      gcuser:~/GCHP$ git submodule update --init --recursive   # Reverts submodules to the "14.0.0" tag
-
-   You can do this for any tag in the version history.   For a list of
-   all tags, type:
-
-   .. code-block:: console
-
-      gcuser:~/GCHP$ git tag
-
-   If you have any unsaved changes, make sure you commit those to a
-   branch prior to updating versions.
+   gcuser:~$ git clone https://github.com/geoschem/GCHP.git GCHP
+   gcuser:~$ git tag                   # browse available version tags
+   gcuser:~$ git checkout tags/14.2.1   
 
 Before continuing, it is worth checking that the source code was
 retrieved correctly. Run :command:`git status` to check that there are
-no differences:
+no differences. You can also run :command:`git log` to see the recent git history,
+or open a gitk window to browse the history using a graphical user interface.
 
 .. code-block:: console
 
    gcuser:~/GCHP$ git status
-   HEAD detached at 14.0.0
+   HEAD detached at 14.4.0
    nothing to commit, working tree clean
-   gcuser:~/GCHP$
+   gcuser:~/GCHP$ git log
+   gcuser:~/GCHP$ gitk &
 
 The output of :command:`git status` should confirm your GCHP version
 and that there are no modifications (nothing to commit, and a clean
 working tree). It also says that you are are in detached HEAD state,
 meaning you are not in a GCHP git software branch. This is true for
-all submodules in the model as well. If you wish to use version
-control to track your changes you must checkout a new branch to work
-on in the directory you will be developing.
+all submodules in the model as well. If you plan to make changes to the
+source code then you must checkout a new branch within whatever submodules
+you plan to develop. Here is an example for developing GEOS-Chem.
+
+.. code-block:: console
+
+   gcuser:~/GCHP$ cd src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
+   gcuser:~/GCHP$ git status
+   HEAD detached at c4c4c146e
+   nothing to commit, working tree clean
+   gcuser:~/GCHP$ git checkout -b feature/model_dev
