@@ -7,15 +7,21 @@ All GCHP run directories have default simulation-specific run-time settings that
 
 .. note::
    The many configuration files in GCHP can be overwhelming. However, you should be able to accomplish most if not all of what you wish to configure from one place in :file:`setCommonRunSettings.sh`. That file is a bash script used to configure settings in other files from one place.
+   Please get very familiar with the options in :file:`setCommonRunSettings.sh` by reading through the configuration
+   section of the file.
+   Be conscientious about not updating the same setting elsewhere.
 
 -------------------------------------------
 
 Configuration files
 -------------------
 
-Detailed information about most of GCHP's configuration file can be found in the following pages..
+Detailed information about most of GCHP's configuration file can be found in the following pages.
 You can also reach these pages by continuing with the "next" button in this user guide.
 See further down on this page for a high-level summary of all configuration files.
+
+.. tip::
+
 
 .. toctree::
    :maxdepth: 1
@@ -92,9 +98,8 @@ This high-level summary of GCHP configuration files gives a short description of
 
 :file:`setCommonRunSettings.sh`
    This file is a bash script where you can set commonly changed run settings. 
+   It auto-updates other configuration files when it is sourced.
    It makes it easier to manage configuring GCHP since settings can be changed from one file rather than across multiple configuration files. 
-   When this file is executed it updates settings in other configuration files, overwriting what is there. 
-   Please get very familiar with the options in :file:`setCommonRunSettings.sh` and be conscientious about not updating the same setting elsewhere.
 
 
 

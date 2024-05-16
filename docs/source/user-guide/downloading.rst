@@ -16,7 +16,13 @@ nested inside the GCHP repository) that aren't automatically retrieved
 when you do :command:`git clone`.  The :literal:`--recurse-submodules`
 option tells Git to finish retrieving the source code for each
 submodule.  It will also initialize and update each submodule's source
-code to the proper place in its version history.
+code to the proper place in its version history. You can also download
+and checkout the git submodules in two steps if you prefer:
+
+.. code-block:: console
+
+   gcuser:~$ git clone https://github.com/geoschem/GCHP.git GCHP
+   gcuser:~$ git submodule update --init --recursive
 
 By default, the source code will be on the :literal:`main` branch
 which is always the last official release of GCHP.  Checking out the
@@ -25,15 +31,16 @@ scientifically-validated version of the code and is easily
 citable. You can find the list of past and present GCHP releases `here
 <https://github.com/geoschem/GCHP/releases>`_.
 
-Alternatively you may clone the GCHP repository, checkout the version you are interested
-in, and then checkout the git submodules. If you know that you will use an older version of
-GCHP this method will save time.
+If you wish to use an older version of GCHP then you can checkout a version
+tag and then update the git submodules. Here is an example of downloading
+and checking out version 14.2.1:
 
 .. code-block:: console
 
    gcuser:~$ git clone https://github.com/geoschem/GCHP.git GCHP
    gcuser:~$ git tag                   # browse available version tags
-   gcuser:~$ git checkout tags/14.2.1   
+   gcuser:~$ git checkout tags/14.2.1
+   gcuser:~$ git submodule update --init --recursive
 
 Before continuing, it is worth checking that the source code was
 retrieved correctly. Run :command:`git status` to check that there are
@@ -43,7 +50,7 @@ or open a gitk window to browse the history using a graphical user interface.
 .. code-block:: console
 
    gcuser:~/GCHP$ git status
-   HEAD detached at 14.4.0
+   HEAD detached at 14.2.1
    nothing to commit, working tree clean
    gcuser:~/GCHP$ git log
    gcuser:~/GCHP$ gitk &
