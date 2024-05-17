@@ -8,7 +8,7 @@ Panoply
 -------
 
 Panoply is useful for quick and easy viewing of GCHP output. 
-Panoply is a grahpical program for plotting geo-referenced data like GCHP's output. 
+Panoply is a graphical program for plotting geo-referenced data like GCHP's output. 
 It is an intuitive program and it is easy to set up.
 
 .. image:: /_static/panoply_example.png
@@ -77,4 +77,4 @@ Here is a basic example of plotting cubed-sphere data:
    The grid-box corners should be used with :code:`pcolormesh()` because the grid-boxes are not regular (it's a curvilinear grid).
    This is why we use :code:`corner_lats` and :code:`corner_lons` in the example above.
 
-You may also use the GCPy python toolkit to work with GCHP files. For more information see `https://github.com/geoschem/gcpy/ <https://github.com/geoschem/gcpy/>`_.
+You may also use the GCPy python toolkit to work with GCHP files. The GCPy package is used primarily for GEOS-Chem benchmarking but can be adapted for other uses. For more information see `https://github.com/geoschem/gcpy/ <https://github.com/geoschem/gcpy/>`_.

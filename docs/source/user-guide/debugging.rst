@@ -4,8 +4,13 @@
 Debugging
 #########
 
-This page provides strategies for investigating errors encountered
-while using GCHP.
+This page provides strategies for investigating errors encountered while using GCHP.
+See also the GEOS-Chem ReadTheDocs pages on
+`debugging<https://geos-chem.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/debug-guide.html>`_
+and
+`understanding what error messages mean <https://gchp.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/error-guide.html>`_ which are also linked to in the Supplementary Guides section
+of the GCHP ReadTheDocs. Note that those pages, unlike this one, also describe GEOS-Chem Classic and thus
+not all examples are applicable to GCHP.
 
 ================
 Configure errors
@@ -26,7 +31,6 @@ there can be multiple instances of the same library loaded, such as when using a
 library when your compute cluster already has a different version of the same library set
 by default. Check the library paths carefully to look for inconsistencies.
 
-
 If you create a GitHub issue for a configuration error please include the :file:`CMakeCache.txt`
 file in your help request as well as the output sent to screen.
 
@@ -45,7 +49,7 @@ are building GCHP.
 If you encounter a build error and cannot figure it out from what is printed to the terminal,
 rebuild with verbose on and send standard output and errors to a log. You can do this with
 :literal:`make -j VERBOSE=1 2>&1 | build.log`.
-Search the log for string :literal:`error`, first with spaces in front of and after the work, and then only
+Search the log for string :literal:`error`, first with a space in front of and after the word, and then only
 in front. This usually hones in on where the error message occurs.
 You want to find the very first occurrence of this in the log.
 
@@ -56,9 +60,9 @@ on the GCHP GitHub issues page, or on the web in general, for the generic error 
 If you still have problems then please create an issue on GitHub containing the GCHP version, your
 :file:`CMakeCache.txt` file, and your build log.
 
-===============
-Run-time errors
-===============
+=======================================
+Run-time errors that occur early in run
+=======================================
 
 The first step in debugging run-time errors is always to look at the logs. There are three main logs to look at, assuming standard error and standard output are sent to different files.
 
@@ -83,6 +87,13 @@ Choose next steps based on what you see in the logs. The following sections go i
 approaches you can take to debugging based on the error. Read through all the topics to choose which approach
 seems most appropriate.
 
+For all strategies we recommend doing a short run at low resolution and with few cores
+to make your debug runs fast and lightweight.
+You should also always do a web search of the issue to see if there is an existing GitHub issue about it.
+The `GCHP GitHub Issues page <https://github.com/geoschem/GCHP/issues>`_ includes a search bar.
+Depending on the issue, you might also find the problem
+already discussed on the `GEOS-Chem <https://github.com/geoschem/geos-chem/issues>`_ or
+`HEMCO <https://github.com/geoschem/hemco/issues>`_ GitHub issues pages.
 
 Segmentation faults
 -------------------
@@ -148,15 +159,10 @@ You can enable additional prints to the main GCHP log within configuration files
 MAPL ExtData errors (data inputs)
 ---------------------------------
 
-It is common to run into errors when adding new input files because of strict rules for import files within MAPL
-and the need to include information about the data in both `HEMCO_Config.rc <config_files/HEMCO_Config_rc.html>`__
-and `ExtData.rc <ExtData_rc.html>`__.
 If you see :literal:`ExtData` in the error traceback then the problem has to do with input files and you should check
-log file :file:`allPEs.log`.
-
-If there is not enough information in :literal:`allPEs.log` to determine what the input file
-problem is then you should enable additional MAPL prints and rerun. This is mostly recommended for input file issues
-because MAPL ExtData is where most of the debug logging statements are currently implemented.
+log file :file:`allPEs.log`. If there is not enough information in :literal:`allPEs.log` to determine what the
+input file problem is then you should enable additional MAPL prints and rerun. This is mostly recommended for input
+file issues because MAPL ExtData is where most of the debug logging statements are currently implemented.
 
 Activate the :literal:`CAP.EXTDATA` and :literal:`MAPL` debug loggers by
 editing the :file:`logging.yml` configuration file as shown below.
@@ -185,21 +191,47 @@ If needed, you can also turn off certain emissions in :file:`HEMCO_Config.rc` to
 is causing problems. This can sometimes help hone in the sections of the configuration files to
 look for typos.
 
-MAPL History errors (diagnostics)
----------------------------------
+If the problem is due to adding new input files then you may have an issue in either the configuration
+files or with the file itself. It is common to run into these sorts of errors when adding new input
+files because of strict rules for import files within MAPL and the need to follow a specific format
+for input data in configuration files. Make sure that you read the ReadTheDocs
+pages on `HEMCO_Config.rc <config-files/HEMCO_Config_rc.html>`__ and `ExtData.rc <config-files/ExtData_rc.html>`__.
+Also see NASA wiki page on
+`supported ExtData input files <https://github.com/GEOS-ESM/MAPL/wiki/Guide-to-Supported-ExtData-Input-Files>`_.
 
-If :file:`MAPL_HistoryGridCompMod.F90` appears in the issue has to do with diagnostics.
-Typos in `HISTORY.rc <config-file/HISTORY_rc.html>`__ can cause errors in this module.
-Problems with registering diagnostics within GEOS-Chem can also cause problems.
-For diagnostic issues read the traceback carefully and go to source code to see what was happening
-when the model crashed. Sometimes is helpful to turn off one or more diagnostic collections to
-determine which entry in :file:`HISTORY.rc` is causing problems.
+Diagnostic errors
+-----------------
+
+If :file:`MAPL_HistoryGridCompMod.F90` appears in the error traceback then the issue has to do with diagnostics
+in MAPL. This is usually due to a typo in `HISTORY.rc <config-files/HISTORY_rc.html>`__. Try to comment
+out different collections in your :file:`HISTORY.rc` file to see if you can get past the issue.
+If you isolate it to one or more collections then look closely at the file to try to find a typo.
+Following the traceback to the MAPL History code is also very useful since it may tell you which entry in
+the config file is causing the problem.
+
+There can be other problems with GCHP diagnostics that do not have to do with MAPL History.
+If your log has error messages from GEOS-Chem about not being able to find an entry in the Registry,
+or if the error traceback includes file :file:`gchp_historyexports_mod.F90`, then the issue is likely
+in GEOS-Chem. You can print out more diagnostic information to the GCHP log by enabling verbose prints
+in GEOS-Chem (see earlier section on this page).
+
+You can print out even more information by manually
+uncommenting :literal:`CALL Print_DiagList`, :literal:`CALL Print_TaggedDiagList`, and
+:literal:`CALL Print_HistoryExportsList` within
+:literal:`src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/Interfaces/GCHP/gchp_historyexports_mod.F90`.
+Then rebuild and rerun. This will show you what diagnostics GEOS-Chem "registers", meaning how it
+interprets :file:`HISTORY.rc`, as well as what diagnostics MAPL makes into imports. Any mismatch in these
+lists will result in a run error. Note that MAPL creates imports for all fields in collections that are
+turned on using the name that appears in :file:`HISTORY.rc`. GEOS-Chem's registry of fields is more
+complicated because it uses the field names to determine which arrays the data are located in. Mismatches are
+thus usually because of a problem in GEOS-Chem's parsing of the configuration file.
 
 Other MAPL errors
 -----------------
 
-If the error is in MAPL but is not in ExtData then you should first enable additional MAPL prints to log and rerun.
-See the section above on ExtData errors for how to do that. Currently most of logging messages are in ExtData
+If the error is in MAPL but is not in ExtData or History then you should still enable
+additional MAPL prints to log and rerun.
+See the section above on ExtData errors for how to do that. Currently most logging messages are in ExtData
 but there are a few others that might be useful. You can also add your own within MAPL. See the next section for
 how to do that.
 
@@ -212,11 +244,16 @@ More often than not the ESMF error message will appear in every file.
 Add your own prints
 -------------------
 
-Sometimes the best why to find the problem is to add print commands to the source code, rebuild, and rerun.
+Sometimes the best way to find the problem is to add print commands to the source code, rebuild, and rerun.
 This is particularly true if you know it is failing in a loop reading data files or parsing a
 configuration file.
 You can find examples in GEOS-Chem and HEMCO on printing messages from within nearly all files.
 For MAPL you can use the logger. Search MAPL for :literal:`lgr%debug` to find examples.
+
+======================================
+Run-time errors that occur late in run
+======================================
+
 
 ==================
 Performance issues
@@ -224,7 +261,6 @@ Performance issues
 
 Performance issues in the model generally include speed and memory.
 
------------------
 Inspecting memory
 -----------------
 
@@ -240,10 +276,12 @@ after run methods for gridded components GCHPctmEnv, FV3 advection,
 and GEOS-Chem. Within GEOS-Chem, total and swap memory will also be
 printed before and after subroutines to run GEOS-Chem, perform
 chemistry, and apply emissions. For more information about inspecting
-memory see the output files section of this user guide.
+memory see `Memory <output_files#memory>`__ in the output files section of ReadTheDocs.
 
 Inspecting timing
 -----------------
 
 Model timing information is printed out at the end of each GCHP run. Check the end of the GCHP log for a breakdown
-of component timing. 
+of component timing. See `Timing <output_files#memory>`__ in the output files section of ReadTheDocs
+for instructions on how to read the timing information printed to log.
+

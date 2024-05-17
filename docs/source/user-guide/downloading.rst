@@ -28,8 +28,8 @@ By default, the source code will be on the :literal:`main` branch
 which is always the last official release of GCHP.  Checking out the
 official release is recommended because it is a
 scientifically-validated version of the code and is easily
-citable. You can find the list of past and present GCHP releases `here
-<https://github.com/geoschem/GCHP/releases>`_.
+citable. You can find the list of past and present GCHP releases on the
+`GEOS-Chem versions page <https://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_versions>`_.
 
 If you wish to use an older version of GCHP then you can checkout a version
 tag and then update the git submodules. Here is an example of downloading
