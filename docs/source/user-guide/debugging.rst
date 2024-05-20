@@ -6,7 +6,7 @@ Debugging
 
 This page provides strategies for investigating errors encountered while using GCHP.
 See also the GEOS-Chem ReadTheDocs pages on
-`debugging<https://geos-chem.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/debug-guide.html>`_
+`debugging <https://geos-chem.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/debug-guide.html>`_
 and
 `understanding what error messages mean <https://gchp.readthedocs.io/en/stable/geos-chem-shared-docs/supplemental-guides/error-guide.html>`_ which are also linked to in the Supplementary Guides section
 of the GCHP ReadTheDocs. Note that those pages, unlike this one, also describe GEOS-Chem Classic and thus
@@ -276,12 +276,11 @@ after run methods for gridded components GCHPctmEnv, FV3 advection,
 and GEOS-Chem. Within GEOS-Chem, total and swap memory will also be
 printed before and after subroutines to run GEOS-Chem, perform
 chemistry, and apply emissions. For more information about inspecting
-memory see `Memory <output_files#memory>`__ in the output files section of ReadTheDocs.
+memory see the :literal:`Memory` section of the `output files page <output_files.html>`__.
 
 Inspecting timing
 -----------------
 
 Model timing information is printed out at the end of each GCHP run. Check the end of the GCHP log for a breakdown
-of component timing. See `Timing <output_files#memory>`__ in the output files section of ReadTheDocs
-for instructions on how to read the timing information printed to log.
+of component timing. See the :literal:`Timing` section of the `output files page <output_files.html>`__ for instructions on how to read the timing information printed to log.
 
