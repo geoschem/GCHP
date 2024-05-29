@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated HEMCO submodule to 3.9.0
 - Changed subdirectory name HEMCO_GridComp to HEMCO since not its own gridded component
 - Moved HEMCO and Cloud-J submodules from GCHP_GridComp to GCHP_GridComp/GEOSChem_GridComp where they are used
+- Converted Github issue templates to issue forms using YAML definition files
 
 ### Removed
 - GitHub config files `.github/stale.yml` and `.github/no-response.yml`
