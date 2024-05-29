@@ -11,10 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased] - TBD
 ### Added
+- RTD docs now includes Supplemental Guide "Archiving Output with the History diagnostics"
 - GitHub Action config file `.github/workflows/stale.yml`, which replaces StaleBot
 - Added git submodule HETP for aerosol thermodynamics in GEOS-Chem
 
 ### Changed
+- Updated Python package versions for ReadTheDocs in `docs/requirements.txt`
+- Now request Python 3.12 for ReadTheDocs builds in `.readthedocs.yaml`
 - Updated GEOS-Chem submodule to 14.4.0
 - Updated HEMCO submodule to 3.9.0
 - Changed subdirectory name HEMCO_GridComp to HEMCO since not its own gridded component

@@ -7,8 +7,8 @@ Quickstart Guide
 This quickstart guide assumes your environment satisfies the
 requirements described in :ref:`System Requirements
 <system_requirements>`.  This means you should load a compute
-environment so that programs like :program:`cmake` and
-:program:`mpirun` are available before continuing. If you do not have
+environment so that software like :program:`cmake` and a
+fortran compiler are available before continuing. If you do not have
 some of GCHP's software dependencies, you can find instructions for
 installing GCHP's external dependencies in our `Spack instructions
 <../supplement/spack.html>`__.  More detailed instructions on
@@ -222,7 +222,8 @@ directory:
 6. Run GCHP
 ===========
 
-Running GCHP is slightly different depending on your MPI library
+GCHP requires a minimum of 6 processors to run. How to run GCHP is
+slightly different depending on your MPI library
 (e.g., OpenMPI, Intel MPI, MVAPICH2, etc.) and scheduler (e.g., SLURM,
 LSF, etc.). If you aren't familiar with running MPI programs on your
 system, see :ref:`Running GCHP <running_gchp>` in the user guide, or
@@ -233,7 +234,8 @@ programs---it's usually something like :program:`mpirun`,
 :program:`mpiexec`, or :program:`srun`. This is the command that you
 will use to launch the :program:`gchp` executable.  You'll have to
 refer to your system's documentation for specific instructions on
-running MPI programs, but generally it looks something like this:
+running MPI programs, but generally it looks something like this to
+run GCHP with the minimum number of processors allowed:
 
 .. code-block:: console
 
@@ -244,8 +246,8 @@ write a script (usually bash) that configures and runs your GCHP
 simulation, and then you submit that script to your local job
 scheduler (SLURM, LSF, etc.). Example job scripts are provided in
 subdirectory :literal:`./runScriptSamples` in the run directory.  That
-folder also includes an example script for running GCHP from the
-command line.
+folder also includes an example script for running GCHP interactively,
+meaning without a job scheduler.
 
 Several steps beyond running GCHP are included in the example run
 scripts. These include loading the environment, updating commonly
@@ -259,14 +261,15 @@ and grid resolution upon successful completion of the run.
    date upon successful completion of a GCHP run. This is done within
    GCHP and not by the run script. You can then easily submit a new
    GCHP run starting off where your last run left off. In addition,
-   GCHP outputs a restart file to your run directory called
-   :file:`gcchem_internal_checkpoint`. This file is moved to
-   subdirectory :literal:`Restarts` and renamed to include the
-   date and grid resolution. This is done by the run script and
-   technically is optional. We recommend doing this since it is
-   is good for archiving (restart files will contain date and
-   grid res) and enables use of the :file:`./setRestartLink.sh`
-   script to set the :file:`gchp_restart.nc4` symbolic link.
+   GCHP outputs a restart file to your Restarts directory called
+   :file:`gcchem_internal_checkpoint`. This file is renamed by the
+   run script (not GCHP) to include the date and grid resolution.
+   Since this is done by the run script it is technically is optional.
+   However, we recommend doing this since it avoids overwriting your
+   restart file upon consecutive runs, is useful for archiving, and
+   enables use of the :file:`./setRestartLink.sh` script to set the
+   :file:`gchp_restart.nc4` symbolic link, something that is done
+   by the run script prior to executing GCHP.
 
 Those are the basics of using GCHP!  See the user guide, step-by-step
 guides, and reference pages for more detailed instructions.

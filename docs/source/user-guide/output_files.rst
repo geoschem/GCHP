@@ -1,7 +1,7 @@
 Output Files
 ============
 
-A successful GCHP run produces three categories of output files: diagnostics, restarts (also called checkpoints), and logs. Diagnostic and restart files are always in netCDF4 format, and logs are always ascii viewable with any text editor. Diagnostic files are output to the :file:`OutputDir` directory in the run directory. The end-of-run restart file is output to the :file:`Restarts` directory. All other output files, including periodic checkpoints if enabled, are saved to the main level of the run directory.
+A successful GCHP run produces three categories of output files: diagnostics, restarts (also called checkpoints), and logs. Diagnostic and restart files are always in netCDF4 format, and logs are always ascii viewable with any text editor. Diagnostic files are output to the :file:`OutputDir` directory in the run directory. The restart files are output to the :file:`Restarts` directory. All other output files are saved to the main level of the run directory.
 
 .. note::
    It is important to be aware that GCHP 3D data files in this version of GCHP have two different vertical dimension conventions. Restart files and Emissions diagnostic files are defined with top-of-atmospheric level equal to 1. All other data files, meaning all diagnostic files that are not Emissions collections, are defined with surface level equal to 1. This means files may be vertically flipped relative to each other. This should be taken into account when doing data visualization and analysis using these files.
@@ -30,12 +30,12 @@ Below is a summary of all GCHP output files that you may encounter depending on 
 
 .. option:: allPES.log
 
-   GCHP logging output based on configuration in :file:`logging.yml`. 
+   GCHP logging output based on configuration in `logging.yml <config-files/logging_yml.html>`__. 
    Treat this file as a debugging tool to help diagnose problems in MAPL, particularly the ExtData component of the model which handles input reading and regridding.
 
 .. option:: logfile.000000.out
 
-   Log file for advection. It includes information such as the domain stack size, stretched grid factors, and FV3 parameters used in the run.
+   Log file for advection. It includes information such as the domain stack size, stretched grid factors, and FV3 parameters used in the run. Generally this log is not useful for debugging.
 
 .. option:: cap_restart
 
@@ -45,15 +45,14 @@ Below is a summary of all GCHP output files that you may encounter depending on 
 
 .. option:: Restarts/GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc4
 
-   GCHP restart file output at the end of the run. 
-   This file is actually the GCHP end-of-run checkpoint file that is moved and renamed as part of the run script. 
-   Unless including the code to do that in your run script you will instead get :file:`gcchem_internal_checkpoint` in the main run directory. 
-   Moving and renaming is a better option because (1) it includes the datetime to prevent overwriting upon consecutive runs, (2) it enables using the :file:`gchp_restart.nc4` symbolic link in the main run directory to automatically point to the correct restart file based on start date and grid resolution, and (3) it minimizes clutter in the run directory. 
+   GCHP restart files after being renamed within the run script. 
    Please note that the vertical level dimension in all GCHP restart files is positive down, meaning level 1 is top-of-atmosphere.
-
-.. option:: gcchem_internal_checkpoint.YYYYMMDD_HHmmz.nc4
-
-   Optional restart files output mid-run. In order to generate these you must configure the run directory to output with a specific frequency that is less than the duration of your run. Note that unlike the end-of-run restart file, these files are not copied to :file:`Restarts` in your run script and are not renamed.
+   These files are actually MAPL checkpoint files that are output with name set in configuration file :file:`GCHP.rc`.
+   Checkpoint files that are output mid-run include datetime. Checkpoint files that are output at the end of the
+   run do not. All checkpoint files are renamed by the run script (if you are using one our examples) to
+   be the standard GEOS-Chem restart file format.
+   Renaming is ideal because (1) it includes the datetime to prevent overwriting upon consecutive runs, and (2) it enables using the :file:`gchp_restart.nc4` symbolic link in the main run directory to automatically point to the correct restart file based on start date and grid resolution. 
+   If your run crashes then you may see instead files that start with :file:`gcchem_internal_checkpoint`.
 
 .. option:: OutputDir/GEOSChem.HistoryCollectionName.YYYYMMDD_HHmmz.nc4
 

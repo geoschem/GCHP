@@ -7,7 +7,7 @@
    so that conceptually the instructions have a linear flow. The Quickstart Guide, on the other hand, shows how to make a run directory prior to compiling.
 
 .. note::
-   Another resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_.
+   Another resource for GCHP build instructions is our `YouTube tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_. It is for version 13 but the build information is still applicable.
 
 .. _building_gchp:
 
@@ -312,7 +312,7 @@ RRTMG
     Switch to enable the RRTMG component. Set value to :literal:`y` to turn on.
 
 FASTJX
-    Switch to enable the legacy FAST-JX v7.0 photolysis mechanism. Set value :literal:`y` to turn on FAST-JX and turn off Cloud-J.
+    Switch to enable the legacy FAST-JX v7.0 photolysis mechanism. Set value :literal:`y` to turn on FAST-JX and turn off Cloud-J. If FASTJX is not set then Cloud-J will be to compute photolysis rates.
 
 OMP
    Switch to enable/disable OpenMP multithreading. As is standard in CMake (see `if documentation <https://cmake.org/cmake/help/latest/command/if.html>`_) valid values are :literal:`ON`, :literal:`YES`, :literal:`Y`, :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
