@@ -55,7 +55,11 @@ of data units that are NOT area-independent are kg/s and m2, or any other unit t
 per grid cell area. This sort of unit is most common in the meteorology diagnostics, such as
 Met_AREAM2 and Met_AD. The values of these arrays will be incorrect in non-native grid output.
 
-You can define as many grids as you want. A collection can define :code:`grid_label` to select
+You can define as many grids as you want. However, you should comment out all grid labels in the
+:literal:`GRID_LABELS` list that you do not intend to use. This is because MAPL creates all grids
+listed regardless of whether they are used which increases the memory requirement for the mode.
+
+A collection can define :code:`grid_label` to select
 a custom grid. If a collection does not define :code:`grid_label` the simulation's grid is assumed.
 
 Below is the format for the :code:`<DEFINE GRID LABELS>` section in :file:`HISTORY.rc`.

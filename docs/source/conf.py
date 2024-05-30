@@ -19,11 +19,11 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'GCHP'
-copyright = '2023, GEOS-Chem Support Team'
+copyright = '2024, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
-release = '14.3.1'
+release = '14.4.0'
 
 
 # -- General configuration ---------------------------------------------------

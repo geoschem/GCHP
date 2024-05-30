@@ -18,7 +18,7 @@ following software:
 * CMake version ≥ 3.13
 * Compilers (C, C++, and Fortran):
 
-   * Intel compilers version ≥ 19, or
+   * Intel compilers versions 2019-2021, or
    * GNU compilers version ≥ 10
 
 * MPI (Message Passing Interface)
@@ -31,16 +31,67 @@ following software:
 
 * HDF5
 * NetCDF (with C, C++, and Fortran support)
-* Earth System Modeling Framework (ESMF) version 8.4.2 recommended. Problems with 8.1 and prior have been reported.
+* Earth System Modeling Framework (ESMF) version 8.4.2+. Problems with 8.1 and prior have been reported.
 
 Your system administrator should be able to tell you if this software is already available on your cluster, and if so, how to activate it.
 If it is not already available, they might be able to build it for you.
-If you need to build GCHP's dependencies yourself, see the supplemental guide for building required software with Spack.
+If you need to build GCHP's dependencies yourself other than ESMF then see the supplemental guide for building required software with Spack.
+
+Environment File
+----------------
+
+Set up an environment file that loads the needed libraries and also
+defines these environment variables needed for GCHP. Here is an
+example of what the library load and variable exports might look line
+in your environment file. This example uses GNU compilers and OpenMPI,
+but there are notes in the comments on how to use Intel instead. The commands
+to load modules on your system may be different than in this example. Contact
+your system administrator if you need help finding libraries on your system.
+
+.. code-block:: console
+
+   module purge
+   module load gcc/10.2.0-fasrc01             # GNU compiler collection (C, C++, Fortran)
+   module load openmpi/4.1.0-fasrc01          # MPI
+   module load netcdf-c/4.8.0-fasrc01         # Netcdf-C
+   module load netcdf-fortran/4.5.3-fasrc01   # Netcdf-Fortran
+   module load cmake/3.25.2-fasrc01           # CMake
+
+   umask 022                             # Make all files world-readable by default
+
+   # NetCDF
+   if [[ "x{NETCDF_HOME}" == "x" ]]; then
+       export NETCDF_HOME=${NETCDF_C_HOME}
+   fi
+   export NETCDF_ROOT=${NETCDF_HOME}
+   export NETCDF_FORTRAN_ROOT=${NETCDF_FORTRAN_HOME}
+
+   # Compilers
+   export CC=gcc                         # C compiler (use icx for Intel)
+   export CXX=g++                        # C++ compiler (se icx for Intel)
+   export FC=gfortran                    # Fortran compiler (use ifort for Intel)
+
+   # MPI
+   export MPI_ROOT=${MPI_HOME}           # Path to MPI library
+
+   # ESMF (includes everything needed to build ESMF as well as use it in GCHP)
+   export ESMF_COMPILER=gfortran         # Fortran compiler (use intel for Intel)
+   export ESMF_COMM=openmpi              # MPI (use intelmpi for IntelMPI)
+   export ESMF_DIR=/home/ESMF/ESMF       # Path to ESMF repository within a generic directory called ESMF
+   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_gnu10.2_openmpi4.1.0
+   export ESMF_ROOT=${ESMF_INSTALL_PREFIX}
+
+Note that this example is set up with environment variables needed to build ESMF so
+that you may use it for both the initial ESMF build as well as subsequent GCHP runs.
+Not all of these ESMF environment variables are needed to actually run GCHP, but including
+them is useful to keep track of the ESMF install you are using. More information on
+installing ESMF is in the next section.
+
 
 Installing ESMF
 ---------------
 
-If you have all of the needed libraries except ESMF then you can
+If you have all of the needed libraries except ESMF then you will need to
 download and build ESMF yourself. The ESMF git repository is available
 to clone from `github.com/esmf-org/esmf <https://github.com/esmf-org/esmf>`_. Use
 :code:`git tag` to browse versions available and then :code:`git
@@ -51,7 +102,7 @@ checkout tags/tag_name` to checkout the version.
    git clone https://github.com/esmf-org/esmf ESMF
    cd ESMF
    git tag
-   git checkout tags/v8.4.1
+   git checkout tags/v8.4.2
 
 If you have previously downloaded ESMF you can use your same clone to
 checkout and build a new ESMF version. Use the same steps as above
@@ -71,32 +122,14 @@ also export environment variables :envvar:`CC`, :envvar:`CXX`,
 Set up an environment file that loads the needed libraries and also
 defines these environment variables. If you already have a GEOS-Chem
 environment file set up then you can copy it or repurpose it by
-including the environment variables needed for ESMF. Here is an
-example of what the library load and variable exports might look line
-in your environment file. This example uses GNU compilers and OpenMPI,
-but there are notes in the comments on how to use Intel instead.
-
-.. code-block:: console
-
-   module purge
-   module load gcc/10.2.0-fasrc01             # GNU compiler collection (C, C++, Fortran)
-   module load openmpi/4.1.0-fasrc01          # MPI
-   module load netcdf-c/4.8.0-fasrc01         # Netcdf-C
-   module load netcdf-fortran/4.5.3-fasrc01   # Netcdf-Fortran
-   module load cmake/3.25.2-fasrc01           # CMake
-
-   export CC=gcc                         # C compiler (use icx for Intel)
-   export CXX=g++                        # C++ compiler (se icx for Intel)
-   export FC=gfortran                    # Fortran compiler (use ifort for Intel)
-   export MPI_ROOT=${MPI_HOME}           # Path to MPI library
-   export ESMF_COMPILER=gfortran         # Fortran compiler (use intel for Intel)
-   export ESMF_COMM=openmpi              # MPI (use intelmpi for IntelMPI)
-   export ESMF_DIR=/home/ESMF/ESMF       # Path to ESMF repository within a generic directory called ESMF
+including the environment variables needed for ESMF. See the previous
+section for an example.
 
 You can create multiple ESMF builds. This is useful if you want to use
-different libraries for the same version of ESMF, or if you want to
-build different ESMF versions. To set yourself up to allow multiple
-builds you should also export environment variable
+different libraries for the same version of ESMF, e.g. to run GCHP with
+either Intel or GNU compilers, or if you want to use newer ESMF versions
+without deleting your old one. To set yourself up to allow multiple
+builds you should export environment variable
 :envvar:`ESMF_INSTALL_PREFIX` and define it as a subdirectory within
 :envvar:`ESMF_DIR`. Include details about that particular build
 to distinguish it from others. For example:
@@ -230,7 +263,7 @@ Recommended Minimum Requirements
 
 These recommended minimums are adequate to effectively use GCHP in
 scientific applications. These runs should be at grid resolutions at
-or above C90.
+or above C90 which is approximately 1x1 degree.
 
 
 Big Compute Recommendations
