@@ -33,8 +33,7 @@ body:
     id: log-files
     attributes:
       label: Please attach any relevant configuration and log files.
-      description: Drag and drop files like the GCHP log files,
-      ExtData.rc, setCommonRunSettings.sh here. You may need to rename files to end in .txt first.
+      description: Drag and drop files like the GCHP log files, ExtData.rc, setCommonRunSettings.sh here. You may need to rename files to end in .txt first.
     validations:
       required: false
   - type: input
