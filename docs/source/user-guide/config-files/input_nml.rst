@@ -19,10 +19,10 @@ do_schmidt
    Logical for whether to use Schmidt advection. Set to .true. if using stretched grid; otherwise this entry is commented out.
 
 stretch_fac	
-   Stretched grid factor, equal to the ratio of grid resolution in targeted high resolution region to the configured run resolution. This is commented out if not using stretched grid.
+   Stretched grid factor, equal to the ratio of grid resolution in targeted high resolution region to the configured run resolution. This is commented out if not using stretched grid. It is automatically updated based on settings in :file:`setCommonRunSettings.sh`.
 
 target_lat	
-   Target latitude of high resolution region if using stretched grid. This is commented out if not using stretched grid.
+   Target latitude of high resolution region if using stretched grid. This is commented out if not using stretched grid. It is automatically updated based on settings in :file:`setCommonRunSettings.sh`.
 
 target_lon	
-   Target longitude of high resolution region if using stretched grid. This is commented out if not using stretched grid.
+   Target longitude of high resolution region if using stretched grid. This is commented out if not using stretched grid. It is automatically updated based on settings in :file:`setCommonRunSettings.sh`.

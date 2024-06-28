@@ -18,21 +18,57 @@ Compute resources
 Set number of nodes and cores
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To change the number of nodes and cores for your run you must update settings in two places: (1) :file:`setCommonRunSettings.sh`, and (2) your run script. 
-The :file:`setCommonRunSettings.sh` file contains detailed instructions on how to set resource parameter options and what they mean. 
+To change the number of nodes and cores for your run you must update settings in
+two places: (1) :file:`setCommonRunSettings.sh`, and (2) your run script. 
+The :file:`setCommonRunSettings.sh` file contains detailed instructions on how
+to set resource parameter options and what they mean. 
 Look for the Compute Resources section in the script. 
-Update your resource request in your run script to match the resources set in :file:`setCommonRunSettings.sh`.
+Update your resource request in your run script to match the resources set
+in :file:`setCommonRunSettings.sh`.
 
 It is important to be smart about your resource allocation. 
-To do this it is useful to understand how GCHP works with respect to distribution of nodes and cores across the grid. 
-At least one unique core is assigned to each face on the cubed sphere, resulting in a constraint of at least six cores to run GCHP. 
-The same number of cores must be assigned to each face, resulting in another constraint of total number of cores being a multiple of six. 
-Communication between the cores occurs only during transport processes.
+To do this it is useful to understand how GCHP works with respect to distribution of
+nodes and cores across the grid. 
+At least one unique core is assigned to each face on the cubed sphere, resulting in
+a constraint of at least six cores to run GCHP. 
+The same number of cores must be assigned to each face, resulting in another
+constraint of total number of cores being a multiple of six.
+There is also an upper limit on total number of cores for any given grid resolution.
+Advection also requires that each core cover a domain size of at least 4x4 grid cells.
+For C24 this means there needs to be at least 36 cores per face because a 24x24 face
+can be broken into 36 4x4 regions. This translates into a maximum of 216 cores for C24,
+864 cores for C48, 3174 cores for C90, 12150 cores for C180, and so on.
 
-While any number of cores is valid as long as it is a multiple of six (although there is an upper limit per resolution), you will typically start to see negative effects due to excessive communication if a core is handling less than around one hundred grid cells or a cluster of grid cells that are not approximately square. 
-You can determine how many grid cells are handled per core by analyzing your grid resolution and resource allocation. 
-For example, if running at C24 with six cores each face is handled by one core (6 faces / 6 cores) and contains 576 cells (24x24). 
-Each core therefore processes 576 cells. Since each core handles one face, each core communicates with four other cores (four surrounding faces). Maximizing squareness of grid cells per core is done automatically within :file:`setCommonRunSettings.sh` if variable :samp:`AutoUpdate_NXNY` is set to :samp:`ON` in the "DOMAIN DECOMPOSITON" section of the file.
+Communication between the cores occurs only during transport processes and
+you will typically start to see negative effects due to
+excessive communication if a core is handling less than around one hundred grid cells.
+You can determine
+approximately how many grid cells are handled per core by analyzing your grid resolution and
+resource allocation. Total number of grid cells is equal to N*N*6 for grid resolution CN,
+e.g. 24*24*6 for C24. Number of grid cells handled per core is then N*N*6 divided by
+total number of cores. This number is approximate since number of grid cells per core can
+vary across each face, such as if you run C48 with 360 cores.
+
+Excessive communication may also occur if the grid cell region of a core is not
+approximately square. Run-time parameters :literal:`NX` and :literal:`NY` quantify how
+each face will be decomposed and can be set to maximize squareness. The product of these
+parameters is equal to the total number of cores and each face will be
+divided into :literal:`NX` x :literal:`NY/6` regions. Setting :literal:`NX` and
+:literal:`NY/6` as close as possible in value will therefore ensure optimal communication.
+Maximizing squareness of
+grid cells per core is done automatically for you within :file:`setCommonRunSettings.sh`.
+You may disable that feature by changing variable :samp:`AutoUpdate_NXNY` to :samp:`OFF`
+in the "DOMAIN DECOMPOSITON" section of the file. Beware that disabling it will require you
+to set :literal:`NX` and :literal:`NY` yourself in the file.
+
+If using mass flux input data then there is an additional constraint that the model grid
+divides evenly across cores. In other words NX and NY/6 must divide evenly into N where
+the run grid resolution is CN. For example, a C30 run can have each face split into
+6x6 regions but not 4x4 regions. The former gives a 5x5 grid cell region per core while
+the latter gives 7.5x7.5 which is non-integer. This has implications for total number of
+cores you can run with when using mass flux inputs since a given total number of cores can
+evenly divide every possible grid resolution.
+
 
 Change domain stack size
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -40,6 +76,37 @@ Change domain stack size
 For runs at very high resolution or small number of processors you may run into a domains stack size error. 
 This is caused by exceeding the domains stack size memory limit set at run-time.  The error will be apparent from the message in your log file. 
 If this occurs you can increase the domains stack size in file :file:`input.nml`.
+
+Considerations for very high core counts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+GCHP has the capability of running on tens of thousands of cores. If running at very
+high grid resolution and you have access to this level of compute power then there are a few
+things to consider prior to submitting your run.
+
+First, very high resolution runs make
+model I/O more challenging. Restart files will be very large and reading and writing them
+will be intensive. Second, MPI configuration, file system, and compute hardware can make or
+break your run at this scale. This often comes back to challenges with I/O.
+For example, we have found that using OpenMPI on certain
+compute clusters requires turning on the MAPL O-server for checkpoint write to prevent
+the model from hanging. 
+
+There are a few settings in configuration file :literal:`GCHP.rc` that
+you can play with to try to improve performance in this area. 
+:literal:`NUM_READERS` parallelizes
+restart read and setting it to values between 6 and 24 may yield improvement.
+:literal:`WRITE_RESTART_BY_OSERVER` assigns restart write to extra nodes by running what
+is called the O-server. The O-server is off by default but can be toggled on manually.
+:literal:`NUM_WRITERS` affects how many processes to write with. You can try
+anywhere from 6 to 24 to see if it makes a differences. 
+Note that none of these settings are dependable ways
+to speed up or fix a run because they are dependent on file system and MPI stack.
+
+Lastly, your specific grid resolution will impact how
+performance scales with more cores. FV3 advection has a point of diminishing returns due
+to excessive communication if core count gets too high for a given run resolution. See
+earlier section on setting number of nodes and cores. 
 
 ---------------------------------------------------------------------------------------------------
 
