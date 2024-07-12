@@ -147,3 +147,11 @@ gc_pretty_print(VARIABLE RRTMG IS_BOOLEAN)
 gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
 gc_pretty_print(VARIABLE FASTJX IS_BOOLEAN)
+
+# Throw an error unless we are using the Hg mechanism,
+# The fullchem & custom mechanisms now use Cloud-J!
+if(${FASTJX})
+  if(NOT ${MECH} MATCHES "Hg")
+    message(FATAL_ERROR "FASTJX can only be used with the Hg mechanism!")
+  endif()
+endif()
