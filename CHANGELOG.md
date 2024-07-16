@@ -1,17 +1,18 @@
 # Changelog
 
 This file documents all notable changes to the GCHP wrapper repository starting in version 14.0.0. See also CHANGELOG files for individual submodules, such as:
-- src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md
-- src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/CHANGELOG.md
-- src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J/CHANGELOG.md
-- src/GCHP_GridComp/GEOSChem_GridComp/HETP/CHANGELOG.md
-- src/MAPL/CHANGELOG.md
+- `src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md`
+- `src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/CHANGELOG.md`
+- `src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J/CHANGELOG.md`
+- `src/GCHP_GridComp/GEOSChem_GridComp/HETP/CHANGELOG.md`
+- `src/MAPL/CHANGELOG.md`
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [14.4.2] - TBD
 ### Changed
 - Updated Cloud-J submodule to 7.7.2
+- Disable support for FAST-JX for all simulations except Hg
 
 ## [14.4.1] - 2024-06-28
 ### Fixed
