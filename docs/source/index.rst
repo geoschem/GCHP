@@ -77,6 +77,7 @@ use Spack to install GCHP's dependencies if needed.
 
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
+   geos-chem-shared-docs/supplemental-guides/geos-chem-input-data-on-aws.rst
    supplement/setting-up-aws-parallelcluster.rst
    supplement/caching-input-data.rst
    supplement/containers.rst
