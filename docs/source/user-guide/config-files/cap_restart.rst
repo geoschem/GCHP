@@ -10,7 +10,7 @@ from disk at the start of the GCHP simulation.
 
 Let's consider an example.  Say you are going to run a 1-day GCHP
 simulation starting at 00 GMT on 2019-07-01.  The
-:ref:`set-common-run-settings.sh` script---when run manually, or
+:ref:`set-common-run-settings-sh` script---when run manually, or
 called your GCHP run script---will set the datetime in
 :file:`cap_restart` to:
 
