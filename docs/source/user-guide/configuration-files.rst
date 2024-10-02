@@ -13,9 +13,9 @@ wish to learn more.
    The many configuration files in GCHP can be overwhelming. However,
    you should be able to accomplish most if not all of what you wish
    to configure from one place in
-   :file:`setCommonRunSettings.sh`. That file is a bash script used to
-   configure settings in other files from one place.  Please get
-   very familiar with the options in :file:`setCommonRunSettings.sh`
+   :ref:`set-common-run-settings-sh`. That file is a bash script used
+   to configure settings in other files from one place.  Please get
+   very familiar with the options in :ref:`set-common-run-settings-sh`
    by reading through the configuration section of the file.
    Be conscientious about not updating the same setting elsewhere.
 
@@ -28,6 +28,14 @@ found in the following pages.  You can also reach these pages by
 continuing with the "next" button in this user guide. See further down
 on this page for a high-level summary of all configuration files.
 
+Commonly-updated configuration files
+------------------------------------
+
+Here is a list of the configuration files containing the various input
+options for your GCHP simulation.  You can specify most of the
+relevant settings in the :ref:`set-common-run-settings-sh` script,
+which will edit the other configuration files accordingly.
+
 .. toctree::
    :maxdepth: 1
 
@@ -38,10 +46,20 @@ on this page for a high-level summary of all configuration files.
    config-files/ExtData_rc.rst
    ../../geos-chem-shared-docs/doc/geoschem-config.rst
    ../../geos-chem-shared-docs/doc/hemco-config.rst
-   config-files/input_nml.rst
-   config-files/logging_yml.rst
-   config-files/HISTORY_rc.rst
    ../../geos-chem-shared-docs/doc/hemco-diagn.rst
+   config-files/HISTORY_rc.rst
+   config-files/logging_yml.rst
+
+Less-commonly-updated configuration files
+-----------------------------------------
+
+You will not typically need to modify these files unless you are
+adding new species or modifying chemistry reactions, etc.
+
+.. toctree::
+   :maxdepth: 1
+
+   config-files/input_nml.rst
    ../../geos-chem-shared-docs/doc/spec-db.rst
    ../../geos-chem-shared-docs/doc/phot-chem.rst
 
@@ -117,8 +135,8 @@ This high-level summary of GCHP configuration files gives a short description of
    settings configured there, including duration, frequency, and
    which collections to update.
 
-   Please see our :ref:`history-diag-guide` supplemental guide for a
-   list of GEOS-Chem diagnostic collections.
+   Please see our :ref:`histguide` supplemental guide for a list of
+   GEOS-Chem diagnostic collections.
 
 :ref:`input-nml`
    Namelist used in advection for domain stack size and stretched grid
