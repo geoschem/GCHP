@@ -1,3 +1,7 @@
+.. |br| raw:: html
+
+   <br />
+
 .. _running_gchp:
 
 #############
@@ -16,16 +20,36 @@ Pre-run checklist
 Prior to running GCHP, always run through the following checklist to
 ensure everything is set up properly.
 
-1. Start date is set in :file:`cap_restart`
-2. Executable :file:`gchp` is present.
-3. All symbolic links are valid (no broken links)
-4. Settings are correct in :file:`setCommonRunSettings.sh`
-5. :file:`setRestartLink.sh` runs without error (ensures restart file is available for date in :file:`cap_restart`)
-6. If running via a job scheduler, totals cores are the same in :file:`setCommonRunSettings.sh` and the run script
-7. If running interactively, you have available locally the total cores in :file:`setCommonRunSettings.sh`
+#. Check that the date is set in :ref:`cap-restart`. |br|
+   |br|
 
+#. Check that the executable :file:`gchp` is present. |br|
+   |br|
+
+#. Check that all symbolic links are valid (no broken links). |br|
+   |br|
+
+#. Check that all simulation settings are correct in
+   :ref:`set-common-run-settings-sh`. |br|
+   |br|
+
+#. Check that :file:`setRestartLink.sh` runs without error.  (This
+   ensures that the restart file is available for the date specified
+   in :ref:`cap-restart`.) |br|
+   |br|
+
+#. If :ref:`running via a job scheduler <running_gchp_batch>`, check
+   that the total cores in :ref:`set-common-run-settings-sh` matches the
+   total cores requested in the run script. |br|
+   |br|
+
+#. If :ref:`running interactively <running_gchp_int>`, check if you
+   have available locally the total cores in
+   :ref:`set-common-run-settings-sh`.
+
+===============
 How to run GCHP
----------------
+===============
 
 You can run GCHP locally from within your run directory
 ("interactively") or by submitting your run to a job scheduler if one
@@ -33,29 +57,50 @@ is available.  Either way, it is useful to put run commands into a
 reusable script we call the run script. Executing the script will
 either run GCHP or submit a job that will run GCHP.
 
-There is a symbolic link in the GCHP run directory called :file:`runScriptSamples` that points to a directory in the source code containing example run scripts.
+There is a symbolic link in the GCHP run directory called
+:file:`runScriptSamples` that points to a directory in the source code
+containing example run scripts.
 Each file includes extra commands that make the run process easier and
 less prone to user error.  These commands include:
 
-1. Define a GCHP log file that includes start date configured in
-   :file:`cap_restart` in its name
-2. Source environment file symbolic link :file:`gchp.env`
-3. Source config file :file:`setCommonRunSettings.sh` to update
-   commonly changed run settings
-4. Set restart file symbolic link :file:`gchp_restart.nc4` to target
+#. Define a GCHP log file that includes start date configured in
+   :ref:`cap-restart` in its name. |br|
+   |br|
+
+#. Load the software environment:
+
+   .. code-block:: console
+
+      $ source gchp.env
+
+#. Update commonly changed run settings:
+
+   .. code-block:: console
+
+      $ source setCommonRunSettings.sh
+
+#. Set restart file symbolic link :file:`gchp_restart.nc4` to target
    file in :file:`Restarts` subdirectory for configured start date and
-   grid resolution
-5. Check that :file:`cap_restart` now contains end date of your run
-6. Rename the output restart file to include run start date and grid
+   grid resolution. |br|
+   |br|
+
+#. Check that :file:`cap_restart` now contains the end date of your
+   run. |br|
+   |br|
+
+#. Rename the output restart file to include run start date and grid
    resolution (format
-   :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`)
+   :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`).
+
+.. _running_gchp_int:
 
 Run interactively
 -----------------
 
-Copy or adapt example run script :file:`gchp.local.run` to run GCHP locally on your machine.
-Before running, make sure the total number of cores configured in :file:`setCommonRunSettings.sh` is available locally.
-It must be at least 6.
+Copy or adapt example run script :file:`gchp.local.run` to run GCHP
+locally on your machine. Before running, make sure the total number of
+cores configured in :ref:`set-common-run-settings-sh` is available
+locally. It must be at least 6.
 
 To run, type the following at the command prompt:
 
@@ -68,15 +113,17 @@ sent to a log file with filename format
 :literal:`gchp.YYYYMMDD_HHmmSSz.log`. The HEMCO log output is also
 included in this file.
 
+.. _running_gchp_batch:
+
 Run as batch job
 ----------------
 
-Batch job run scripts will vary based on what job scheduler you have available.
-We offer a template batch job run script in the
+Batch job run scripts will vary based on what job scheduler you have
+available. We offer a template batch job run script in the
 :file:`runScriptSamples` subdirectory called
-:file:`gchp.batch_job.sh`. This file contains examples for 3
-types of job scheduler: SLURM, LSF, and PBS.
-You may copy and adapt this file for your system and preferences as needed.
+:file:`gchp.batch_job.sh`. This file contains examples for 3 types of
+job scheduler: SLURM, LSF, and PBS. You may copy and adapt this file
+for your system and preferences as needed.
 
 At the top of all batch job scripts are configurable run
 settings. Most critically are requested # cores, # nodes, time, and
@@ -86,9 +133,13 @@ trial and error.  See :ref:`hardware requirements
 cores you request the faster GCHP will run given the same grid
 resolution.  Configurable job scheduler settings and acceptable
 formats are often accessible from the command line.  For example, type
-:command:`man sbatch` to scroll through configurable options for
-SLURM, including various ways of specifying number of cores,
-time and memory requested.
+
+.. code-block:: console
+
+   $ man sbatch
+
+to scroll through configurable options for SLURM, including various
+ways of specifying number of cores, time and memory requested.
 
 To submit a batch job using a run script called :file:`gchp.run` and
 the SLURM job scheduler:
@@ -107,35 +158,46 @@ If your computational cluster uses a different job scheduler, check
 with your IT staff or search the internet for how to configure and
 submit batch jobs on your system.
 
+=======================
 Verify a successful run
------------------------
+=======================
 
 GEOS-Chem standard output and standard error will be sent to a file
 specific to your scheduler, e.g. :file:`slurm-jobid.out`, unless you
 configured your run script to send it to a different log
 file. Variable :literal:`log` is defined in the template run script as
 :file:`gchp.YYYYMMDD_HHmmSSz.log` if you wish to use it. The date
-string in the log filename is the start date of your simulation
-as configured in :file:`cap_restart`. This log is automatically
-used if you execute the interactive run script example
-:file:`gchp.local.run`. GCHP produces another output log file
-called :file:`allPEs.log` which is produced by the MAPL
-library logger for debugging purposes. Several other logs
-are output for informational purposes only but generally
-are not useful for debugging.
+string in the log filename is the start date of your simulation as
+configured in :ref:`cap-restart`. This log is automatically used if
+you execute the interactive run script example
+:file:`gchp.local.run`. GCHP produces another output log file called
+:file:`allPEs.log` which is produced by the MAPL library logger for
+debugging purposes. Several other logs are output for informational
+purposes only but generally are not useful for debugging.
 
 There are several ways to verify that your run was successful. Here
 are just a few:
 
-1. The GCHP log file shows every timestep (search for :literal:`AGCM
-   Date`) and ends with timing information.
-2. NetCDF files are present in the :file:`OutputDir/` subdirectory.
-3. There is a restart file corresponding to your end date in the
-   :file:`Restarts` subdirectory.
-4. The start date in :file:`cap_restart` has been updated to your run
-   end date.
-5. The job scheduler log does not contain any error messages.
-6. Output file :file:`allPEs.log` does not contain any error
+#. The GCHP log file shows every timestep (search for :literal:`AGCM
+   Date`) and ends with timing information. |br|
+   |br|
+
+#. NetCDF files are present in the :file:`OutputDir/`
+   subdirectory. |br|
+   |br|
+
+#. There is a restart file corresponding to your end date in the
+   :file:`Restarts` subdirectory. |br|
+   |br|
+
+#. The start date in :ref:`cap-restart` has been updated to your run
+   end date. |br|
+   |br|
+
+#. The job scheduler log does not contain any error messages. |br|
+   |br|
+
+#. Output file :file:`allPEs.log` does not contain any error
    messages.
 
 If it looks like something went wrong, scan through the log files to
@@ -144,28 +206,50 @@ strategies depending on what you find. Below is a summary of steps to
 take to debug GCHP runs. See also :ref:`debugging <debugging>` for
 additional guidance.
 
-* Find the first error message in the GCHP log file to see if it tells
-  you what is wrong.
-* Find the first line of the traceback for the error and find the file
-  and line number listed to see if it gives a hint about what is
-  wrong.
-* Review all of your configuration files to ensure you have proper
-  setup, especially :file:`setCommonRunSettings.sh`.
-* "MAPL_Cap" or "CAP" errors in the run log typically indicate an
-  error with your start time and/or duration. Check
-  :file:`cap_restart` and :file:`setCommonRunSettings.sh`.
-* "MAPL_ExtData" or "ExtData" errors in the run log indicate an error with your input files. Check :file:`HEMCO_Config.rc` and :file:`ExtData.rc` for errors.
-* "MAPL_HistoryGridComp" or "History" errors in the run log are
-  related to your configured diagnostics. Check :file:`HISTORY.rc`.
-* If the problem is a segmentation fault then rebuild the model with
-  cmake option :literal:`-DCMAKE_BUILD_TYPE=Debug` and rerun.
-* If the problem appears to be in HEMCO then change the warnings and
-  verbose options in :file:`HEMCO_Config.rc` to true and rerun
-* If the problem appears to be in GEOS-Chem then change the verbose
-  activate option in :file:`geoschem_config.yml` to true and rerun
-* If the problem appears to be in MAPL ExtData then change the
-  :literal:`root_level` settings for :literal:`CAP.ExtData` in
-  :file:`logging.yml` to :literal:`DEBUG` and rerun
+#. Find the first error message in the GCHP log file to see if it tells
+   you what is wrong. |br|
+   |br|
+
+#. Find the first line of the traceback for the error and find the file
+   and line number listed to see if it gives a hint about what is
+   wrong. |br|
+   |br|
+
+#. Review all of your configuration files to ensure you have proper
+   setup, especially :ref:`set-common-run-settings-sh`. |br|
+   |br|
+
+#. :literal:`MAPL_Cap` or :literal:`CAP` errors in the run log
+   typically indicate an  error with your start time and/or duration. Check
+   :ref:`cap-restart` and :ref:`set-common-run-settings-sh`. |br|
+   |br|
+
+#. :literal:`MAPL_ExtData` or :literal:`ExtData` errors in the run log
+   indicate an error with your input files. Check
+   :ref:`cfg-hco-cfg` and :ref:`extdata-rc` for errors. |br|
+   |br|
+
+#. :literal:`MAPL_HistoryGridComp` or :literal:`History` errors in the
+   run log are related to your configured diagnostics. Check
+   :ref:`history-rc` file. |br|
+   |br|
+
+#. If the problem is a segmentation fault then rebuild the model with
+   cmake option :literal:`-DCMAKE_BUILD_TYPE=Debug` and rerun. |br|
+   |br|
+
+#. If the problem appears to be in HEMCO then change the warnings and
+   verbose options in :ref:`cfg-hco-cfg` to true and rerun. |br|
+   |br|
+
+#. If the problem appears to be in GEOS-Chem then change the verbose
+   activate option in :ref:`cfg-gc-yml` to :literal:`true`
+   and rerun. |br|
+   |br|
+
+#. If the problem appears to be in MAPL ExtData then change the
+   :literal:`root_level` settings for :literal:`CAP.ExtData` in
+   :ref:`logging-yml` to :literal:`DEBUG` and rerun.
 
 If you still cannot figure out where the problem is then please create
 a GCHP GitHub issue and include all config and log files for your
@@ -177,11 +261,12 @@ Reuse a run directory
 
 Archive run output
 ------------------
-Reusing a GCHP run directory comes with the perils of losing your old work.
-To mitigate this issue there is utility shell script :file:`archiveRun.sh`.
-This script archives data output and configuration files to a
-subdirectory that will not be deleted if you clean your run
-directory.
+
+Reusing a GCHP run directory comes with the perils of losing your old
+work. To mitigate this issue there is utility shell script
+:file:`archiveRun.sh`. This script archives data output and
+configuration files to a subdirectory that will not be deleted
+if you clean your run directory.
 
 Archiving runs is useful for other reasons as well, including:
 
