@@ -283,7 +283,7 @@ Sampling configuration
    :literal:`'time-averaged'`. This specifies the length of the time
    average. By default it is equal to :literal:`frequency`.
 
-.. option:: ref_date:
+.. option:: ref_date
 
    **OPTIONAL**. The reference date from which the frequency is
    based. The format is :literal:`YYYYMMDD`. For example, a frequency

@@ -24,14 +24,14 @@ will automatically initialize and update all the submodules:
 
 .. code-block:: console
 
-   gcuser:~$ git clone --recurse-submodules https://github.com/geoschem/GCHP.git ~/GCHP
-   gcuser:~$ cd ~/GCHP
+   $ git clone --recurse-submodules https://github.com/geoschem/GCHP.git ~/GCHP
+   $ cd ~/GCHP
 
 Upon download you will have the most recently released version. You can check what this is by printing the last commit in the git log and scanning the output for tag.
 
 .. code-block:: console
 
-   gcuser:~/GCHP$ git log -n 1
+   $ git log -n 1
 
 .. tip::
 
@@ -40,17 +40,17 @@ Upon download you will have the most recently released version. You can check wh
 
    .. code-block:: console
 
-      gcuser:~/GCHP$ git checkout tags/14.0.0                  # Points HEAD to the tag "14.0.0"
-      gcuser:~/GCHP$ git branch version_14.0.0                 # Creates a new branch at tag "14.0.0"
-      gcuser:~/GCHP$ git checkout version_14.0.0               # Checks out the version_14.0.0 branch
-      gcuser:~/GCHP$ git submodule update --init --recursive   # Reverts submodules to the "14.0.0" tag
+      $ git checkout tags/14.0.0                  # Points HEAD to the tag "14.0.0"
+      $ git branch version_14.0.0                 # Creates a new branch at tag "14.0.0"
+      $ git checkout version_14.0.0               # Checks out the version_14.0.0 branch
+      $ git submodule update --init --recursive   # Reverts submodules to the "14.0.0" tag
 
    You can do this for any tag in the version history.   For a list of
    all tags, type:
 
    .. code-block:: console
 
-      gcuser:~/GCHP$ git tag
+      $ git tag
 
    If you have any unsaved changes, make sure you commit those to a
    branch prior to updating versions.
@@ -65,8 +65,25 @@ the prompts:
 
 .. code-block:: console
 
-   gcuser:~/GCHP$ cd run/
-   gcuser:~/GCHP$ ./createRunDir.sh
+   $ cd run/
+   $ ./createRunDir.sh
+
+.. important::
+
+   The convection scheme used for GEOS-FP met generation changed
+   from RAS to Grell-Freitas with impact on GEOS-FP meteorology
+   files starting June 1, 2020, specifically enhanced vertical
+   transport. In addition, there is a bug in convective
+   precipitation flux following the switch where all values are
+   zero. While this bug is automatically fixed by computing fluxes
+   online for runs starting on or after June 1 2020, the fix
+   assumes meteorology year corresponds to simulation year. Due to
+   these issues we recommend splitting up GEOS-FP runs in time such
+   that a single simulation does not run across June
+   1, 2020. Instead. set one run to stop on June 1 2020 and then
+   restart a new run from there. If you wish to use a GEOS-FP
+   meteorology year different from your simulation year please
+   create a GEOS-Chem GitHub issue for assistance.
 
 =======================
 3. Configure your build
@@ -83,15 +100,15 @@ guide we will do both, starting with building from the source code.
 
 .. code-block:: console
 
-   gcuser:~/GCHP$ mkdir ~/GCHP/build
-   gcuser:~/GCHP$ cd ~/GCHP/build
+   $ mkdir ~/GCHP/build
+   $ cd ~/GCHP/build
 
 Initialize your build directory by running :program:`cmake`, passing it the path to your source code.
 Make sure you have loaded all libraries required for GCHP prior to this step.
 
 .. code-block:: console
 
-   gcuser:~/GCHP/build$ cmake ~/GCHP
+   $ cmake ~/GCHP
 
 Now you can configure :ref:`build options <gchp_build_options>`.
 These are persistent settings that are saved to your build directory.
@@ -103,7 +120,7 @@ the run directory you created in Step 2.
 
 .. code-block:: console
 
-   gcuser:~/GCHP/build$ cmake . -DRUNDIR="/path/to/your/run/directory"
+   $ cmake . -DRUNDIR="/path/to/your/run/directory"
 
 .. note::
    The :literal:`.` in the :program:`cmake` command above is
@@ -116,15 +133,15 @@ symbolic link in the run directory:
 
 .. code-block:: console
 
-   gcuser:/path/to/your/run/directory/$ cd build
-   gcuser:/path/to/your/run/directory/build$ cmake ../CodeDir -DRUNDIR=..
+   $ cd /path/to/your/run/directory/build
+   $ cmake ../CodeDir -DRUNDIR=..
 
 GEOS-Chem has a number of optional compiler flags you can add
 here. For example, to compile with RRTMG:
 
 .. code-block:: console
 
-   gcuser:/path/to/your/run/directory/build$ cmake ../CodeDir -DRUNDIR=.. -DRRTMG=y
+   $ cmake ../CodeDir -DRUNDIR=.. -DRRTMG=y
 
 A useful compiler option is to build in debug mode. Doing this is a
 good idea if you encountered a segmentation fault in a previous run
@@ -132,7 +149,7 @@ and need more information about where the error happened and why.
 
 .. code-block:: console
 
-   gcuser:/path/to/your/run/directory/build$ cmake ../CodeDir -DRUNDIR=.. -DCMAKE_BUILD_TYPE=Debug
+   $ cmake ../CodeDir -DRUNDIR=.. -DCMAKE_BUILD_TYPE=Debug
 
 See the GEOS-Chem documentation for more information on compiler flags.
 
@@ -147,14 +164,15 @@ available. Do this with the :literal:`-j` flag:
 
 .. code-block:: console
 
-   gcuser:~/GCHP/build$ make -j
+   $ cd ~/GCHP/build   # Skip if you are already here
+   $ make -j
 
 Upon successful compilation, install the compiled executable to your
 run directory (or directories):
 
 .. code-block:: console
 
-   gcuser:~/GCHP/build$ make install
+   $ make install
 
 This copies :file:`bin/gchp` and supplemental files to your run directory.
 
@@ -180,7 +198,7 @@ Now, navigate to your run directory:
 
 .. code-block:: console
 
-   $ cd path/to/your/run/directory
+   $ cd /path/to/your/run/directory
 
 Commonly changed simulation settings, such as grid resolution, run
 duration, and number of cores, are set in

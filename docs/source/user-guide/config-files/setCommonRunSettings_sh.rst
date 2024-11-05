@@ -52,7 +52,7 @@ the configurations section earlier in the script. Some of the
 functions are general, such as printing a message during file update
 based on if the script was passed optional argument
 :literal:`--verbose`. Other functions are specialized, such as
-replacing met-field read frequency in :ref:`extdata`
+replacing met-field read frequency in :ref:`extdata-rc`
 based on the model timestep.
 
 The update files section changes settings in other configuration files

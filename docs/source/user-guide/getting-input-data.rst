@@ -4,18 +4,20 @@
 Download Input Data
 ###################
 
-Input data for GEOS-Chem is available at
-http://geoschemdata.wustl.edu/ExtData/.
+Input data for GEOS-Chem is available at the :ref:`GEOS-Chem Input
+Data <gcid>` portal.  You may browse the contents of the data at this
+link:  https://geos-chem.s3.amazonaws.com/index.html
 
-The bashdatacatalog is the recommended for downloading and managing
-your GEOS-Chem input data. Refer to the bashdatacatalog's
+The bashdatacatalog is the recommended method for downloading and
+managing your GEOS-Chem input data. Refer to the bashdatacatalog's
 `Instructions for GEOS-Chem Users
 <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_. Below
 is a brief summary of using the bashdatacatalog for aquiring GCHP
 input data.
 
+===========================
 Install the bashdatacatalog
----------------------------
+===========================
 
 Install the bashdatacatalog with the following command. Follow the
 prompts and restart your console.
@@ -26,8 +28,9 @@ prompts and restart your console.
 
 .. note:: You can rerun this command to upgrade to the latest version.
 
+======================
 Download Data Catalogs
-----------------------
+======================
 
 Catalog files can be downloaded from http://geoschemdata.wustl.edu/ExtData/DataCatalogs/.
 
@@ -124,4 +127,4 @@ See Also
 
 - `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
 - `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`_
-- `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs/>`_
+- `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs>`_
