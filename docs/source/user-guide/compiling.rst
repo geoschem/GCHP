@@ -185,7 +185,7 @@ useful information for troubleshooting.
    :literal:`CMAKE_PREFIX_PATH` variable.
 
    For example, if you got an error saying "Could not find ESMF", and
-   ESMF is installedto :file:`/software/ESMF`, you would do
+   ESMF is installed to :file:`/software/ESMF`, you would do
 
    .. code-block:: console
 

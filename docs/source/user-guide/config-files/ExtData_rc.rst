@@ -12,8 +12,8 @@ ExtData.rc
 for GCHP. Explanatory information about the file is located at the top
 of the configuration file in all run directories. The file format is
 the same as that used in the GEOS model, and GMAO/NASA documentation
-for it can be found at the ExtData component page on the GEOS-5
-wiki. Note that this file will be retired in GCHP v15.0 when MAPL
+for it can be found at the 'ExtData component page on the GEOS-5
+wiki <https://geos5.org/wiki/index.php?title=Using_the_ExtData_component&mobileaction=toggle_view_desktop/>`_. Note that this file will be retired in GCHP v15.0 when MAPL
 version 3 is integrated into GCHP. It will be replaced with a YAML
 format file with a simplified and easier to understand interface.
 
