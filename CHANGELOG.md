@@ -9,7 +9,10 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - TBD
+## [14.5.0] - 2024-11-08
+### Added
+- Added documentation about GEOS convection change affecting meteorology starting June 1, 2020
+
 ### Changed
 - Updated GEOS-Chem to 14.5.0
 - Updated HEMCO to 3.10.0
@@ -17,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Fixed formatting error in `.github/workflows/stale.yml` that caused the Mark Stale Issues action not to run
+- Updated compiler requirements to specify max GNU version is 12
+- Updated documentation for version 14.5.0
+- Updated `docs/requirements.txt` to use `jinja2==3.1.4` (fixes a security issue)
 
 ## [14.4.3] - 2024-08-13
 ### Changed
