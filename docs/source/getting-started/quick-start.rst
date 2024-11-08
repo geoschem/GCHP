@@ -75,7 +75,7 @@ the prompts:
    files starting June 1, 2020, specifically enhanced vertical
    transport. If you plan to do simulations across this boundary
    consider using MERRA2 instead. For more information see
-   `GEOS-Chem GitHub issue #1409<https://github.com/geoschem/geos-chem/issues/1409/>`_.
+   `GEOS-Chem GitHub issue #1409 <https://github.com/geoschem/geos-chem/issues/1409/>`__.
 
 =======================
 3. Configure your build
