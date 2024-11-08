@@ -77,12 +77,12 @@ use Spack to install GCHP's dependencies if needed.
 
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
-   geos-chem-shared-docs/supplemental-guides/geos-chem-input-data-on-aws.rst
    supplement/setting-up-aws-parallelcluster.rst
    supplement/caching-input-data.rst
    supplement/containers.rst
    supplement/stretched-grid.rst
    supplement/satellite-overpass.rst
+   geos-chem-shared-docs/doc/gcid-portal-overview.rst
    geos-chem-shared-docs/supplemental-guides/bashdatacatalog.rst
    geos-chem-shared-docs/supplemental-guides/history-diag-guide.rst
    geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
