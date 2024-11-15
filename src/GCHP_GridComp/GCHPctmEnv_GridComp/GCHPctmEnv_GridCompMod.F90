@@ -953,7 +953,7 @@ module GCHPctmEnv_GridComp
          ! Get vertical mass flux
          call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
 
-         ! Flip vertical so that GCHP diagnostic level is following GEOS-Chem convetion
+         ! Flip vertical so that GCHP diagnostic level is following GEOS-Chem convention
          ! Add negative sign to make positive = "up"
          UpwardsMassFlux(:,:,:) = -UpwardsMassFlux(:,:,LM:0:-1)/dt
       end if
