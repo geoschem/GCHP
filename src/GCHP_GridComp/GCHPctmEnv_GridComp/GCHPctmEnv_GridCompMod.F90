@@ -871,7 +871,7 @@ module GCHPctmEnv_GridComp
          call MAPL_GetPointer(IMPORT, temp3d_r4, 'MFXC',  RC=STATUS)
          _VERIFY(STATUS)
          if ( correct_mass_flux_for_humidity > 0 ) then
-            MFX_EXPORT = dble(temp3d_r4) / ( 1.d0 - SPHU0_EXPORT )
+            MFX_EXPORT = dble(temp3d_r4) * ( 1.d0 - SPHU0_EXPORT )
          else
             MFX_EXPORT = dble(temp3d_r4)
          endif
@@ -879,7 +879,7 @@ module GCHPctmEnv_GridComp
          call MAPL_GetPointer(IMPORT, temp3d_r4, 'MFYC',  RC=STATUS)
          _VERIFY(STATUS)
          if ( correct_mass_flux_for_humidity > 0 ) then
-            MFY_EXPORT = dble(temp3d_r4) / ( 1.d0 - SPHU0_EXPORT )
+            MFY_EXPORT = dble(temp3d_r4) * ( 1.d0 - SPHU0_EXPORT )
          else
             MFY_EXPORT = dble(temp3d_r4)
          endif
@@ -953,8 +953,9 @@ module GCHPctmEnv_GridComp
          ! Get vertical mass flux
          call fv_getVerticalMassFlux(MFX_EXPORT, MFY_EXPORT, UpwardsMassFlux, dt)
 
-         ! Flip vertical so that GCHP diagnostic is positive="up"
-         UpwardsMassFlux(:,:,:) = UpwardsMassFlux(:,:,LM:0:-1)/dt
+         ! Flip vertical so that GCHP diagnostic level is following GEOS-Chem convention
+         ! Add negative sign to make positive = "up"
+         UpwardsMassFlux(:,:,:) = -UpwardsMassFlux(:,:,LM:0:-1)/dt
       end if
 
       ! nullify pointers

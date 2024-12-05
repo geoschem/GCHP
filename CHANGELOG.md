@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added code to `src/CMakeLists.txt` to build & install the KPP standalone executable when `fullchem` or `custom` mechanisms are selected
 
+### Fixed
+- Fixed dry mass flux derivation in GCHPctmEnv when using mass flux imports
+- Fixed UpwardsMassFlux sign to make positive represent upwards direction
+
 ## [14.5.0] - 2024-11-08
 ### Added
 - Added documentation about GEOS convection change affecting meteorology starting June 1, 2020
