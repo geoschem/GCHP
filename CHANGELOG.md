@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Fixed dry mass flux derivation in GCHPctmEnv when using mass flux imports
 - Fixed UpwardsMassFlux sign to make positive represent upwards direction
+- Fixed logic error in `src/CMakeLists.txt` that attempted to build the KPP standalone for the carbon simulation (see geoschem/GCClassic #78)
 
 ## [14.5.0] - 2024-11-08
 ### Added
