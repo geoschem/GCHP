@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased] - TBD
 ### Added
 - Added code to `src/CMakeLists.txt` to build & install the KPP standalone executable when `fullchem` or `custom` mechanisms are selected
+- Added ReadTheDocs Supplemental Guide on using the KPP-Standalone Box Model and KPP-Standalone Interface in GEOS-Chem
 
 ### Fixed
 - Fixed dry mass flux derivation in GCHPctmEnv when using mass flux imports
