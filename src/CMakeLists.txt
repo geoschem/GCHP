@@ -60,6 +60,41 @@ set_target_properties(${EXE_FILE_NAME}
 )
 
 #-----------------------------------------------------------------------------
+# Define the KPP standalone executable:
+# 1. Specify a cache variable with the default target name
+# 2. Specify the location of the main program
+# 3. Specify libraries that the main program depends on
+# 4. Store the binary exectuable file in the bin folder (pre-install)
+# 5. If not fullchem or custom mechanism, prevent executable from being built
+#
+# At present build KPP standalone only for fullchem or custom mechanisms.
+#
+# This should now fix the issue reported by @msulprizio in:
+#   https://github.com/geoschem/GCClassic/issues/78
+#-----------------------------------------------------------------------------
+set(KPPSA_FILE_NAME kpp_standalone CACHE STRING
+  "Default name for the KPP standalone executable file")
+mark_as_advanced(KPPSA_FILE_NAME)
+add_executable(${KPPSA_FILE_NAME}
+  GCHP_GridComp/GEOSChem_GridComp/geos-chem/KPP/standalone/kpp_standalone.F90
+)
+if("${MECH}" STREQUAL fullchem OR "${MECH}" STREQUAL custom)
+  target_link_libraries(${KPPSA_FILE_NAME}
+    PUBLIC
+    KPPStandalone
+  )
+  set_target_properties(${KPPSA_FILE_NAME}
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+  )
+else()
+  set_target_properties(${KPPSA_FILE_NAME}
+    PROPERTIES
+    EXCLUDE_FROM_ALL TRUE
+  )
+endif()
+
+#-----------------------------------------------------------------------------
 # Allow GCHP to be installed either to the path specified by -DRUNDIR or
 # -DINSTALLCOPY.  In most instances, the build directory is a subdirectory
 # of the run directory, so -DRUNDIR=.. will install the executable in the run
@@ -96,6 +131,12 @@ foreach(INSTALL_PATH ${COMBINED_INSTALL_DIRS})
       # Installation path is a GEOS-Chem run directory,
       # Therefore we will install the executable there.
       install(TARGETS ${EXE_FILE_NAME} RUNTIME DESTINATION ${INSTALL_PATH})
+
+      # Only install KPP standalone for fullchem/custom mechanisms.
+      # See: htps://github.com/geoschem/GCClassic/issues/78
+      if("${MECH}" STREQUAL fullchem OR "${MECH}" STREQUAL custom)
+        install(TARGETS ${KPPSA_FILE_NAME} RUNTIME DESTINATION ${INSTALL_PATH})
+      endif()
     endif()
 
 endforeach()
