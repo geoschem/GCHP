@@ -87,7 +87,7 @@ jobs:
                 `"\"timePeriod\": \"${TIME_PERIOD}\","`
                 `"\"tag\": \"${COMMIT_NAME}\","`
                 `"\"numCores\": \"${NUM_CORES}\","`
-                `"\"memory\": \"80000\","` 
+                `"\"memory\": \"120000\","`
                 `"\"resolution\": \"${RESOLUTION}\","`
                 `"\"sendEmailNotification\": \"true\""`
               `"},"`
