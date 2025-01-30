@@ -60,6 +60,8 @@ set_target_properties(${EXE_FILE_NAME}
 )
 
 #-----------------------------------------------------------------------------
+# If GCHP has been configured with -DKPPSA=y, then:
+#
 # Define the KPP standalone executable:
 # 1. Specify a cache variable with the default target name
 # 2. Specify the location of the main program
@@ -72,26 +74,28 @@ set_target_properties(${EXE_FILE_NAME}
 # This should now fix the issue reported by @msulprizio in:
 #   https://github.com/geoschem/GCClassic/issues/78
 #-----------------------------------------------------------------------------
-set(KPPSA_FILE_NAME kpp_standalone CACHE STRING
-  "Default name for the KPP standalone executable file")
-mark_as_advanced(KPPSA_FILE_NAME)
-add_executable(${KPPSA_FILE_NAME}
-  GCHP_GridComp/GEOSChem_GridComp/geos-chem/KPP/standalone/kpp_standalone.F90
-)
-if("${MECH}" STREQUAL fullchem OR "${MECH}" STREQUAL custom)
-  target_link_libraries(${KPPSA_FILE_NAME}
-    PUBLIC
-    KPPStandalone
-  )
-  set_target_properties(${KPPSA_FILE_NAME}
-    PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-  )
-else()
-  set_target_properties(${KPPSA_FILE_NAME}
-    PROPERTIES
-    EXCLUDE_FROM_ALL TRUE
-  )
+if (${KPPSA})
+  set(KPPSA_FILE_NAME kpp_standalone CACHE STRING
+    "Default name for the KPP standalone executable file")
+  mark_as_advanced(KPPSA_FILE_NAME)
+  add_executable(${KPPSA_FILE_NAME}
+    GCHP_GridComp/GEOSChem_GridComp/geos-chem/KPP/standalone/kpp_standalone.F90
+    )
+  if("${MECH}" STREQUAL fullchem OR "${MECH}" STREQUAL custom)
+    target_link_libraries(${KPPSA_FILE_NAME}
+      PUBLIC
+      KPPStandalone
+      )
+    set_target_properties(${KPPSA_FILE_NAME}
+      PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+      )
+  else()
+    set_target_properties(${KPPSA_FILE_NAME}
+      PROPERTIES
+      EXCLUDE_FROM_ALL TRUE
+      )
+  endif()
 endif()
 
 #-----------------------------------------------------------------------------
