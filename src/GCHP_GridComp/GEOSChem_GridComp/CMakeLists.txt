@@ -16,6 +16,9 @@ set(LUO_WETDEP OFF CACHE BOOL
 set(FASTJX OFF CACHE BOOL
   "Switch to use legacy FAST-JX photolysis in GEOS-Chem"
 )
+set(KPPSA OFF CACHE BOOL
+  "Switch to build the KPP-Standalone Box Model"
+)
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -147,3 +150,4 @@ gc_pretty_print(VARIABLE RRTMG IS_BOOLEAN)
 gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
 gc_pretty_print(VARIABLE FASTJX IS_BOOLEAN)
+gc_pretty_print(VARIABLE KPPSA IS_BOOLEAN)

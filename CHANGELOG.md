@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased] - TBD
 ### Changed
 - Bumped `jinja2` to version 3.1.5 in `docs/requirements.txt` to fix a security issue
+- Changed the build sequence so that the KPP-Standalone is only built when configuring with `-DKPPSA=y`
 
 ## [14.5.1] - 2025-01-10
 ### Added
