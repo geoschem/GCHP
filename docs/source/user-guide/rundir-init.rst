@@ -193,3 +193,29 @@ created and brief instructions for us. For example:
      -- Example run scripts are in the runScriptSamples subdirectory
      -- For more information visit the GCHP user guide at
         https://readthedocs.org/projects/gchp/
+
+
+Build KPP-Standalone Box Model (optional)
+-----------------------------------------
+
+If you are creating a run directory for a fullchem simulation, the
+next (and final) menu will aks you:
+
+.. code-block:: console
+
+   -----------------------------------------------------------
+   Do you want to build the KPP-Standalone Box Model? (y/n)
+   -----------------------------------------------------------
+   >>>
+
+Type :program:`y` and then :command:`ENTER` you wish to build the
+:program:`KPP-Standalone Box Model`, or :program:`n` then
+:program:`ENTER` to skip this step. If you choose to build
+KPP-Standalone, you will be given this reminder:
+
+.. code-block:: console
+
+   >>>> REMINDER: You must compile with options: -DKPPSA=y <<<<
+
+Please see the Supplemental Guide entitled :ref:`kppsa-guide`
+for further usage instructions.
