@@ -13,6 +13,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Increased execution memory for GCHP cloud benchmarks from 80 to 120 GB in `.github/workflows/cloud-benchmarking-workflow.yml`
 
+## [14.5.2] - 2025-02-12
+### Added
+- Added text to RTD stating that data download from `s3://geos-chem` is and `s3://gcgrid` is free
+
+### Changed
+- Bumped `jinja2` to version 3.1.5 in `docs/requirements.txt` to fix a security issue
+- Changed the build sequence so that the KPP-Standalone is only built when configuring with `-DKPPSA=y`
+- Updated RTD documentation for fullchem rundir creation, which now asks users if they wish to build KPP-Standalone
+
 ## [14.5.1] - 2025-01-10
 ### Added
 - Added code to `src/CMakeLists.txt` to build & install the KPP standalone executable when `fullchem` or `custom` mechanisms are selected
