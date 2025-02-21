@@ -19,6 +19,9 @@ set(FASTJX OFF CACHE BOOL
 set(KPPSA OFF CACHE BOOL
   "Switch to build the KPP-Standalone Box Model"
 )
+set(MODEL_CTMENV OFF CACHE BOOL
+  "Switch to skip advection and GEOS-Chem runs and run the ctmEnv gridded component only"
+)
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -48,6 +51,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<STREQUAL:${TOMAS_BINS},40>:TOMAS40>
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
   $<$<BOOL:${FASTJX}>:FASTJX>
+  $<$<BOOL:${MODEL_CTMENV}>:MODEL_CTMENV>
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
