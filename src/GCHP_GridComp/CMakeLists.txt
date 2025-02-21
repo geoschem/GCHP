@@ -6,6 +6,27 @@
 set(FV_PRECISION           R8    ) # FV3 precision is R8
 set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/Apps/mapl_acg.pl)
 
+#---------------
+# Set whether running in CTMenv-only mode, with GEOS-chem not added
+# as a gridded component and FV3 not run
+#---------------
+option(MODEL_CTMENV "Enable CTMenv-only mode in GCHP" OFF)
+if(MODEL_CTMENV)
+  message(STATUS "WARNING: Running in CTMenv-only mode in GCHP!")
+endif()
+
+#--------------------------------
+# Create the GCHP_GridComp target
+#--------------------------------
+add_library(GCHP_GridComp STATIC
+    GCHP_GridCompMod.F90
+)
+
+# For MAPL3 (in development)
+#add_library(GCHP_GridComp SHARED
+#    GCHP_GridCompMod.F90
+#)
+
 #-------------------------------------------
 # Add DYNAMICS gridded component (advection)
 #-------------------------------------------
@@ -21,18 +42,12 @@ add_subdirectory(GEOSChem_GridComp EXCLUDE_FROM_ALL)
 #----------------------------------------------------
 add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 
-#--------------------------------
-# Create the GCHP_GridComp target
-#--------------------------------
-# MAPL2:
-add_library(GCHP_GridComp STATIC
-    GCHP_GridCompMod.F90
+#----------------------------------------------------
+# Set compile definitions and link libraries
+#----------------------------------------------------
+target_compile_definitions(GCHP_GridComp PRIVATE
+  $<$<BOOL:${MODEL_CTMENV}>:MODEL_CTMENV>
 )
-
-# For MAPL3 (in development)
-#add_library(GCHP_GridComp SHARED
-#    GCHP_GridCompMod.F90
-#)
 
 #----------------------------------------------------
 # Set compile definitions and link libraries
