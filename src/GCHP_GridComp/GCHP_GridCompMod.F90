@@ -156,10 +156,12 @@ contains
                             RC=STATUS)
    _VERIFY(STATUS)
 
+#ifndef MODEL_CTMENV
    ! Add chemistry
    CHEM = MAPL_AddChild(GC, NAME='GCHPchem', SS=AtmosChemSetServices, &
                         RC=STATUS)
    _VERIFY(STATUS)
+#endif
 
    ! Add dynamics
    ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
@@ -211,6 +213,7 @@ contains
                                   SRC_ID = ECTM,               &
                                   __RC__ )
 
+#ifndef MODEL_CTMENV
       CALL MAPL_AddConnectivity ( GC,                          &
                                   SHORT_NAME = (/ 'AREA  ',    &
                                                   'DryPLE',    &
@@ -224,8 +227,9 @@ contains
                                   DST_ID = ADV,                 &
                                   SRC_ID = CHEM,                &
                                   __RC__ )
+#endif
 
-      CALL MAPL_TerminateImport    ( GC,                         &
+    CALL MAPL_TerminateImport    ( GC,                         &
                                      SHORT_NAME = (/'TRADV'/), &
                                      CHILD = ADV,                &
                                      __RC__  )
@@ -336,6 +340,7 @@ contains
     endif
 #endif
 
+#ifndef MODEL_CTMENV
     ! AdvCore Tracers
     !----------------
     call ESMF_StateGet( GIM(ADV), 'TRADV', BUNDLE, RC=STATUS )
@@ -348,7 +353,8 @@ contains
     !--------------
     call ESMF_FieldBundleGet(BUNDLE,FieldCount=NUM_TRACERS, RC=STATUS)
     _VERIFY(STATUS)
-   
+#endif
+
     ! Disable this erroneous MAPL_TimerOff to fix timing. J.W.Zhuang 2017/04 
     ! call MAPL_TimerOff(STATE,"RUN")
     call MAPL_TimerOff(STATE,"TOTAL")
@@ -489,7 +495,7 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GCHP, before GCHPctmEnv: ', RC=STATUS )
+                  'Before GCHPctmEnv: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
@@ -507,10 +513,11 @@ contains
        call ESMF_VMBarrier(VM, RC=STATUS)
        _VERIFY(STATUS)
        call MAPL_MemUtilsWrite(VM, &
-                  'GCHP, after  GCHPctmEnv: ', RC=STATUS )
+                  'After  GCHPctmEnv: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
 
+#ifndef MODEL_CTMENV
     ! Dynamics & Advection
     !------------------
     ! SDE 2017-02-18: This needs to run even if transport is off, as it is
@@ -574,6 +581,7 @@ contains
                   'GCHP, after  GEOS-Chem: ', RC=STATUS )
        _VERIFY(STATUS)
     endif
+#endif
 
 #ifdef ADJOINT
     ELSE
