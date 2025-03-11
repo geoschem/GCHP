@@ -13,6 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Increased execution memory for GCHP cloud benchmarks from 80 to 120 GB in `.github/workflows/cloud-benchmarking-workflow.yml`
 
+## [14.5.3] - 2025-03-05
+### Added
+- Updated RTD docs to state that users wishing not to open AWS account can use AWS CLI commands with `--no-sign-request`
+
+### Changed
+- Updated GEOS-Chem submodule to 14.5.3
+- Updated HEMCO submodule to 3.10.2
+
 ## [14.5.2] - 2025-02-12
 ### Added
 - Added text to RTD stating that data download from `s3://geos-chem` is and `s3://gcgrid` is free
