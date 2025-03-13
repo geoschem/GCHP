@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Increased execution memory for GCHP cloud benchmarks from 80 to 120 GB in `.github/workflows/cloud-benchmarking-workflow.yml`
 
+### Fixed
+- Check if mass flux import is top-down and flip accordingly
+
 ## [14.5.3] - 2025-03-05
 ### Added
 - Updated RTD docs to state that users wishing not to open AWS account can use AWS CLI commands with `--no-sign-request`
