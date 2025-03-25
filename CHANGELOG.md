@@ -9,6 +9,10 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Changed
+- Bumped `jinja2` to 3.1.6 in `docs/requirements.txt` (fixes a security issue identified by @dependabot)
+
 ## [14.5.3] - 2025-03-05
 ### Added
 - Updated RTD docs to state that users wishing not to open AWS account can use AWS CLI commands with `--no-sign-request`
