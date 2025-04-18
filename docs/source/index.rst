@@ -72,6 +72,15 @@ use Spack to install GCHP's dependencies if needed.
    user-guide/debugging.rst
 
 .. toctree::
+   :caption: GEOS-Chem Simulations
+   :maxdepth: 4
+
+   geos-chem-shared-docs/simulations/carbon.rst
+   geos-chem-shared-docs/simulations/fullchem.rst
+   geos-chem-shared-docs/simulations/tago3.rst
+   geos-chem-shared-docs/simulations/transport-tracers.rst
+   
+.. toctree::
    :maxdepth: 1
    :caption: Supplemental Guides
 
