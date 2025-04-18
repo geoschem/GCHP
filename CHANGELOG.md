@@ -9,12 +9,16 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - TBD
+## [14.6.0] - 2025-04-18
+### Added
+- Added ReadTheDocs documentation about GEOS-Chem simulations
+
 ### Changed
 - Increased execution memory for GCHP cloud benchmarks from 80 to 120 GB in `.github/workflows/cloud-benchmarking-workflow.yml`
 
 ### Fixed
 - Check if mass flux import is top-down and flip accordingly
+- Bumped `jinja2` to 3.1.6 in `docs/requirements.txt` (fixes a security issue id
 
 ## [14.5.3] - 2025-03-05
 ### Added
