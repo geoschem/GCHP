@@ -803,6 +803,12 @@ module GCHPctmEnv_GridComp
 ! OUTPUT PARAMETERS:
 !
       integer, optional, intent(out)  :: RC       ! Error code
+
+
+#ifdef ADJOINT
+      logical, save :: firstRun = .true.
+#endif
+
 !
 ! !DESCRIPTION:
 ! Set mass flux and courant exports needed for offline advection. How this
