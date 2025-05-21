@@ -803,6 +803,7 @@ module GCHPctmEnv_GridComp
 ! OUTPUT PARAMETERS:
 !
       integer, optional, intent(out)  :: RC       ! Error code
+
 !
 ! !DESCRIPTION:
 ! Set mass flux and courant exports needed for offline advection. How this
@@ -841,6 +842,10 @@ module GCHPctmEnv_GridComp
       real,     pointer, dimension(:,:,:) :: VC        => null()
       real(r8), pointer, dimension(:,:,:) :: UCr8      => null()
       real(r8), pointer, dimension(:,:,:) :: VCr8      => null()
+
+#ifdef ADJOINT
+      logical, save :: firstRun = .true.
+#endif
 
       !=====================================
       ! prepare_massflux_exports starts here
