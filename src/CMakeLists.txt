@@ -1,20 +1,34 @@
+# Add gFTL
+add_subdirectory(GFE/gFTL EXCLUDE_FROM_ALL)
+set(GFTL_DIR ${GFTL_SOURCE_DIR})
+message(STATUS "${GFTL_DIR}")
+
 # Add gFTL-shared
 set(GIT_SUBMODULE OFF CACHE BOOL "Prevent gFTL-shared from trying to checkout its gFTL submodule")
-add_subdirectory(gFTL-shared EXCLUDE_FROM_ALL)
+add_subdirectory(GFE/gFTL-shared EXCLUDE_FROM_ALL)
+set(GFTL_SHARED ${GFTL_SOURCE_DIR})
+message(STATUS "${GFTL_SHARED}")
+
+# Add fArgParse
+add_subdirectory(GFE/fArgParse EXCLUDE_FROM_ALL)
+set(FARGPARSE_DIR ${FARGPARSE_SOURCE_DIR})
+message(STATUS "${FARGPARSE_DIR}")
 
 # Add pFUnit
 set(PFUNIT_FOUND FALSE) # Do not rely on ESMA_cmake/FindBaseLibs.cmake to set this
 if(PFUNIT_FOUND)
-  add_subdirectory(pFUnit EXCLUDE_FROM_ALL)
+  add_subdirectory(GFE/pFUnit EXCLUDE_FROM_ALL)
 endif()
 
 # Add yaFyaml
-add_subdirectory(yaFyaml EXCLUDE_FROM_ALL)
+add_subdirectory(GFE/yaFyaml EXCLUDE_FROM_ALL)
 set(YAFYAML_DIR ${YAFYAML_SOURCE_DIR})
 message(STATUS "${YAFYAML_DIR}")
 
 # Add pFlogger
-add_subdirectory(pFlogger EXCLUDE_FROM_ALL)
+add_subdirectory(GFE/pFlogger EXCLUDE_FROM_ALL)
+set(PFLOGGER_DIR ${PFLOGGER_SOURCE_DIR})
+message(STATUS "${PFLOGGER_DIR}")
 
 # Add MAPL
 set(LATEX_FOUND FALSE) # Disable LaTeX support (to avoid dependencies like ImageMagick)
