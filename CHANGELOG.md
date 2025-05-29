@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added ReadTheDocs documentation updates for GCHP 14.6.1
 
+### Changed
+- Updated GEOS-Chem submodule to 14.6.1
+- Updated HEMCO submodule to 3.11.1
+
 ## [14.6.0] - 2025-04-18
 ### Added
 - Added ReadTheDocs documentation about GEOS-Chem simulations
