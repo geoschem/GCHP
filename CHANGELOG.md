@@ -49,6 +49,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Check if mass flux import is top-down and flip accordingly
 - Bumped `jinja2` to 3.1.6 in `docs/requirements.txt` (fixes a security issue id
 
+### Added
+- Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
+
 ## [14.5.3] - 2025-03-05
 ### Added
 - Updated RTD docs to state that users wishing not to open AWS account can use AWS CLI commands with `--no-sign-request`
