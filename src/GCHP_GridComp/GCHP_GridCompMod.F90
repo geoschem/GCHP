@@ -425,6 +425,14 @@ contains
        _VERIFY(STATUS)
     endif
 
+    if ( MemDebugLevel > 0 ) THEN
+       call ESMF_VMBarrier(VM, RC=STATUS)
+       _VERIFY(STATUS)
+       call MAPL_MemUtilsWrite(VM, &
+                  'GCHP, start of Run in GCHP_GridCompMod.F90 : ', RC=STATUS )
+       _VERIFY(STATUS)
+    endif
+
 #ifdef ADJOINT
     ! Check if this is an adjoint run
     CALL ESMF_ConfigGetAttribute( CF, ModelPhase, &
@@ -741,6 +749,14 @@ contains
 
     ! Added for GCHP Adjoint
     firstRun = .false.
+
+    if ( MemDebugLevel > 0 ) THEN
+       call ESMF_VMBarrier(VM, RC=STATUS)
+       _VERIFY(STATUS)
+       call MAPL_MemUtilsWrite(VM, &
+                  'GCHP, end of Run in GCHP_GridCompMod.F90 : ', RC=STATUS )
+       _VERIFY(STATUS)
+    endif
 
     _RETURN(ESMF_SUCCESS)
 
