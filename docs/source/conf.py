@@ -23,7 +23,7 @@ copyright = '2024, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
-release = '14.6.1'
+release = '14.6.2'
 
 
 # -- General configuration ---------------------------------------------------
