@@ -392,7 +392,7 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &
-                              SHORT_NAME='CY_F4', &
+                              SHORT_NAME='CY_R4', &
                               LONG_NAME='yward_accumulated_courant_number', &
                               UNITS='', &
                               DIMS=MAPL_DimsHorzVert, &
@@ -400,7 +400,7 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &
-                              SHORT_NAME='MFX_F4', &
+                              SHORT_NAME='MFX_R4', &
                               LONG_NAME='pressure_weighted_accumulated_xward_mass_flux', &
                               UNITS='Pa m+2 s-1', &
                               DIMS=MAPL_DimsHorzVert, &
@@ -1016,16 +1016,6 @@ module GCHPctmEnv_GridComp
             MFY_EXPORT = MFY_EXPORT / ( 1.d0 - SPHU0_EXPORT )
          endif
 
-         ! Set R4 exports for diagnostics
-         call MAPL_GetPointer(EXPORT, MFX_R4_EXPORT, 'MFX_R4', NotFoundOK=.TRUE., _RC)
-         IF ( ASSOCIATED(MFX_R4_EXPORT) ) MFX_R4_EXPORT = MFX_EXPORT
-         call MAPL_GetPointer(EXPORT, MFY_R4_EXPORT, 'MFY_R4', NotFoundOK=.TRUE., _RC)
-         IF ( ASSOCIATED(MFY_R4_EXPORT) ) MFY_R4_EXPORT = MFY_EXPORT
-         call MAPL_GetPointer(EXPORT, CX_R4_EXPORT, 'CX_R4', NotFoundOK=.TRUE., _RC)
-         IF ( ASSOCIATED(CX_R4_EXPORT) ) CX_R4_EXPORT  = CX_IMPORT
-         call MAPL_GetPointer(EXPORT, CY_R4_EXPORT, 'CY_R4', NotFoundOK=.TRUE., _RC)
-         IF ( ASSOCIATED(CY_R4_EXPORT) ) CY_R4_EXPORT  = CY_IMPORT
-
       else
 
          ! Get wind imports (real4, A-grid)
@@ -1074,11 +1064,21 @@ module GCHPctmEnv_GridComp
          endif
          firstRun = .false.
 #endif
-         
+
          ! Deallocate local arrays
          DEALLOCATE(UC, VC, UCr8, VCr8)
 
       end if
+
+      ! Set R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, MFX_R4_EXPORT, 'MFX_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(MFX_R4_EXPORT) ) MFX_R4_EXPORT = MFX_EXPORT
+      call MAPL_GetPointer(EXPORT, MFY_R4_EXPORT, 'MFY_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(MFY_R4_EXPORT) ) MFY_R4_EXPORT = MFY_EXPORT
+      call MAPL_GetPointer(EXPORT, CX_R4_EXPORT, 'CX_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(CX_R4_EXPORT) ) CX_R4_EXPORT  = CX_IMPORT
+      call MAPL_GetPointer(EXPORT, CY_R4_EXPORT, 'CY_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(CY_R4_EXPORT) ) CY_R4_EXPORT  = CY_IMPORT
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
       call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
