@@ -842,6 +842,10 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: UCr8      => null()
       real(r8), pointer, dimension(:,:,:) :: VCr8      => null()
 
+#ifdef ADJOINT
+      logical, save :: firstRun = .true.
+#endif
+
       !=====================================
       ! prepare_massflux_exports starts here
       !=====================================
@@ -931,14 +935,17 @@ module GCHPctmEnv_GridComp
          UCr8  = dble(UC)
          VCr8  = dble(VC)
          
-#ifdef ADJOINT
+#ifndef ADJOINT
+         ! Calculate mass fluxes and courant numbers
+         call fv_computeMassFluxes(UCr8, VCr8, PLE, &
+              MFX_EXPORT, MFY_EXPORT, &
+              CX_EXPORT, CY_EXPORT, dt)
+#else
          if (.not. firstRun) THEN
-#endif
             ! Calculate mass fluxes and courant numbers
             call fv_computeMassFluxes(UCr8, VCr8, PLE, &
-                                      MFX_EXPORT, MFY_EXPORT, & 
-                                      CX_EXPORT, CY_EXPORT, dt)
-#ifdef ADJOINT
+                 MFX_EXPORT, MFY_EXPORT, &
+                 CX_EXPORT, CY_EXPORT, dt)
          endif
          firstRun = .false.
 #endif
