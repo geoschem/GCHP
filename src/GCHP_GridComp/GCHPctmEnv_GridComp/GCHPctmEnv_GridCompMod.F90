@@ -1076,9 +1076,9 @@ module GCHPctmEnv_GridComp
       call MAPL_GetPointer(EXPORT, MFY_R4_EXPORT, 'MFY_R4', NotFoundOK=.TRUE., _RC)
       IF ( ASSOCIATED(MFY_R4_EXPORT) ) MFY_R4_EXPORT = MFY_EXPORT
       call MAPL_GetPointer(EXPORT, CX_R4_EXPORT, 'CX_R4', NotFoundOK=.TRUE., _RC)
-      IF ( ASSOCIATED(CX_R4_EXPORT) ) CX_R4_EXPORT  = CX_IMPORT
+      IF ( ASSOCIATED(CX_R4_EXPORT) ) CX_R4_EXPORT  = CX_EXPORT
       call MAPL_GetPointer(EXPORT, CY_R4_EXPORT, 'CY_R4', NotFoundOK=.TRUE., _RC)
-      IF ( ASSOCIATED(CY_R4_EXPORT) ) CY_R4_EXPORT  = CY_IMPORT
+      IF ( ASSOCIATED(CY_R4_EXPORT) ) CY_R4_EXPORT  = CY_EXPORT
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
       call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
