@@ -338,7 +338,7 @@ Inspecting timing
 -----------------
 
 Model timing information is printed out at the end of each GCHP
-run. Check the end of the GCHP log for a breakdown of component
+run. Check the end of the log fille :literal:`allPEs.log` for a breakdown of component
 timing. See the :literal:`Timing` section of the `output files page
 <output_files.html>`__ for instructions on how to read the timing
 information printed to log.
