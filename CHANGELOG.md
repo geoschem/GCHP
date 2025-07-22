@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Updated ReadTheDocs documentation to state that we are using Spack v0.23.1 in the Spack installation guide
 - Reordered entries in the ReadTheDocs reference section to match the GCClassic documentation
+- Updated the ESMF version used in ReadTheDocs installation instructions from 8.4.2 to 8.6.1
 
 ## [14.6.2] - 2025-06-12
 ### Changed
