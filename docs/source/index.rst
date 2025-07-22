@@ -79,7 +79,7 @@ use Spack to install GCHP's dependencies if needed.
    geos-chem-shared-docs/simulations/fullchem.rst
    geos-chem-shared-docs/simulations/tago3.rst
    geos-chem-shared-docs/simulations/transport-tracers.rst
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: Supplemental Guides
@@ -108,10 +108,11 @@ use Spack to install GCHP's dependencies if needed.
    :maxdepth: 1
    :caption: Help & Reference
 
-   reference/SUPPORT.md
+   reference/versioning.rst
+   reference/known-bugs.rst
    reference/CONTRIBUTING.md
+   reference/SUPPORT.md
    geos-chem-shared-docs/editing_these_docs.rst
    reference/git-submodules.rst
    reference/glossary.rst
-   reference/versioning.rst
    reference/uploading_to_spack.rst
