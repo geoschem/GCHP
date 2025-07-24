@@ -64,6 +64,18 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none")
 endif()
 
+# Add code sanitation options (GNU Fortran only), e.g. memory leak checking
+set(SANITIZE OFF CACHE BOOL
+    "Switch to turn on code sanitization (i.e. identify memory leaks and similar conditions)"
+)
+if(${SANITIZE})
+  if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ffree-line-length-none -fsanitize=leak -fsanitize=address -fsanitize=undefined")
+  else()
+    message( FATAL_ERROR "The SANITIZE option is only defined for GNU Fortran.")
+  endif()
+endif()
+
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
 
 # Add the directory with gchp_ctm's source code
