@@ -106,25 +106,31 @@ would like to use from the dataset.
    -----------------------------------------------------------
      1. MERRA-2 (Recommended)
      2. GEOS-FP
-     3. GEOS-IT (Beta release)
+     3. GEOS-IT
    >>>
 
-.. important::
+.. attention::
 
-   The convection scheme used for GEOS-FP met generation changed
-   from RAS to Grell-Freitas with impact on GEOS-FP meteorology
-   files starting June 1, 2020, specifically enhanced vertical
-   transport. In addition, there is a bug in convective
-   precipitation flux following the switch where all values are
-   zero. While this bug is automatically fixed by computing fluxes
-   online for runs starting on or after June 1 2020, the fix
-   assumes meteorology year corresponds to simulation year. Due to
-   these issues we recommend splitting up GEOS-FP runs in time such
-   that a single simulation does not run across June
-   1, 2020. Instead. set one run to stop on June 1 2020 and then
-   restart a new run from there. If you wish to use a GEOS-FP
-   meteorology year different from your simulation year please
-   create a GEOS-Chem GitHub issue for assistance.
+   The convection scheme used to generate archived GEOS-FP meteorology
+   files changed from RAS to Grell-Freitas starting 01 June 2020 with
+   impact on vertical transport. Discussion and analysis of the impact
+   is available at
+   https://github.com/geoschem/geos-chem/issues/1409.
+
+   To fix this issue, different GEOS-Chem convection schemes are
+   called based on simulation start time. This ensures comparability
+   in GEOS-Chem runs using GEOS-FP fields generated using the RAS
+   convection scheme and fields generated using Grell-Freitas, but
+   only if the simulation does not cross the 01 June 2020 boundary. We
+   therefore recommend splitting up GEOS-FP runs in time such that a
+   single simulation does not span this date. For example, configure
+   one run to end on 01 June 2020 and then use  its output restart to
+   start another run on 01 June 2020.. Alternatively consider using
+   MERRA2 which was entirely generated with RAS, or GEOS-IT which was
+   entirely generated with Grell-Freitas. If you wish to use a GEOS-FP
+   meteorology year different from your simulation year please create
+   a GEOS-Chem GitHub issue for assistance to avoid accidentally using
+   zero convective precipitation flux.
 
 Enter run directory path
 ------------------------

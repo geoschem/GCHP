@@ -1,5 +1,11 @@
+###############
 Upload to Spack
-===============
+###############
+
+.. note::
+
+   This page is now obsolete.  GCHP is no longer maintained as a Spack package.
+
 
 This page describes how to upload recipe changes to Spack. Common recipe changes include updating available versions of GCHP 
 and changing version requirements for dependencies.
