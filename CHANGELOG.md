@@ -9,6 +9,23 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [14.6.3] - 2025-07-28
+### Added
+- Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks
+- Added "Known Bugs" page under "Reference" section of the ReadTheDocs documentation
+
+### Changed
+- Updated ReadTheDocs documentation to state that we are using Spack v0.23.1 in the Spack installation guide
+- Reordered entries in the ReadTheDocs reference section to match the GCClassic documentation
+- Updated GEOS-Chem submodule to 14.6.3
+- Updated HEMCO submodule to 3.11.2
+
+### Fixed
+- Fixed bug in GCHP adjoint code to compute mass fluxes after first run
+
+### Removed
+- Removed descriptions of GEOS-IT as "beta release" in ReadTheDocs documentation
+
 ## [14.6.2] - 2025-06-12
 ### Changed
 - Updated GEOS-Chem submodule to 14.6.2
