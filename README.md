@@ -1,14 +1,10 @@
 <img src="https://geoschem.github.io/img/GEOS-Chem_Logo_Light_Background.png" height="60%" width="60%" alt="GEOS-Chem Logo">
 
 <p>
-  <a href="https://github.com/geoschem/GCHP/releases"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?include_prereleases&label=Latest%20Pre-Release"></a>
-  <a href="https://github.com/geoschem/GCHP/releases/"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Stable%20Release"></a>
-  <a href="https://github.com/geoschem/GCHP/"><img src="https://img.shields.io/github/release-date/geoschem/GCHP"></a>
-  <a href="https://github.com/geoschem/GCHP/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
-  <br />
-  <a href="https://spack.readthedocs.io/en/latest/package_list.html#gchp"><img src="https://img.shields.io/badge/Install%20with-Spack-ff69b4"></a>
-  <a href="https://hub.docker.com/r/geoschem/gchp"><img src="https://img.shields.io/docker/v/geoschem/gchp?color=blue&label=Docker%2FSingularity"></a>
+  <a href="https://github.com/geoschem/GCHP/releases/"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Stable%20Release" alt="Latest release"></a>
+  <a href="https://github.com/geoschem/GCHP/"><img src="https://img.shields.io/github/release-date/geoschem/GCHP" alt="Release date"></a><br/>
   <a href="https://doi.org/10.5281/zenodo.4428926"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4428926.svg" alt="DOI"></a>
+  <a href="https://github.com/geoschem/GCHP/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://gchp.readthedocs.io"><img src="https://img.shields.io/readthedocs/gchp?label=ReadTheDocs"></a>
 </p>
 
