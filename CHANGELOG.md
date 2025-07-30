@@ -9,6 +9,14 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Changed
+- Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
+- Updated badges on `README.md` and `docs/source/index.rst`
+
+### Fixed
+- Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
+
 ## [14.6.3] - 2025-07-28
 ### Added
 - Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks
