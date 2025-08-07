@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added submodule for GFE (Goddard-Fortran-Ecosystem) which includes GMAO libraries yafYaml, pFlogger, gFTL, gFTL-shared, fArgParse, and pFUnit as its own submodules
 
 ### Changed
-- Changed minimum CMake version from 3.13 to 3.14
+- Changed minimum CMake version from 3.13 to 3.24
 - Changed minimum ESMF version from 8.4.2 to 8.6.1
 - Updated docs to indicate timing information now printed to allPEs.log
 
