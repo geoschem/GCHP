@@ -9,6 +9,19 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [14.7.0] - TBD
+### Added
+- Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
+- Added submodule for GFE (Goddard-Fortran-Ecosystem) which includes GMAO libraries yafYaml, pFlogger, gFTL, gFTL-shared, fArgParse, and pFUnit as its own submodules
+
+### Changed
+- Changed minimum CMake version from 3.13 to 3.14
+- Changed minimum ESMF version from 8.4.2 to 8.6.1
+- Updated docs to indicate timing information now printed to allPEs.log
+
+### Removed
+- Removed individual submodules for yafYaml, pFlogger, and gFTL-shared since now located in new submodule GFE
+
 ## [14.6.3] - 2025-07-28
 ### Added
 - Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks
@@ -48,9 +61,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Check if mass flux import is top-down and flip accordingly
 - Bumped `jinja2` to 3.1.6 in `docs/requirements.txt` (fixes a security issue id
-
-### Added
-- Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
 
 ## [14.5.3] - 2025-03-05
 ### Added
