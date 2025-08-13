@@ -16,6 +16,7 @@ following software:
 * Git
 * Make (or GNUMake)
 * CMake version ≥ 3.24
+* UDUNITS2
 * Compilers (C, C++, and Fortran):
 
    * Intel compilers versions 2019-2021, or

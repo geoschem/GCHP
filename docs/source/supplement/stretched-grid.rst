@@ -1,3 +1,4 @@
+
 .. _stretched-grid:
 
 #########################
@@ -78,14 +79,17 @@ simulation. For example, a C180 simulation requires a restart file
 with a C180 grid. Likewise, a stretched-grid simulation needs a
 restart file with the same stretched-grid (i.e., an identical
 cubed-sphere size, stretch-factor, target longitude, and target
-latitude).
+latitude). It also requires that the file contain global attributes
+specifying the stretch parameters as floating point. These attributes
+should be named :literal:`TARGET_LAT`, :literal:`TARGET_LON`, and
+:literal:`STRETCH_FACTOR`.
 
 You can regrid an existing restart file to a stretched-grid using the
 GEOS-Chem python package GCPy. See the `Regridding
 <https://gcpy.readthedocs.io/en/stable/Regridding.html>`_ section of
-the GCPy documentation for instructions. Once you have created a
-restart file for your simulation, you can move on to updating your
-simulation's configuration files.
+the GCPy documentation for instructions.  Inspect your restart file
+to make sure the global attributes for stretch parameters are as you
+expect them to be.
 
 .. note::
 
@@ -95,15 +99,17 @@ simulation's configuration files.
     <http://geoschemdata.wustl.edu/ExtData/GEOSCHEM_RESTARTS/GC_14.0.0/>`_
     directory in the GEOS-Chem data repository.
 
-
 Configure run directory
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+Once you have created a restart file for your simulation, you can move on to updating your
+simulation's configuration files.
 Modify the section of :file:`setCommonRunSettings.sh` that controls
 the simulation grid. Turn :envvar:`STRETCH_GRID` to :literal:`ON` and
 update :envvar:`CS_RES`, :envvar:`STRETCH_FACTOR`,
 :envvar:`TARGET_LAT`, and :envvar:`TARGET_LON` for your specific
-grid.
+grid. The values must exactly match those of the global attrbiutes in your
+restart file.
 
 .. code-block:: bash
 
@@ -119,11 +125,13 @@ grid.
    # Turn stretched grid ON/OFF. Follow these rules if ON:
    #    (1) Minimum STRETCH_FACTOR value is 1.0001
    #    (2) TARGET_LAT and TARGET_LON are floats containing decimal
-   #    (3) TARGET_LON in range [0,360)
+   #    (3) STRETCH_FACTOR, TARGET_LAT, and TARGET_LON are global
+   #        attributes in your restart file with exactly the same
+   #        values as floating point
    STRETCH_GRID=OFF
    STRETCH_FACTOR=3.0
    TARGET_LAT=40.0
-   TARGET_LON=260.0
+   TARGET_LON=-95.0
 
 Execute :program:`./setCommonRunSettings.sh` to update your run
 directory's configuration files.
@@ -150,6 +158,15 @@ grid restart file.
    start date in :file:`cap_restart` and global grid resolution in
    :file:`setCommonRunSettings.sh`. This is also included as pre-run
    step in all example run scripts provided in :file:`runScriptSamples`.
+
+Output Files
+^^^^^^^^^^^^
+
+GCHP diagnostics files that are output on a stretched grid will contain global
+attributes specifying the stretch parameters. Output checkpoint files
+will also contain these parameters. Beware the output filenames, including
+restart filenames, will not contain stretch parameter information. When in doubt,
+always check the global attributes of the file.
 
 ===============================
 Tutorial: Eastern United States
@@ -234,7 +251,7 @@ create a GCHP stretched grid restart file in the `GCPy documentation
 tutorial regrid the c48 fullchem restart file for July 1, 2019 that
 comes with a GCHP fullchem run directory
 (:file:`GEOSChem.Restart.20190701_0000z.c48.nc4`). Grid resolution is
-60, stretch factor is 3.6, target longitude is 275, and target
+60, stretch factor is 3.6, target longitude is -95, and target
 latitude is 37. Name the output file
 :file:`initial_GEOSChem_rst.EasternUS_SG_fullchem.c60.s3.6_37N_275E.nc`.
 
@@ -253,7 +270,7 @@ Make the following modifications to :file:`setCommonRunSettings.sh`:
 * Change :literal:`STRETCH_GRID` to :literal:`ON`
 * Change :literal:`STRETCH_FACTOR` to :literal:`3.6`
 * Change :literal:`TARGET_LAT` to :literal:`37.0`
-* Change :literal:`TARGET_LON` to :literal:`275.0`
+* Change :literal:`TARGET_LON` to :literal:`-95.0`
 
 .. note::
     In our tests this simulation took approximately 7 hours to run
