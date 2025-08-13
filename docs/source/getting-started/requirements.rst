@@ -15,7 +15,7 @@ following software:
 
 * Git
 * Make (or GNUMake)
-* CMake version ≥ 3.13
+* CMake version ≥ 3.24
 * Compilers (C, C++, and Fortran):
 
    * Intel compilers versions 2019-2021, or
@@ -31,7 +31,7 @@ following software:
 
 * HDF5
 * NetCDF (with C, C++, and Fortran support)
-* Earth System Modeling Framework (ESMF) version 8.4.2+. Problems with 8.1 and prior have been reported.
+* Earth System Modeling Framework (ESMF) version 8.6.1+. Prior versions are not compatible with the version of MAPL used in GCHP.
 
 Your system administrator should be able to tell you if this software is already available on your cluster, and if so, how to activate it.
 If it is not already available, they might be able to build it for you.
