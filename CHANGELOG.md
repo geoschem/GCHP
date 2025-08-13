@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed minimum CMake version from 3.13 to 3.24
 - Changed minimum ESMF version from 8.4.2 to 8.6.1
 - Updated docs to indicate timing information now printed to allPEs.log
+- Updated docs to include library requirement udunits2 and additional information about stretched grid parameters
 
 ### Removed
 - Removed individual submodules for yafYaml, pFlogger, and gFTL-shared since now located in new submodule GFE
