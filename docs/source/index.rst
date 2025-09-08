@@ -84,6 +84,8 @@ use Spack to install GCHP's dependencies if needed.
    :maxdepth: 1
    :caption: Supplemental Guides
 
+   supplement/horizontal-grids.rst
+   supplement/vertical-grids.rst
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
    supplement/setting-up-aws-parallelcluster.rst
