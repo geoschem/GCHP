@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased] - TBD
 ### Added
 - Added supplemental guides for GCHP horizontal and vertical grids to ReadTheDocs
+- Added "Particulate matter in GEOS-Chem" supplemental guide to ReadTheDocs
 
 ## [14.6.3] - 2025-07-28
 ### Added
