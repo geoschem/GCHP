@@ -1,57 +1,65 @@
 # Release pipeline:
-# 
+#
 # This pipeline triggers the cloud-based benchmarking workflow
-# upon pushes to the dev environment. The benchmarking workflow 
+# upon pushes to the dev environment. The benchmarking workflow
 # infrastructure code can be found in the following repository:
 # https://github.com/geoschem/gc-cloud-infrastructure
 #
-# This pipeline is triggered by pushes to dev
+# This pipeline is triggered by pushes to dev/* branches.
 #
 # Notes:
 #   - This workflow requires aws credentials necessary to
-#     trigger the benchmarking step function via the aws cli. 
-#     The credentials need step function permissions and can 
-#     be added to the repo as an action secret called 
+#     trigger the benchmarking step function via the aws cli.
+#     The credentials need step function permissions and can
+#     be added to the repo as an action secret called
 #     AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID.
 
 name: cloud_benchmarking
 on:
   push:
     branches:
-      - dev**
+      - dev/*
     tags:
       - '*'
   pull_request:
     branches:
-      - dev**
+      - dev/*
 
 jobs:
   trigger_step_function:
     runs-on: ubuntu-latest # aws cli comes pre-installed
     steps:
+
       # for now both use Spot instances -- may need to update to use on demand
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
+
+      # By default we use 1Hr benchmarks
       - name: Set Initial Variables
-        # By default we use 1Hr benchmarks
         run: |
           echo "TIME_PERIOD=1Hr" >> $GITHUB_ENV
           echo "RESOLUTION=24" >> $GITHUB_ENV
-          echo "GITHUB_SHA_SHORT=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
-          echo "COMMIT_NAME=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
-      # conditionally overwrite variables if a tag was the triggering event
+          echo "GITHUB_SHA_SHORT=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+          echo "COMMIT_NAME=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+
+      # Conditionally overwrite variables if a tag was the triggering event
       - name: Reset Initial Variables for pull request
-        run: |
-          echo "GITHUB_SHA_SHORT=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
-          echo "COMMIT_NAME=`echo ${{ github.event.pull_request.head.sha }} | cut -c1-7`" >> $GITHUB_ENV
         if: github.event_name == 'pull_request'
+        env:
+          GITHUB_SHA_SHORT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "GITHUB_SHA_SHORT=${GITHUB_SHA_SHORT:0:7}" >> $GITHUB_ENV
+          echo "COMMIT_NAME=${GITHUB_SHA_SHORT:0:7}" >> $GITHUB_ENV
+
+      # We do a 1Month benchmark for tags
       - name: Reset Variables For Tags
-        # We do a 1Month benchmark for tags
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           echo "TIME_PERIOD=1Mon" >> $GITHUB_ENV
           echo "COMMIT_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/tags/')
+
       - name: Generate Primary Key
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -62,6 +70,7 @@ jobs:
           cd ${{ github.workspace }}
           echo "DEV_PRIMARY_KEY=gchp-c${RESOLUTION}-${TIME_PERIOD}-`git describe --tags`" >> $GITHUB_ENV
           echo "REF_PRIMARY_KEY=`./.github/workflows/findRefKey.sh ${RESOLUTION} ${TIME_PERIOD} ${GITHUB_SHA}`" >> $GITHUB_ENV
+
       - name: Trigger Step Function
         env:
           # Set config options for aws cli

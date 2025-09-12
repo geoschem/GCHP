@@ -9,7 +9,7 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [14.7.0] - TBD
+## [Unreleased] - TBD
 ### Added
 - Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
 - Added submodule for GFE (Goddard-Fortran-Ecosystem) which includes GMAO libraries yafYaml, pFlogger, gFTL, gFTL-shared, fArgParse, and pFUnit as its own submodules
@@ -19,6 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed minimum ESMF version from 8.4.2 to 8.6.1
 - Updated docs to indicate timing information now printed to allPEs.log
 - Updated docs to include library requirement udunits2 and additional information about stretched grid parameters
+- Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
+- Updated badges on `README.md` and `docs/source/index.rst`
+
+### Fixed
+- Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
 
 ### Removed
 - Removed individual submodules for yafYaml, pFlogger, and gFTL-shared since now located in new submodule GFE
