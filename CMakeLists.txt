@@ -7,6 +7,7 @@ project (gchp_ctm
 cmake_policy(SET CMP0079 NEW)
 
 set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
+set(PRINT_MASS OFF CACHE BOOL "Switch to enable/disable printing mass in advection")
 
 # Add ESMA_cmake and ecbuild's module directories to the module path
 list(APPEND CMAKE_MODULE_PATH 
