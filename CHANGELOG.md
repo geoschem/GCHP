@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
 - Added submodule for GFE (Goddard-Fortran-Ecosystem) which includes GMAO libraries yafYaml, pFlogger, gFTL, gFTL-shared, fArgParse, and pFUnit as its own submodules
+- Added connectivity from GEOS-Chem to FV3 dynamics to pass DELP_DRY in GEOS-Chem restart file to advection for restart file species mass conservation
 
 ### Changed
 - Changed minimum CMake version from 3.13 to 3.24
