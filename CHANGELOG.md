@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated docs to include library requirement udunits2 and additional information about stretched grid parameters
 - Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
 - Updated badges on `README.md` and `docs/source/index.rst`
+- Updated submodule ESMA_cmake for GNU Fortran compiler compatibility with CPUs returning processor description INTEL
 
 ### Fixed
 - Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
