@@ -341,6 +341,89 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
 
+      ! Add the same exports as R4 as a work-around to a MAPL 2.55 History
+      ! bug where R8 cannot be converted to R4 for output (ewl, 5/28/25)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='SPHU0_R4', &
+                              LONG_NAME='specific_humidity_before_advection', &
+                              UNITS='kg kg-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='PLE0_R4', &
+                              LONG_NAME='pressure_at_layer_edges_before_advection',&
+                              UNITS='Pa', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='PLE1_R4', &
+                              LONG_NAME='pressure_at_layer_edges_after_advection', &
+                              UNITS='Pa', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc,                                    &
+                              SHORT_NAME = 'DryPLE0_R4',                &
+                              LONG_NAME  = 'dry_pressure_at_layer_edges_before_advection',&
+                              UNITS      = 'Pa',                     &
+                              DIMS       = MAPL_DimsHorzVert,        &
+                              VLOCATION  = MAPL_VLocationEdge,       &
+                              RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc,                                   &
+                              SHORT_NAME = 'DryPLE1_R4',                &
+                              LONG_NAME  = 'dry_pressure_at_layer_edges_after_advection',&
+                              UNITS      = 'Pa',                     &
+                              DIMS       = MAPL_DimsHorzVert,        &
+                              VLOCATION  = MAPL_VLocationEdge,       &
+                              RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='CX_R4', &
+                              LONG_NAME='xward_accumulated_courant_number', &
+                              UNITS='', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='CY_R4', &
+                              LONG_NAME='yward_accumulated_courant_number', &
+                              UNITS='', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='MFX_R4', &
+                              LONG_NAME='pressure_weighted_accumulated_xward_mass_flux', &
+                              UNITS='Pa m+2 s-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='MFY_R4', &
+                              LONG_NAME='pressure_weighted_accumulated_yward_mass_flux', &
+                              UNITS='Pa m+2 s-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='UpwardsMassFlux_R4', &
+                              LONG_NAME='upward_mass_flux_of_air', &
+                              UNITS='kg m-2 s-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+
       ! Set profiling timers
       !-------------------------
       call lgr%debug('Adding timers')
@@ -630,6 +713,12 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: DryPLE0_EXPORT => null()
       real(r8), pointer, dimension(:,:,:) :: DryPLE1_EXPORT => null()
 
+      ! R4 exports used for diagnostics
+      real(r4), pointer, dimension(:,:,:) :: PLE0_R4_EXPORT    => null()
+      real(r4), pointer, dimension(:,:,:) :: PLE1_R4_EXPORT    => null()
+      real(r4), pointer, dimension(:,:,:) :: DryPLE0_R4_EXPORT => null()
+      real(r4), pointer, dimension(:,:,:) :: DryPLE1_R4_EXPORT => null()
+
       !================================
       ! prepare_ple_exports starts here
       !================================
@@ -683,6 +772,8 @@ module GCHPctmEnv_GridComp
       PLE1_EXPORT = 100.0d0 * PLE1_EXPORT
       PLE1_EXPORT = PLE1_EXPORT(:,:,LM:0:-1)
 
+      ! Set R4 diagnostics
+      
       ! Also compute dry pressures if using dry pressure in advection
       if ( use_total_air_pressure_in_advection < 1 ) then
 
@@ -704,8 +795,20 @@ module GCHPctmEnv_GridComp
          DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
          DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
 
+         ! Set DryPLE R4 exports for diagnostics
+         call MAPL_GetPointer(EXPORT, DryPLE0_R4_EXPORT, 'DryPLE0_R4', NotFoundOK=.TRUE., _RC)
+         IF ( ASSOCIATED(DryPLE0_R4_EXPORT) ) DryPLE0_R4_EXPORT = DryPLE0_EXPORT
+         call MAPL_GetPointer(EXPORT, DryPLE1_R4_EXPORT, 'DryPLE1_R4', NotFoundOK=.TRUE., _RC)
+         IF ( ASSOCIATED(DryPLE1_R4_EXPORT) ) DryPLE1_R4_EXPORT = DryPLE1_EXPORT
+
       endif
 
+      ! Set PLE R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, PLE0_R4_EXPORT, 'PLE0_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(PLE0_R4_EXPORT) ) PLE0_R4_EXPORT = PLE0_EXPORT
+      call MAPL_GetPointer(EXPORT, PLE1_R4_EXPORT, 'PLE1_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(PLE1_R4_EXPORT) ) PLE1_R4_EXPORT = PLE1_EXPORT
+      
       ! Set PLE output which will be used to compute mass fluxes in FV3
       if ( use_total_air_pressure_in_advection > 0 ) then
          PLE => PLE0_EXPORT
@@ -748,6 +851,7 @@ module GCHPctmEnv_GridComp
       integer :: STATUS
       real,     pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
       real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
+      real(r4), pointer, dimension(:,:,:) :: SPHU0_R4_EXPORT => null()
 
       !================================
       ! prepare_sphu_export starts here
@@ -777,6 +881,10 @@ module GCHPctmEnv_GridComp
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
       end if
 
+      ! R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, SPHU0_R4_EXPORT, 'SPHU0_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(SPHU0_R4_EXPORT) ) SPHU0_R4_EXPORT = SPHU0_EXPORT
+      
       _RETURN(ESMF_SUCCESS)
 
    end subroutine prepare_sphu_export
@@ -825,6 +933,12 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: CY_EXPORT  => null()
       real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT  => null()
 
+      ! Pointers to R4 exports for diagnostics
+      real(r4), pointer, dimension(:,:,:) :: MFX_R4_EXPORT => null()
+      real(r4), pointer, dimension(:,:,:) :: MFY_R4_EXPORT => null() 
+      real(r4), pointer, dimension(:,:,:) :: CX_R4_EXPORT  => null()
+      real(r4), pointer, dimension(:,:,:) :: CY_R4_EXPORT  => null()
+
       ! Pointers to imports
       real,     pointer, dimension(:,:,:) :: MFX_IMPORT => null()
       real,     pointer, dimension(:,:,:) :: MFY_IMPORT => null()
@@ -835,6 +949,7 @@ module GCHPctmEnv_GridComp
 
       ! Pointer to diagnostic export
       real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
+      real(r4), pointer, dimension(:,:,:) :: UpwardsMassFlux_R4 => null()
 
       ! Pointers to local arrays
       real,     pointer, dimension(:,:,:) :: UC        => null()
@@ -949,11 +1064,21 @@ module GCHPctmEnv_GridComp
          endif
          firstRun = .false.
 #endif
-         
+
          ! Deallocate local arrays
          DEALLOCATE(UC, VC, UCr8, VCr8)
 
       end if
+
+      ! Set R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, MFX_R4_EXPORT, 'MFX_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(MFX_R4_EXPORT) ) MFX_R4_EXPORT = MFX_EXPORT
+      call MAPL_GetPointer(EXPORT, MFY_R4_EXPORT, 'MFY_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(MFY_R4_EXPORT) ) MFY_R4_EXPORT = MFY_EXPORT
+      call MAPL_GetPointer(EXPORT, CX_R4_EXPORT, 'CX_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(CX_R4_EXPORT) ) CX_R4_EXPORT  = CX_EXPORT
+      call MAPL_GetPointer(EXPORT, CY_R4_EXPORT, 'CY_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(CY_R4_EXPORT) ) CY_R4_EXPORT  = CY_EXPORT
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
       call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
@@ -987,6 +1112,12 @@ module GCHPctmEnv_GridComp
       VC              => null()
       UCr8            => null()
       VCr8            => null()
+
+      ! Nullify R4 exports used for diagnostics
+      MFX_R4_EXPORT      => null()
+      MFY_R4_EXPORT      => null()
+      CX_R4_EXPORT       => null()
+      CY_R4_EXPORT       => null()
 
       _RETURN(ESMF_SUCCESS)
 

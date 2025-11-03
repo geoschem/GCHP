@@ -30,8 +30,11 @@ Below is a summary of all GCHP output files that you may encounter depending on 
 
 .. option:: allPES.log
 
-   GCHP logging output based on configuration in `logging.yml <config-files/logging_yml.html>`__. 
-   Treat this file as a debugging tool to help diagnose problems in MAPL, particularly the ExtData component of the model which handles input reading and regridding.
+   GCHP logging output based on configuration in `logging.yml <config-files/logging_yml.html>`__.
+   This file always prints timing information for the run.
+   Note that in GCHP versions prior to 14.7.0 this information was instead in the general GCHP log file.
+   Besides using this file for timing information, treat this file as a debugging tool to help diagnose problems in MAPL, particularly the ExtData component of the model which handles input reading and regridding.
+   You can maximize ExtData prints (the MAPL component for handling imports) by setting :literal:`root.level` in the :literal:`MAPL.ExtData` section to :literal:`DEBUG`. Be sure to set it back to :literal:`INFO` when you are done since debug prints in ExtData severely slow down the model.
 
 .. option:: logfile.000000.out
 
@@ -85,7 +88,7 @@ These memory statistics are useful for assessing how much memory GCHP is using a
 Timing
 ------
 
-Timing of GCHP components is done using MAPL timers. A summary of all timing is printed to the GCHP log at the end of a run. Configuring timers from the run directory is not currently possible but will be an option in a future version. Until then a complete summary of timing will always be printed to the end of the log for a successful GCHP run. You can use this information to help diagnose timing issues in the model, such as extra slow file read due to system problems.
+Timing of GCHP components is done using MAPL timers. A summary of all timing is printed to the GCHP log file :literal:`allPEs.log` at the end of a successful GCHP run. You can use this information to help diagnose timing issues in the model, such as extra slow file read due to system problems.
 
 The timing output written by MAPL is somewhat cryptic but you can use this guide to decipher it. Timing is broken in up into several sections.
 
