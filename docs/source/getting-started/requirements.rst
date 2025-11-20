@@ -304,4 +304,4 @@ General Hardware and Software Recommendations
   enabling the MAPL o-server functionality for writing restart files,
   thereby speeding up the model. This is set automatically when
   executing :file:`setCommonRunSettings.sh` if using over 1000
-  cores. You can also toggle whether to use it manually in that file.
+  cores. You can also toggle whether to use it manually in that file..
