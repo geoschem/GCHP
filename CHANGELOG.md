@@ -13,7 +13,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added supplemental guides for GCHP horizontal and vertical grids to ReadTheDocs
 - Added "Particulate matter in GEOS-Chem" supplemental guide to ReadTheDocs
+- Added `docs/read_the_docs_environment.yml` Conda environment file
 
+### Changed
+- Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
+  
 ## [14.6.3] - 2025-07-28
 ### Added
 - Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks
