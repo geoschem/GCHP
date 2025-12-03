@@ -49,6 +49,7 @@ module GCHPctmEnv_GridComp
    integer, parameter :: r4     = 4
    
    logical :: meteorology_vertical_index_is_top_down
+   logical :: wind_specific_humidity_index_is_top_down
    integer :: use_total_air_pressure_in_advection
    integer :: correct_mass_flux_for_humidity
    
@@ -451,6 +452,24 @@ module GCHPctmEnv_GridComp
       end if
       call lgr%info(trim(msg))
 
+      ! Get whether advection fields (C720 raw) vertical index is top down (native fields)
+      ! or bottom up (GEOS-Chem processed fields)
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute( &
+                               CF,                                             &
+                               value=wind_specific_humidity_index_is_top_down,   &
+                               label='WIND_SPECIFIC_HUMIDITY_INDEX_IS_TOP_DOWN:',&
+                               Default=.false.,                                &
+                               __RC__ )
+      if (wind_specific_humidity_index_is_top_down) then
+         msg='Configured to expect ''top-down'' advection met. data'// &
+             ' from ''ExtData'''
+      else
+         msg='Configured to expect ''bottom-up'' advection met.'// &
+             ' data from ''ExtData'''
+      end if
+      call lgr%info(trim(msg))
+
       ! Get whether to use total or dry air pressure in advection
       ! -----------------------------------------------------------------
       call ESMF_ConfigGetAttribute( &
@@ -690,7 +709,8 @@ module GCHPctmEnv_GridComp
               PS=PS1_IMPORT,          &
               PLE=DryPLE0_EXPORT,     &
               SPHU=SPHU1_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              topDownMet=(meteorology_vertical_index_is_top_down .or. &
+                         wind_specific_humidity_index_is_top_down) )
 
          DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
          DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
@@ -699,7 +719,8 @@ module GCHPctmEnv_GridComp
               PS=PS2_IMPORT,          &
               PLE=DryPLE1_EXPORT,     &
               SPHU=SPHU2_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              topDownMet=(meteorology_vertical_index_is_top_down .or. &
+                         wind_specific_humidity_index_is_top_down) )
 
          DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
          DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
@@ -770,8 +791,9 @@ module GCHPctmEnv_GridComp
       LM = size(SPHU1_IMPORT, 3)
 
       ! Set export as copy of import casted to real8 and set vertical index
-      ! as top-down (level 1 corresponds to TOA)
-      if (meteorology_vertical_index_is_top_down) then 
+      ! as top-down (level 1 corresponds to TOA). Handle mixed (processed + raw) met sources 
+      if (meteorology_vertical_index_is_top_down .or. &
+          wind_specific_humidity_index_is_top_down) then 
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
@@ -920,7 +942,9 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          
          ! Copy imports to local arrays so that vertical index is top down
-         if (meteorology_vertical_index_is_top_down) then
+         ! Handle mixed met sources (C720 + processed other fields)
+         if (meteorology_vertical_index_is_top_down .or. &
+             wind_specific_humidity_index_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
             VC(:,:,:) = VA_IMPORT(:,:,:)
          else
