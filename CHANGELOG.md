@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
+- Fixed vertical flipping bug in GCHPctmEnv when using C720 fields with GEOS-FP processed data
 
 ### Removed
 - Removed individual submodules for yafYaml, pFlogger, and gFTL-shared since now located in new submodule GFE

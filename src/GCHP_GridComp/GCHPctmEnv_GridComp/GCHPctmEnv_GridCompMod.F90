@@ -48,7 +48,8 @@ module GCHPctmEnv_GridComp
    integer, parameter :: r8     = 8
    integer, parameter :: r4     = 4
    
-   logical :: meteorology_vertical_index_is_top_down
+   logical :: adv_meteorology_flux_is_top_down
+   logical :: adv_meteorology_humidity_is_top_down
    integer :: use_total_air_pressure_in_advection
    integer :: correct_mass_flux_for_humidity
    
@@ -519,18 +520,35 @@ module GCHPctmEnv_GridComp
       ! Get whether meteorology vertical index is top down (native fields)
       ! or bottom up (GEOS-Chem processed fields)
       ! -----------------------------------------------------------------
+      ! Flux (wind or mass flux)
       call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=meteorology_vertical_index_is_top_down,   &
-                               label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:',&
-                               Default=.false.,                                &
-                               __RC__ )
-      if (meteorology_vertical_index_is_top_down) then
+           CF,                                             &
+           value=adv_meteorology_flux_is_top_down,         &
+           label='MET_ADVECTION_FLUX_IS_TOP_DOWN:',        &
+           Default=.false.,                                &
+           __RC__ )
+      if (adv_meteorology_flux_is_top_down) then
          msg='Configured to expect ''top-down'' meteorological data'// &
-             ' from ''ExtData'''
+             ' from ''ExtData'' for flux used in advection (wind or mass flux)'
       else
          msg='Configured to expect ''bottom-up'' meteorological'// &
-             ' data from ''ExtData'''
+             ' data from ''ExtData'' for flux used in advection (wind or mass flux)'
+      end if
+      call lgr%info(trim(msg))
+
+      ! Humidity
+      call ESMF_ConfigGetAttribute( &
+           CF,                                             &
+           value=adv_meteorology_humidity_is_top_down,      &
+           label='MET_HUMIDITY_IS_TOP_DOWN:',     &
+           Default=.false.,                                &
+           __RC__ )
+      if (adv_meteorology_humidity_is_top_down) then
+         msg='Configured to expect ''top-down'' meteorological data'// &
+             ' from ''ExtData'' for humidity used in advection'
+      else
+         msg='Configured to expect ''bottom-up'' meteorological'// &
+             ' data from ''ExtData'' for humidity used in advection'
       end if
       call lgr%info(trim(msg))
 
@@ -781,7 +799,7 @@ module GCHPctmEnv_GridComp
               PS=PS1_IMPORT,          &
               PLE=DryPLE0_EXPORT,     &
               SPHU=SPHU1_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              topDownMet=adv_meteorology_humidity_is_top_down )
 
          DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
          DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
@@ -790,7 +808,7 @@ module GCHPctmEnv_GridComp
               PS=PS2_IMPORT,          &
               PLE=DryPLE1_EXPORT,     &
               SPHU=SPHU2_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              topDownMet=adv_meteorology_humidity_is_top_down )
 
          DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
          DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
@@ -875,7 +893,7 @@ module GCHPctmEnv_GridComp
 
       ! Set export as copy of import casted to real8 and set vertical index
       ! as top-down (level 1 corresponds to TOA)
-      if (meteorology_vertical_index_is_top_down) then 
+      if (adv_meteorology_humidity_is_top_down) then
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
@@ -999,7 +1017,7 @@ module GCHPctmEnv_GridComp
          call MAPL_GetPointer(IMPORT, CY_IMPORT, 'CYC',  RC=STATUS)
          _VERIFY(STATUS)
 
-         if (meteorology_vertical_index_is_top_down) then
+         if (adv_meteorology_flux_is_top_down) then
             MFX_EXPORT =  dble(MFX_IMPORT(:,:,:))
             MFY_EXPORT =  dble(MFY_IMPORT(:,:,:))
             CX_EXPORT  =  dble(CX_IMPORT(:,:,:))
@@ -1035,7 +1053,7 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          
          ! Copy imports to local arrays so that vertical index is top down
-         if (meteorology_vertical_index_is_top_down) then
+         if (adv_meteorology_flux_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
             VC(:,:,:) = VA_IMPORT(:,:,:)
          else
