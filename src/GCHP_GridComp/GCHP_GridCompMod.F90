@@ -1,4 +1,6 @@
 #include "MAPL_Generic.h"
+#include "MAPL.h" ! ewl try this
+
 !=============================================================================
 !BOP
 
@@ -29,11 +31,15 @@ module GCHP_GridCompMod
 ! !USES:
 
   use ESMF
-  use MAPL_Mod
-  use pFlogger, only: logging, Logger
-  use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
-  use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
-  use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
+!ewl  use MAPL_Mod
+  use mapl3 ! ewl added
+  use fv_arrays_mod, only: REAL4 !ewl added
+!ewl  use pFlogger, only: logging, Logger
+!ewl  use CHEM_GridCompMod,    only : AtmosChemSetServices => SetServices
+!ewl  use AdvCore_GridCompMod, only : AtmosAdvSetServices  => SetServices
+  !ewl  use GCHPctmEnv_GridComp, only : EctmSetServices      => SetServices
+  !new:
+  use pflogger, only: logger_t => logger
 
   implicit none
   private
@@ -42,6 +48,9 @@ module GCHP_GridCompMod
 ! !PUBLIC MEMBER FUNCTIONS:
 !
   public SetServices
+
+  integer,  parameter :: r4           = REAL4
+
 !
 ! !PRIVATE MEMBER FUNCTIONS:
 !
@@ -56,8 +65,6 @@ module GCHP_GridCompMod
 !EOP
 
   integer ::  ADV, CHEM, ECTM, MemDebugLevel
-  class(Logger), pointer  :: lgr => null()
-  
 
 contains
 
@@ -88,8 +95,8 @@ contains
 
     character(len=ESMF_MAXSTR)              :: IAm
     integer                                 :: STATUS
-    character(len=ESMF_MAXSTR)              :: COMP_NAME
-
+!ewl    character(len=ESMF_MAXSTR)              :: COMP_NAME
+    class(logger_t), pointer :: logger
 ! Locals
 
     type (ESMF_Config)                      :: CF
@@ -103,147 +110,162 @@ contains
 
 ! Begin...
 
-    ! Get the target component name and set-up traceback handle
-    !-----------------------------------------------------------
-    Iam = 'SetServices'
-    call ESMF_GridCompGet( GC, NAME=COMP_NAME, CONFIG=CF, RC=STATUS )
-    _VERIFY(STATUS)
-    Iam = trim(COMP_NAME) // "::" // Iam
-
-    lgr => logging%get_logger('GCHP')
-
+    ! Changes based on DynCore_GridCompMod in mapl3 branch (ewl)
+    !ewl    ! Get the target component name and set-up traceback handle
+    !ewl    !-----------------------------------------------------------
+    !ewl    Iam = 'SetServices'
+    !ewl
+    !ewl    call ESMF_GridCompGet( GC, NAME=COMP_NAME, CONFIG=CF, RC=STATUS )
+    !ewl   _VERIFY(STATUS)
+    !ewl    Iam = trim(COMP_NAME) // "::" // Iam
+    !ewl lgr => logging%get_logger('GCHP')
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%info("SetServices::GCHP_GridCompMod:: start...")
+!    _SET_NAMED_PRIVATE_STATE(gc, GCHPState, PRIVATE_STATE) ! ewl: what is this?
+     
 ! Register services for this component
 ! ------------------------------------
 
-   call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_INITIALIZE, Initialize, &
-                                     RC=STATUS )
-   _VERIFY(STATUS)
-   call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN, Run, RC=STATUS )
-   _VERIFY(STATUS)
-   call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_FINALIZE, Finalize, &
-                                     RC=STATUS )
-   _VERIFY(STATUS)
-
+    ! ewl change based on DynCore
+    !call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_INITIALIZE, Initialize, &
+    !                                  RC=STATUS )
+    !_VERIFY(STATUS)
+    !call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_RUN, Run, RC=STATUS )
+    !_VERIFY(STATUS)
+    !call MAPL_GridCompSetEntryPoint ( GC, ESMF_METHOD_FINALIZE, Finalize, &
+    !                                  RC=STATUS )
+    !_VERIFY(STATUS)
+      ! Register services for this component
+      call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
+      call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
+      call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
 !BOP
-#ifdef ADJOINT
-    CALL ESMF_ConfigGetAttribute( CF, ModelPhase, &
-                                  Label = "MODEL_PHASE:",&
-                                  Default="FORWARD", &
-                                  __RC__ ) 
-    isAdjoint = .false.
-    if (trim(ModelPhase) == 'ADJOINT') &
-         isAdjoint = .true.
-
-#ifdef REVERSE_OPERATORS
-    IF (.not. isAdjoint) THEN
-       IF (MAPL_Am_I_Root()) &
-            WRITE(*,*) '  Forward run, adding children in standard order. ' // ModelPhase
-#else
-       WRITE(*,*) '  Adding children in standard order. MODEL_PHASE: ' // ModelPhase
-#endif
-
-#endif
+! ewl: ignore adjoint for now
+!#ifdef ADJOINT
+!    CALL ESMF_ConfigGetAttribute( CF, ModelPhase, &
+!                                  Label = "MODEL_PHASE:",&
+!                                  Default="FORWARD", &
+!                                  __RC__ ) 
+!    isAdjoint = .false.
+!    if (trim(ModelPhase) == 'ADJOINT') &
+!         isAdjoint = .true.
+!
+!#ifdef REVERSE_OPERATORS
+!    IF (.not. isAdjoint) THEN
+!       IF (MAPL_Am_I_Root()) &
+!            WRITE(*,*) '  Forward run, adding children in standard order. ' // ModelPhase
+!#else
+!       WRITE(*,*) '  Adding children in standard order. MODEL_PHASE: ' // ModelPhase
+!#endif
+!
+!#endif
 
 ! !IMPORT STATE:
 
+      ! ewl: add some dummy?
+
 ! !EXPORT STATE:
 
-! Create children`s gridded components and invoke their SetServices
-! -----------------------------------------------------------------
+      ! ewl: add dummy here?
 
-   ! Add component for deriving variables for other components
-   ECTM = MAPL_AddChild(GC, NAME='GCHPctmEnv' , SS=EctmSetServices,      &
-                            RC=STATUS)
-   _VERIFY(STATUS)
+!ewl! Create children`s gridded components and invoke their SetServices
+!ewl! -----------------------------------------------------------------
+!ewl
+!ewl   ! Add component for deriving variables for other components
+!ewl   ECTM = MAPL_AddChild(GC, NAME='GCHPctmEnv' , SS=EctmSetServices,      &
+!ewl                            RC=STATUS)
+!ewl   _VERIFY(STATUS)
+!ewl
+!ewl#ifndef MODEL_CTMENV
+!ewl   ! Add chemistry
+!ewl   CHEM = MAPL_AddChild(GC, NAME='GCHPchem', SS=AtmosChemSetServices, &
+!ewl                        RC=STATUS)
+!ewl   _VERIFY(STATUS)
+!ewl#endif
+!ewl
+!ewl   ! Add dynamics
+!ewl   ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
+!ewl                       RC=STATUS)
+!ewl   _VERIFY(STATUS)
+!ewl
+!ewl#ifdef ADJOINT
+!ewl#ifdef REVERSE_OPERATORS
+!ewl   ELSE
+!ewl      IF (MAPL_Am_I_Root()) &
+!ewl           WRITE(*,*) '  Adjoint run, adding children in reverse order. '
+!ewl   ! Add dynamics
+!ewl   ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
+!ewl                       RC=STATUS)
+!ewl   _VERIFY(STATUS)
+!ewl
+!ewl   ! Add chemistry
+!ewl   CHEM = MAPL_AddChild(GC, NAME='GCHPchem', SS=AtmosChemSetServices, &
+!ewl                        RC=STATUS)
+!ewl   _VERIFY(STATUS)
+!ewl
+!ewl   ! Add component for deriving variables for other components
+!ewl   ECTM = MAPL_AddChild(GC, NAME='GCHPctmEnv' , SS=EctmSetServices,      &
+!ewl                            RC=STATUS)
+!ewl   _VERIFY(STATUS)
+!ewl   ENDIF
+!ewl#endif
+!ewl#endif
+!ewl
+!ewl! Set internal connections between the children`s IMPORTS and EXPORTS
+!ewl! -------------------------------------------------------------------
+!ewl!BOP
+!ewl
+!ewl! !CONNECTIONS:
+!ewl
+!ewl      ! Connectivities between Children
+!ewl      ! -------------------------------
+!ewl      CALL MAPL_AddConnectivity ( GC,                          &
+!ewl                                  SHORT_NAME = (/ 'CX     ',   &
+!ewl                                                  'CY     ',   &
+!ewl                                                  'MFX    ',   &
+!ewl                                                  'MFY    ',   &
+!ewl                                                  'PLE0   ',   &
+!ewl                                                  'PLE1   ',   &
+!ewl                                                  'DryPLE0',   &
+!ewl                                                  'DryPLE1',   &
+!ewl                                                  'SPHU0  '/), &
+!ewl                                  DST_ID = ADV,                &
+!ewl                                  SRC_ID = ECTM,               &
+!ewl                                  __RC__ )
+!ewl
+!ewl#ifndef MODEL_CTMENV
+!ewl      CALL MAPL_AddConnectivity ( GC,                          &
+!ewl                                  SHORT_NAME = (/ 'AREA  ',    &
+!ewl                                                  'DryPLE',    &
+!ewl                                                  'PLE   ' /), &
+!ewl                                  DST_ID   = CHEM,             &
+!ewl                                  SRC_ID = ADV,                &
+!ewl                                  __RC__ )
+!ewl
+!ewl      CALL MAPL_AddConnectivity ( GC,                           &
+!ewl                                  SHORT_NAME = (/ 'DELPDRY' /), &
+!ewl                                  DST_ID = ADV,                 &
+!ewl                                  SRC_ID = CHEM,                &
+!ewl                                  __RC__ )
+!ewl#endif
+!ewl
+!ewl    CALL MAPL_TerminateImport    ( GC,                         &
+!ewl                                     SHORT_NAME = (/'TRADV'/), &
+!ewl                                     CHILD = ADV,                &
+!ewl                                     __RC__  )
+!ewl
+!ewl    call MAPL_TimerAdd(GC, name="RUN", RC=STATUS)
+!ewl    _VERIFY(STATUS)
 
-#ifndef MODEL_CTMENV
-   ! Add chemistry
-   CHEM = MAPL_AddChild(GC, NAME='GCHPchem', SS=AtmosChemSetServices, &
-                        RC=STATUS)
-   _VERIFY(STATUS)
-#endif
-
-   ! Add dynamics
-   ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
-                       RC=STATUS)
-   _VERIFY(STATUS)
-
-#ifdef ADJOINT
-#ifdef REVERSE_OPERATORS
-   ELSE
-      IF (MAPL_Am_I_Root()) &
-           WRITE(*,*) '  Adjoint run, adding children in reverse order. '
-   ! Add dynamics
-   ADV = MAPL_AddChild(GC, NAME='DYNAMICS',  SS=AtmosAdvSetServices,  &
-                       RC=STATUS)
-   _VERIFY(STATUS)
-
-   ! Add chemistry
-   CHEM = MAPL_AddChild(GC, NAME='GCHPchem', SS=AtmosChemSetServices, &
-                        RC=STATUS)
-   _VERIFY(STATUS)
-
-   ! Add component for deriving variables for other components
-   ECTM = MAPL_AddChild(GC, NAME='GCHPctmEnv' , SS=EctmSetServices,      &
-                            RC=STATUS)
-   _VERIFY(STATUS)
-   ENDIF
-#endif
-#endif
-
-! Set internal connections between the children`s IMPORTS and EXPORTS
-! -------------------------------------------------------------------
-!BOP
-
-! !CONNECTIONS:
-
-      ! Connectivities between Children
-      ! -------------------------------
-      CALL MAPL_AddConnectivity ( GC,                          &
-                                  SHORT_NAME = (/ 'CX     ',   &
-                                                  'CY     ',   &
-                                                  'MFX    ',   &
-                                                  'MFY    ',   &
-                                                  'PLE0   ',   &
-                                                  'PLE1   ',   &
-                                                  'DryPLE0',   &
-                                                  'DryPLE1',   &
-                                                  'SPHU0  '/), &
-                                  DST_ID = ADV,                &
-                                  SRC_ID = ECTM,               &
-                                  __RC__ )
-
-#ifndef MODEL_CTMENV
-      CALL MAPL_AddConnectivity ( GC,                          &
-                                  SHORT_NAME = (/ 'AREA  ',    &
-                                                  'DryPLE',    &
-                                                  'PLE   ' /), &
-                                  DST_ID   = CHEM,             &
-                                  SRC_ID = ADV,                &
-                                  __RC__ )
-
-      CALL MAPL_AddConnectivity ( GC,                           &
-                                  SHORT_NAME = (/ 'DELPDRY' /), &
-                                  DST_ID = ADV,                 &
-                                  SRC_ID = CHEM,                &
-                                  __RC__ )
-#endif
-
-    CALL MAPL_TerminateImport    ( GC,                         &
-                                     SHORT_NAME = (/'TRADV'/), &
-                                     CHILD = ADV,                &
-                                     __RC__  )
-
-    call MAPL_TimerAdd(GC, name="RUN", RC=STATUS)
-    _VERIFY(STATUS)
-
-    call MAPL_GenericSetServices    ( GC, RC=STATUS )
-    _VERIFY(STATUS)
+    !ewl comment out since not in dyn
+    !ewl call MAPL_GenericSetServices    ( GC, RC=STATUS )
+    !ewl _VERIFY(STATUS)
 
 !EOP
 
-    _RETURN(ESMF_SUCCESS)
-  
+    !ewl _RETURN(ESMF_SUCCESS)
+    _RETURN(_SUCCESS)
+
   end subroutine SetServices
 
 
@@ -268,6 +290,7 @@ contains
 !
 !EOP
 
+  ! ewl not sure how many of these are needed....
 ! ErrLog Variables
 
   character(len=ESMF_MAXSTR)           :: IAm 
@@ -276,7 +299,7 @@ contains
 
 ! Local derived type aliases
 
-   type (MAPL_MetaComp),       pointer :: STATE
+   !ewl type (MAPL_MetaComp),       pointer :: STATE ! type not defined some commenting out for mapl3
    type (ESMF_GridComp),       pointer :: GCS(:)
    type (ESMF_State),          pointer :: GIM(:)
    type (ESMF_State),          pointer :: GEX(:)
@@ -286,81 +309,103 @@ contains
    type (ESMF_Config)                  :: CF
    integer                             :: NUM_TRACERS
 
+   ! new (ewl)
+   character(len=:), allocatable :: gchp_file
+   class(logger_t), pointer :: logger
+
 !=============================================================================
 
 ! Begin... 
 
-    ! Get the target component name and set-up traceback handle
-    !----------------------------------------------------------
-    Iam = "Initialize"
-    call ESMF_GridCompGet ( GC, name=COMP_NAME, Config=CF, RC=STATUS )
-    _VERIFY(STATUS)
-    Iam = trim(COMP_NAME) // "::" // Iam
+    ! Change for mapl3
+    !ewl  ! Get the target component name and set-up traceback handle
+    !ewl  !----------------------------------------------------------
+    !ewl  Iam = "Initialize"
+    !ewl  call ESMF_GridCompGet ( GC, name=COMP_NAME, Config=CF, RC=STATUS )
+    !ewl  _VERIFY(STATUS)
+    !ewl  Iam = trim(COMP_NAME) // "::" // Iam
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%info("Initialize::GCHP_GridCompMod:: starting...")
+     ! Need to have this local...what type? (ewl)
+!    _GET_NAME_PRIVATE_STATE(gc, GCHP, PRIVATE_STATE, self) !ewl what is this?
 
-
+    ! ewl: need to adapt below to use MAPL_GridCompGetResource instead
     ! Get memory debug level
     !----------------------------------------------------------
     call ESMF_ConfigGetAttribute(CF, MemDebugLevel, &
                                  Label="MEMORY_DEBUG_LEVEL:" , RC=STATUS)
     _VERIFY(STATUS)
+    ! ewl: not sure if the below new is correct. Use old above for now.
+    !       call MAPL_GridCompGetResource(gc, "MEMORY_DEBUG_LEVEL", gchp_file, default="GCHP.rc", _RC)
 
 
-    ! Get my MAPL_Generic state
-    !--------------------------
-    call MAPL_GetObjectFromGC ( GC, STATE, RC=STATUS)
-    _VERIFY(STATUS)
+    ! ewl: seems to not be needed anymore....
+    !ewl ! Get my MAPL_Generic state
+    !ewl !--------------------------
+    !ewl call MAPL_GetObjectFromGC ( GC, STATE, RC=STATUS)
+    !ewl _VERIFY(STATUS)
 
-    ! Create Atmospheric grid
-    !------------------------
-    call MAPL_GridCreate( GC, rc=status )
-    _VERIFY(STATUS)
+    ! ewl: comment out for now. not in dyncore
+    !ewl ! Create Atmospheric grid
+    !ewl !------------------------
+    !ewl call MAPL_GridCreate( GC, rc=status )
+    !ewl _VERIFY(STATUS)
 
-#ifdef ADJOINT
-    if (MAPL_Am_I_Root()) THEN
-       WRITE(*,*) 'Before Generic Init'
-    endif
-#endif
+! ewl: skip adjoint for now
+!#ifdef ADJOINT
+!    if (MAPL_Am_I_Root()) THEN
+!       WRITE(*,*) 'Before Generic Init'
+!    endif
+!#endif
 
-    ! Call Initialize for every Child
-    !--------------------------------
-    call MAPL_GenericInitialize ( GC, IMPORT, EXPORT, CLOCK, __RC__ )
-    _VERIFY(STATUS)
+    ! ewl: keep for now, but not in dyncore
+    !ewl Call Initialize for every Child
+    !ewl -------------------------------
+    !ewl call MAPL_GenericInitialize ( GC, IMPORT, EXPORT, CLOCK, __RC__ )
+    !ewl _VERIFY(STATUS)
 
-    call MAPL_TimerOn(STATE,"TOTAL")
-    !    call MAPL_TimerOn(STATE,"INITIALIZE")
+    ! ewl - timers are gone
+    !ewl call MAPL_TimerOn(STATE,"TOTAL")
+    !ewl !    call MAPL_TimerOn(STATE,"INITIALIZE")
 
-    ! Get children and their im/ex states from my generic state.
-    !----------------------------------------------------------
-    call MAPL_Get ( STATE, GCS=GCS, GIM=GIM, GEX=GEX, RC=STATUS )
-    _VERIFY(STATUS)
+! ewl: skip this for now since does not work
+!    ! Get children and their im/ex states from my generic state.
+!    !----------------------------------------------------------
+!    call MAPL_Get ( STATE, GCS=GCS, GIM=GIM, GEX=GEX, RC=STATUS )
+!    _VERIFY(STATUS)
 
-#ifdef ADJOINT
-    if (MAPL_Am_I_Root()) THEN
-       WRITE(*,*) 'After Generic Init'
-    endif
-#endif
+! ewl: skip adjoint for now
+!#ifdef ADJOINT
+!    if (MAPL_Am_I_Root()) THEN
+!       WRITE(*,*) 'After Generic Init'
+!    endif
+!#endif
 
-#ifndef MODEL_CTMENV
-    ! AdvCore Tracers
-    !----------------
-    call ESMF_StateGet( GIM(ADV), 'TRADV', BUNDLE, RC=STATUS )
-    _VERIFY(STATUS)
-    
-    call MAPL_GridCompGetFriendlies(GCS(CHEM), "DYNAMICS", BUNDLE, RC=STATUS )
-    _VERIFY(STATUS)
-    
-    ! Count tracers
-    !--------------
-    call ESMF_FieldBundleGet(BUNDLE,FieldCount=NUM_TRACERS, RC=STATUS)
-    _VERIFY(STATUS)
-#endif
+!ewl#ifndef MODEL_CTMENV
+!ewl    ! AdvCore Tracers
+!ewl    !----------------
+!ewl    call ESMF_StateGet( GIM(ADV), 'TRADV', BUNDLE, RC=STATUS )
+!ewl    _VERIFY(STATUS)
+!ewl    
+!ewl    call MAPL_GridCompGetFriendlies(GCS(CHEM), "DYNAMICS", BUNDLE, RC=STATUS )
+!ewl    _VERIFY(STATUS)
+!ewl    
+!ewl    ! Count tracers
+!ewl    !--------------
+!ewl    call ESMF_FieldBundleGet(BUNDLE,FieldCount=NUM_TRACERS, RC=STATUS)
+!ewl    _VERIFY(STATUS)
+!ewl#endif
 
-    ! Disable this erroneous MAPL_TimerOff to fix timing. J.W.Zhuang 2017/04 
-    ! call MAPL_TimerOff(STATE,"RUN")
-    call MAPL_TimerOff(STATE,"TOTAL")
+    ! ewl - timers are gone
+    !ewl ! Disable this erroneous MAPL_TimerOff to fix timing. J.W.Zhuang 2017/04 
+    !ewl ! call MAPL_TimerOff(STATE,"RUN")
+    !ewl call MAPL_TimerOff(STATE,"TOTAL")
 
-    _RETURN(ESMF_SUCCESS)
- end subroutine Initialize
+    ! ewl: new return success
+    !ewl _RETURN(ESMF_SUCCESS)
+    _RETURN(_SUCCESS)
+
+  end subroutine Initialize
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -370,7 +415,7 @@ contains
                  
 ! !INTERFACE:
 
-   subroutine Run ( GC, IMPORT, EXPORT, CLOCK, RC )
+   subroutine Run( GC, IMPORT, EXPORT, CLOCK, RC )
 
 ! !USES:
 
@@ -397,7 +442,7 @@ contains
 
 ! Local derived type aliases
 
-   type (MAPL_MetaComp),      pointer  :: STATE
+!   type (MAPL_MetaComp),      pointer  :: STATE
    type (ESMF_GridComp),      pointer  :: GCS(:)
    type (ESMF_State),         pointer  :: GIM(:)
    type (ESMF_State),         pointer  :: GEX(:)
@@ -413,350 +458,368 @@ contains
    character(len=ESMF_MAXSTR)          :: ModelPhase
    logical                             :: isAdjoint
    logical, save                       :: firstRun = .true.
- 
+
+   ! ewl new
+   real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
+   class(logger_t), pointer :: logger
+   type(ESMF_GRID) :: esmfgrid
+   type(ESMF_HConfig) :: hconfig
+
 !=============================================================================
 
 ! Begin... 
 
-    ! Get the target component name and set-up traceback handle
-    ! ---------------------------------------------------------
-    Iam = "Run"
-    call ESMF_GridCompGet ( GC, name=COMP_NAME, config=CF, RC=STATUS )
-    _VERIFY(STATUS)
-    Iam = trim(COMP_NAME) // "::" // Iam
+!ewl      ! Get the target component name and set-up traceback handle
+!ewl      ! ---------------------------------------------------------
+!ewl      Iam = "Run"
+!ewl      call ESMF_GridCompGet ( GC, name=COMP_NAME, config=CF, RC=STATUS )
+!ewl      _VERIFY(STATUS)
+   !ewl      Iam = trim(COMP_NAME) // "::" // Iam
+   ! This is in dyncore but esmfgrid not found...
+      call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
+      call logger%info("Run::GCHP_GridCompMod:: starting...")
+      call ESMF_GridValidate(esmfgrid, _RC)
+      call MAPL_GridGet(esmfgrid, longitudes=lons, latitudes=lats, _RC)
+      call MAPL_StateGetPointer(export, temp2d, "LONS", _RC)
+      if( associated(temp2D) ) temp2d = lons
+      call MAPL_StateGetPointer(export, temp2d, "LATS", _RC)
+      if( associated(temp2D) ) temp2d = lats
 
-    ! Get my internal MAPL_Generic state
-    !-----------------------------------
-    call MAPL_GetObjectFromGC ( GC, STATE, RC=STATUS)
-    _VERIFY(STATUS)
+! ewl do we need this? comment out for now. it is old.
+!    ! Get my internal MAPL_Generic state
+!    !-----------------------------------
+!    call MAPL_GetObjectFromGC ( GC, STATE, RC=STATUS)
+!    _VERIFY(STATUS)
+!
+!    ! Get the VM for optional memory prints (level >= 1)
+!    !-----------------------------------
+!    if ( MemDebugLevel > 0 ) THEN
+!       call ESMF_VmGetCurrent(VM, RC=STATUS)
+!       _VERIFY(STATUS)
+!    endif
 
-    ! Get the VM for optional memory prints (level >= 1)
-    !-----------------------------------
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VmGetCurrent(VM, RC=STATUS)
-       _VERIFY(STATUS)
-    endif
+!ewl: ignore adjoint for now
+!#ifdef ADJOINT
+!    ! Check if this is an adjoint run
+!    CALL ESMF_ConfigGetAttribute( CF, ModelPhase, &
+!         Label = "MODEL_PHASE:",&
+!         Default="FORWARD", &
+!         __RC__ ) 
+!    isAdjoint = .false.
+!    if (trim(ModelPhase) == 'ADJOINT') &
+!         isAdjoint = .true.
+!#endif
 
-#ifdef ADJOINT
-    ! Check if this is an adjoint run
-    CALL ESMF_ConfigGetAttribute( CF, ModelPhase, &
-         Label = "MODEL_PHASE:",&
-         Default="FORWARD", &
-         __RC__ ) 
-    isAdjoint = .false.
-    if (trim(ModelPhase) == 'ADJOINT') &
-         isAdjoint = .true.
-#endif
-
-    ! Start timers
-    !-------------
-    call MAPL_TimerOn(STATE,"TOTAL")
-    call MAPL_TimerOn(STATE,"RUN")
-
-    ! Get the children`s states from the generic state
-    !-------------------------------------------------
-    call MAPL_Get ( STATE,                           &
-                    GCS=GCS,                         &
-                    GIM=GIM,                         &
-                    GEX=GEX,                         &
-                    IM = IM,                         &
-                    JM = JM,                         &
-                    LM = LM,                         &
-                    GCNames = GCNames,               &
-                    INTERNAL_ESMF_STATE = INTERNAL,  &
-                    RC = STATUS )
-    _VERIFY(STATUS)
-
-    ! Get heartbeat
-    !--------------
-    call ESMF_ConfigGetAttribute(CF, DT, Label="RUN_DT:" , RC=STATUS)
-    _VERIFY(STATUS)
-
-#ifdef ADJOINT
-    !------------------------------------------------------------
-    ! If we're doing the adoint, we should be running these in
-    ! reverse order. Possibly not the Environment module?
-    ! In cany case, this isn't working yet, so disable it for now
-    !------------------------------------------------------------
-#ifdef REVERSE_OPERATORS
-    IF (.not. isAdjoint) THEN
-#else
-    IF (.true.) THEN
-#endif
-    if (MAPL_Am_I_Root()) THEN
-       WRITE(*,*) 'Not reversing high-level operators'
-    endif
-#endif
-
-    ! Cinderella Component: to derive variables for other components
-    !---------------------
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'Before GCHPctmEnv: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    call MAPL_TimerOn ( STATE, GCNames(ECTM) )
-    call ESMF_GridCompRun ( GCS(ECTM),               &
-                            importState = GIM(ECTM), &
-                            exportState = GEX(ECTM), &
-                            clock       = CLOCK,     &
-                            userRC      = STATUS  )
-    _VERIFY(STATUS)
-
-    call MAPL_TimerOff( STATE, GCNames(ECTM) )
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'After  GCHPctmEnv: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-#ifndef MODEL_CTMENV
-    ! Dynamics & Advection
-    !------------------
-    ! SDE 2017-02-18: This needs to run even if transport is off, as it is
-    ! responsible for the pressure level edge arrays. It already has an internal
-    ! switch ("AdvCore_Advection") which can be used to prevent any actual
-    ! transport taking place by bypassing the advection calculation.
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GCHP, before Advection: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    call MAPL_TimerOn ( STATE, GCNames(ADV) )
-    call ESMF_GridCompRun ( GCS(ADV),               &
-                            importState = GIM(ADV), &
-                            exportState = GEX(ADV), &
-                            clock       = CLOCK,    &
-                            userRC      = STATUS );
-    _VERIFY(STATUS)
-    call MAPL_GenericRunCouplers (STATE, ADV, CLOCK, RC=STATUS );
-    _VERIFY(STATUS)
-    call MAPL_TimerOff( STATE, GCNames(ADV) )
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GCHP, after  Advection: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    ! Chemistry
-    !------------------
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GCHP, before GEOS-Chem: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    call MAPL_TimerOn ( STATE, GCNames(CHEM) )
-    call ESMF_GridCompRun ( GCS(CHEM),               &
-                            importState = GIM(CHEM), &
-                            exportState = GEX(CHEM), &
-                            clock       = CLOCK,     &
-                            userRC      = STATUS );
-    _VERIFY(STATUS)
-    call MAPL_GenericRunCouplers (STATE, CHEM, CLOCK, RC=STATUS );
-    _VERIFY(STATUS)
-    call MAPL_TimerOff(STATE,GCNames(CHEM))
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GCHP, after  GEOS-Chem: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-#endif
-
-#ifdef ADJOINT
-    ELSE
-       if (MAPL_Am_I_Root()) THEN
-          WRITE(*,*) 'Reversing high-level operators'
-       endif
-
-       IF (firstRun) THEN
-          ! Cinderella Component: to derive variables for other components
-          !---------------------
-
-          if ( MemDebugLevel > 0 ) THEN
-             call ESMF_VMBarrier(VM, RC=STATUS)
-             _VERIFY(STATUS)
-             call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before GEOS_ctmE: ', RC=STATUS )
-             _VERIFY(STATUS)
-          endif
-
-          call MAPL_TimerOn ( STATE, GCNames(ECTM) )
-          call ESMF_GridCompRun ( GCS(ECTM),               &
-               importState = GIM(ECTM), &
-               exportState = GEX(ECTM), &
-               clock       = CLOCK,     &
-               userRC      = STATUS  )
-          _VERIFY(STATUS)
-
-          call MAPL_TimerOff( STATE, GCNames(ECTM) )
-
-          if ( MemDebugLevel > 0 ) THEN
-             call ESMF_VMBarrier(VM, RC=STATUS)
-             _VERIFY(STATUS)
-             call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  GEOS_ctmE: ', RC=STATUS )
-             _VERIFY(STATUS)
-          endif
-
-          ! Dynamics & Advection
-          !------------------
-          ! SDE 2017-02-18: This needs to run even if transport is off, as it is
-          ! responsible for the pressure level edge arrays. It already has an internal
-          ! switch ("AdvCore_Advection") which can be used to prevent any actual
-          ! transport taking place by bypassing the advection calculation.
-
-          if ( MemDebugLevel > 0 ) THEN
-             call ESMF_VMBarrier(VM, RC=STATUS)
-             _VERIFY(STATUS)
-             call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before Advection: ', RC=STATUS )
-             _VERIFY(STATUS)
-          endif
-
-          call MAPL_TimerOn ( STATE, GCNames(ADV) )
-          call ESMF_GridCompRun ( GCS(ADV),               &
-               importState = GIM(ADV), &
-               exportState = GEX(ADV), &
-               clock       = CLOCK,    &
-               userRC      = STATUS );
-          _VERIFY(STATUS)
-          call MAPL_GenericRunCouplers (STATE, ADV, CLOCK, RC=STATUS );
-          _VERIFY(STATUS)
-          call MAPL_TimerOff( STATE, GCNames(ADV) )
-
-          if ( MemDebugLevel > 0 ) THEN
-             call ESMF_VMBarrier(VM, RC=STATUS)
-             _VERIFY(STATUS)
-             call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  Advection: ', RC=STATUS )
-             _VERIFY(STATUS)
-          endif
-
-       ENDIF
-    ! Chemistry
-    !------------------
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before GEOS-Chem: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    call MAPL_TimerOn ( STATE, GCNames(CHEM) )
-    call ESMF_GridCompRun ( GCS(CHEM),               &
-                            importState = GIM(CHEM), &
-                            exportState = GEX(CHEM), &
-                            clock       = CLOCK,     &
-                            userRC      = STATUS );
-    _VERIFY(STATUS)
-    call MAPL_GenericRunCouplers (STATE, CHEM, CLOCK, RC=STATUS );
-    _VERIFY(STATUS)
-    call MAPL_TimerOff(STATE,GCNames(CHEM))
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  GEOS-Chem: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    ! Cinderella Component: to derive variables for other components
-    !---------------------
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before GEOS_ctmE: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    call MAPL_TimerOn ( STATE, GCNames(ECTM) )
-    call ESMF_GridCompRun ( GCS(ECTM),               &
-                            importState = GIM(ECTM), &
-                            exportState = GEX(ECTM), &
-                            clock       = CLOCK,     &
-                            userRC      = STATUS  )
-    _VERIFY(STATUS)
-
-    call MAPL_TimerOff( STATE, GCNames(ECTM) )
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  GEOS_ctmE: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    ! Dynamics & Advection
-    !------------------
-    ! SDE 2017-02-18: This needs to run even if transport is off, as it is
-    ! responsible for the pressure level edge arrays. It already has an internal
-    ! switch ("AdvCore_Advection") which can be used to prevent any actual
-    ! transport taking place by bypassing the advection calculation.
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, before Advection: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    call MAPL_TimerOn ( STATE, GCNames(ADV) )
-    call ESMF_GridCompRun ( GCS(ADV),               &
-                            importState = GIM(ADV), &
-                            exportState = GEX(ADV), &
-                            clock       = CLOCK,    &
-                            userRC      = STATUS );
-    _VERIFY(STATUS)
-    call MAPL_GenericRunCouplers (STATE, ADV, CLOCK, RC=STATUS );
-    _VERIFY(STATUS)
-    call MAPL_TimerOff( STATE, GCNames(ADV) )
-
-    if ( MemDebugLevel > 0 ) THEN
-       call ESMF_VMBarrier(VM, RC=STATUS)
-       _VERIFY(STATUS)
-       call MAPL_MemUtilsWrite(VM, &
-                  'GIGC, after  Advection: ', RC=STATUS )
-       _VERIFY(STATUS)
-    endif
-
-    ENDIF
-#endif
-
-    call MAPL_TimerOff(STATE,"RUN")
-    call MAPL_TimerOff(STATE,"TOTAL")
+!ewl    ! Start timers
+!ewl    !-------------
+!ewl    call MAPL_TimerOn(STATE,"TOTAL")
+!ewl    call MAPL_TimerOn(STATE,"RUN")
+!ewl
+!ewl    ! Get the children`s states from the generic state
+!ewl    !-------------------------------------------------
+!ewl    call MAPL_Get ( STATE,                           &
+!ewl                    GCS=GCS,                         &
+!ewl                    GIM=GIM,                         &
+!ewl                    GEX=GEX,                         &
+!ewl                    IM = IM,                         &
+!ewl                    JM = JM,                         &
+!ewl                    LM = LM,                         &
+!ewl                    GCNames = GCNames,               &
+!ewl                    INTERNAL_ESMF_STATE = INTERNAL,  &
+!ewl                    RC = STATUS )
+!ewl    _VERIFY(STATUS)
+!ewl
+!ewl    ! Get heartbeat
+!ewl    !--------------
+!ewl    call ESMF_ConfigGetAttribute(CF, DT, Label="RUN_DT:" , RC=STATUS)
+!ewl    _VERIFY(STATUS)
+!ewl
+!ewl#ifdef ADJOINT
+!ewl    !------------------------------------------------------------
+!ewl    ! If we're doing the adoint, we should be running these in
+!ewl    ! reverse order. Possibly not the Environment module?
+!ewl    ! In cany case, this isn't working yet, so disable it for now
+!ewl    !------------------------------------------------------------
+!ewl#ifdef REVERSE_OPERATORS
+!ewl    IF (.not. isAdjoint) THEN
+!ewl#else
+!ewl    IF (.true.) THEN
+!ewl#endif
+!ewl    if (MAPL_Am_I_Root()) THEN
+!ewl       WRITE(*,*) 'Not reversing high-level operators'
+!ewl    endif
+!ewl#endif
+!ewl
+!ewl    ! Cinderella Component: to derive variables for other components
+!ewl    !---------------------
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'Before GCHPctmEnv: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    call MAPL_TimerOn ( STATE, GCNames(ECTM) )
+!ewl    call ESMF_GridCompRun ( GCS(ECTM),               &
+!ewl                            importState = GIM(ECTM), &
+!ewl                            exportState = GEX(ECTM), &
+!ewl                            clock       = CLOCK,     &
+!ewl                            userRC      = STATUS  )
+!ewl    _VERIFY(STATUS)
+!ewl
+!ewl    call MAPL_TimerOff( STATE, GCNames(ECTM) )
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'After  GCHPctmEnv: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl#ifndef MODEL_CTMENV
+!ewl    ! Dynamics & Advection
+!ewl    !------------------
+!ewl    ! SDE 2017-02-18: This needs to run even if transport is off, as it is
+!ewl    ! responsible for the pressure level edge arrays. It already has an internal
+!ewl    ! switch ("AdvCore_Advection") which can be used to prevent any actual
+!ewl    ! transport taking place by bypassing the advection calculation.
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GCHP, before Advection: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    call MAPL_TimerOn ( STATE, GCNames(ADV) )
+!ewl    call ESMF_GridCompRun ( GCS(ADV),               &
+!ewl                            importState = GIM(ADV), &
+!ewl                            exportState = GEX(ADV), &
+!ewl                            clock       = CLOCK,    &
+!ewl                            userRC      = STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_GenericRunCouplers (STATE, ADV, CLOCK, RC=STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_TimerOff( STATE, GCNames(ADV) )
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GCHP, after  Advection: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    ! Chemistry
+!ewl    !------------------
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GCHP, before GEOS-Chem: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    call MAPL_TimerOn ( STATE, GCNames(CHEM) )
+!ewl    call ESMF_GridCompRun ( GCS(CHEM),               &
+!ewl                            importState = GIM(CHEM), &
+!ewl                            exportState = GEX(CHEM), &
+!ewl                            clock       = CLOCK,     &
+!ewl                            userRC      = STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_GenericRunCouplers (STATE, CHEM, CLOCK, RC=STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_TimerOff(STATE,GCNames(CHEM))
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GCHP, after  GEOS-Chem: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl#endif
+!ewl
+!ewl#ifdef ADJOINT
+!ewl    ELSE
+!ewl       if (MAPL_Am_I_Root()) THEN
+!ewl          WRITE(*,*) 'Reversing high-level operators'
+!ewl       endif
+!ewl
+!ewl       IF (firstRun) THEN
+!ewl          ! Cinderella Component: to derive variables for other components
+!ewl          !---------------------
+!ewl
+!ewl          if ( MemDebugLevel > 0 ) THEN
+!ewl             call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl             _VERIFY(STATUS)
+!ewl             call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, before GEOS_ctmE: ', RC=STATUS )
+!ewl             _VERIFY(STATUS)
+!ewl          endif
+!ewl
+!ewl          call MAPL_TimerOn ( STATE, GCNames(ECTM) )
+!ewl          call ESMF_GridCompRun ( GCS(ECTM),               &
+!ewl               importState = GIM(ECTM), &
+!ewl               exportState = GEX(ECTM), &
+!ewl               clock       = CLOCK,     &
+!ewl               userRC      = STATUS  )
+!ewl          _VERIFY(STATUS)
+!ewl
+!ewl          call MAPL_TimerOff( STATE, GCNames(ECTM) )
+!ewl
+!ewl          if ( MemDebugLevel > 0 ) THEN
+!ewl             call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl             _VERIFY(STATUS)
+!ewl             call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, after  GEOS_ctmE: ', RC=STATUS )
+!ewl             _VERIFY(STATUS)
+!ewl          endif
+!ewl
+!ewl          ! Dynamics & Advection
+!ewl          !------------------
+!ewl          ! SDE 2017-02-18: This needs to run even if transport is off, as it is
+!ewl          ! responsible for the pressure level edge arrays. It already has an internal
+!ewl          ! switch ("AdvCore_Advection") which can be used to prevent any actual
+!ewl          ! transport taking place by bypassing the advection calculation.
+!ewl
+!ewl          if ( MemDebugLevel > 0 ) THEN
+!ewl             call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl             _VERIFY(STATUS)
+!ewl             call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, before Advection: ', RC=STATUS )
+!ewl             _VERIFY(STATUS)
+!ewl          endif
+!ewl
+!ewl          call MAPL_TimerOn ( STATE, GCNames(ADV) )
+!ewl          call ESMF_GridCompRun ( GCS(ADV),               &
+!ewl               importState = GIM(ADV), &
+!ewl               exportState = GEX(ADV), &
+!ewl               clock       = CLOCK,    &
+!ewl               userRC      = STATUS );
+!ewl          _VERIFY(STATUS)
+!ewl          call MAPL_GenericRunCouplers (STATE, ADV, CLOCK, RC=STATUS );
+!ewl          _VERIFY(STATUS)
+!ewl          call MAPL_TimerOff( STATE, GCNames(ADV) )
+!ewl
+!ewl          if ( MemDebugLevel > 0 ) THEN
+!ewl             call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl             _VERIFY(STATUS)
+!ewl             call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, after  Advection: ', RC=STATUS )
+!ewl             _VERIFY(STATUS)
+!ewl          endif
+!ewl
+!ewl       ENDIF
+!ewl    ! Chemistry
+!ewl    !------------------
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, before GEOS-Chem: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    call MAPL_TimerOn ( STATE, GCNames(CHEM) )
+!ewl    call ESMF_GridCompRun ( GCS(CHEM),               &
+!ewl                            importState = GIM(CHEM), &
+!ewl                            exportState = GEX(CHEM), &
+!ewl                            clock       = CLOCK,     &
+!ewl                            userRC      = STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_GenericRunCouplers (STATE, CHEM, CLOCK, RC=STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_TimerOff(STATE,GCNames(CHEM))
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, after  GEOS-Chem: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    ! Cinderella Component: to derive variables for other components
+!ewl    !---------------------
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, before GEOS_ctmE: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    call MAPL_TimerOn ( STATE, GCNames(ECTM) )
+!ewl    call ESMF_GridCompRun ( GCS(ECTM),               &
+!ewl                            importState = GIM(ECTM), &
+!ewl                            exportState = GEX(ECTM), &
+!ewl                            clock       = CLOCK,     &
+!ewl                            userRC      = STATUS  )
+!ewl    _VERIFY(STATUS)
+!ewl
+!ewl    call MAPL_TimerOff( STATE, GCNames(ECTM) )
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, after  GEOS_ctmE: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    ! Dynamics & Advection
+!ewl    !------------------
+!ewl    ! SDE 2017-02-18: This needs to run even if transport is off, as it is
+!ewl    ! responsible for the pressure level edge arrays. It already has an internal
+!ewl    ! switch ("AdvCore_Advection") which can be used to prevent any actual
+!ewl    ! transport taking place by bypassing the advection calculation.
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, before Advection: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    call MAPL_TimerOn ( STATE, GCNames(ADV) )
+!ewl    call ESMF_GridCompRun ( GCS(ADV),               &
+!ewl                            importState = GIM(ADV), &
+!ewl                            exportState = GEX(ADV), &
+!ewl                            clock       = CLOCK,    &
+!ewl                            userRC      = STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_GenericRunCouplers (STATE, ADV, CLOCK, RC=STATUS );
+!ewl    _VERIFY(STATUS)
+!ewl    call MAPL_TimerOff( STATE, GCNames(ADV) )
+!ewl
+!ewl    if ( MemDebugLevel > 0 ) THEN
+!ewl       call ESMF_VMBarrier(VM, RC=STATUS)
+!ewl       _VERIFY(STATUS)
+!ewl       call MAPL_MemUtilsWrite(VM, &
+!ewl                  'GIGC, after  Advection: ', RC=STATUS )
+!ewl       _VERIFY(STATUS)
+!ewl    endif
+!ewl
+!ewl    ENDIF
+!ewl#endif
+!ewl
+!ewl    call MAPL_TimerOff(STATE,"RUN")
+!ewl    call MAPL_TimerOff(STATE,"TOTAL")
 
     ! Added for GCHP Adjoint
     firstRun = .false.
 
-    _RETURN(ESMF_SUCCESS)
+!ewl    _RETURN(ESMF_SUCCESS)
+    _RETURN(_SUCCESS)
 
   end subroutine Run
 
@@ -781,17 +844,25 @@ contains
      character(len=ESMF_MAXSTR)          :: IAm 
      integer                             :: STATUS
      character(len=ESMF_MAXSTR)          :: COMP_NAME
-     
-     ! Get the target component name and set-up traceback handle
-     Iam = "Finalize"
-     call ESMF_GridCompGet ( GC, name=COMP_NAME, RC=STATUS )
-     _VERIFY(STATUS)
-     Iam = trim(COMP_NAME) // Iam
 
+     ! ewl new
+     class(logger_t), pointer :: logger
+
+     !ewl  ! Get the target component name and set-up traceback handle
+     !ewl  Iam = "Finalize"
+     !ewl  call ESMF_GridCompGet ( GC, name=COMP_NAME, RC=STATUS )
+     !ewl  _VERIFY(STATUS)
+     !ewl  Iam = trim(COMP_NAME) // Iam
+     call MAPL_GridCompGet(gc, logger=logger, _RC)
+     call logger%info("Finalize::GCHP_GridCompMod:: starting...")
+
+     !ewl comment out for now since does not work. Maybe not needed anymore?
+     ! ewl: dyncore has its own finalize routine specific to the state
      ! Call generic finalize
-     call MAPL_GenericFinalize( GC, IMPORT, EXPORT, CLOCK, RC=STATUS )
-     _VERIFY(STATUS)
+     !call MAPL_GenericFinalize( GC, IMPORT, EXPORT, CLOCK, RC=STATUS )
+     !_VERIFY(STATUS)
 
+     ! ewl: are these still needed?
      ! Destroy import and export states
      call ESMF_StateDestroy(IMPORT, rc=status)
      _VERIFY(STATUS)
