@@ -1,0 +1,4 @@
+This directory contains yaml config files for the case one gridded component,
+GCHP, with no children. Normally GCHP would have three children: GCHPctmEnv,
+DYNAMICS (AdvCore), and GCHPchem (GEOS-Chem), but those are commented out in
+GCHP.yaml.
