@@ -20,17 +20,18 @@ module GCHP_GridCompMod
 contains
 
   !=============================================================================
-  
+
     subroutine SetServices ( GC, RC )
 
     type(ESMF_GridComp)  :: gc  ! gridded component
     integer, intent(out) :: rc  ! return code
 
+    integer :: status
     class(logger_t), pointer :: logger
 
     call MAPL_GridCompGet(gc, logger=logger, _RC)
     call logger%info("SetServices::GCHP_GridCompMod: starting...")
-     
+
     ! Register services for this component
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
@@ -51,8 +52,10 @@ contains
     type(ESMF_Clock) :: clock  ! the clock
     integer, intent(out) :: rc ! Error code, 0 all is well
 
-    character(len=:), allocatable :: gchp_file
+    integer :: status
     class(logger_t), pointer :: logger
+    character(len=:), allocatable :: gchp_file
+
 
     call MAPL_GridCompGet(gc, logger=logger, _RC)
     call logger%info("Initialize::GCHP_GridCompMod: starting...")
@@ -75,10 +78,11 @@ contains
     type(ESMF_Clock) :: clock  ! the clock
     integer, intent(out) :: rc ! Error code, 0 all is well
 
-    real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
+    integer :: status
     class(logger_t), pointer :: logger
     type(ESMF_GRID) :: esmfgrid
     type(ESMF_HConfig) :: hconfig
+    real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
 
     call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
     call logger%info("Run::GCHP_GridCompMod: starting...")
@@ -106,16 +110,11 @@ contains
     type(ESMF_Clock) :: clock  ! the clock
     integer, intent(out) :: rc ! Error code, 0 all is well
 
+    integer :: status
     class(logger_t), pointer :: logger
 
     call MAPL_GridCompGet(gc, logger=logger, _RC)
     call logger%info("Finalize::GCHP_GridCompMod: starting...")
-
-    ! Destroy import and export states
-    call ESMF_StateDestroy(IMPORT, rc=status)
-    _VERIFY(STATUS)
-    call ESMF_StateDestroy(EXPORT, rc=status)
-    _VERIFY(STATUS)
 
     call logger%info("Finalize::GCHP_GridCompMod: complete")
 
