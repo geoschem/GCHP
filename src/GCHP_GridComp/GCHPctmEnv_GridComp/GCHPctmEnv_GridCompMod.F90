@@ -48,7 +48,9 @@ module GCHPctmEnv_GridComp
    integer, parameter :: r8     = 8
    integer, parameter :: r4     = 4
    
-   logical :: meteorology_vertical_index_is_top_down
+   logical :: met_mass_flux_is_top_down
+   logical :: met_wind_is_top_down
+   logical :: met_humidity_is_top_down
    integer :: use_total_air_pressure_in_advection
    integer :: correct_mass_flux_for_humidity
    
@@ -156,14 +158,6 @@ module GCHPctmEnv_GridComp
       call MAPL_AddImportSpec(gc, &
                               SHORT_NAME='PS2', &
                               LONG_NAME='pressure_at_surface_after_advection',&
-                              UNITS='hPa', &
-                              DIMS=MAPL_DimsHorzOnly, &
-                              VLOCATION=MAPL_VLocationEdge, &
-                              RC=STATUS)
-      _VERIFY(STATUS)
-      call MAPL_AddImportSpec(gc, &
-                              SHORT_NAME='PS2', &
-                              LONG_NAME='pressure_at_surface_after_advection', &
                               UNITS='hPa', &
                               DIMS=MAPL_DimsHorzOnly, &
                               VLOCATION=MAPL_VLocationEdge, &
@@ -519,29 +513,55 @@ module GCHPctmEnv_GridComp
       ! Get whether meteorology vertical index is top down (native fields)
       ! or bottom up (GEOS-Chem processed fields)
       ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=meteorology_vertical_index_is_top_down,   &
-                               label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:',&
-                               Default=.false.,                                &
-                               __RC__ )
-      if (meteorology_vertical_index_is_top_down) then
-         msg='Configured to expect ''top-down'' meteorological data'// &
-             ' from ''ExtData'''
+
+      ! Get vertical direction of flux that will be used
+      if ( import_mass_flux_from_extdata) then
+
+         ! Get vertical direction of mass flux import
+         call ESMF_ConfigGetAttribute( CF,        &
+              value=met_mass_flux_is_top_down,    &
+              label='MET_MASS_FLUX_IS_TOP_DOWN:', &
+              Default=.true., __RC__ )
+         if (met_mass_flux_is_top_down) then
+            msg='Configured to expect ''top-down'' mass flux data from ''ExtData'''
+         else
+            msg='Configured to expect ''bottom-up'' mass flux data data from ''ExtData'''
+         end if
+
       else
-         msg='Configured to expect ''bottom-up'' meteorological'// &
-             ' data from ''ExtData'''
+
+         ! Get vertical direction of wind import
+         call ESMF_ConfigGetAttribute( CF,       &
+           value=met_wind_is_top_down,           &
+           label='MET_WIND_IS_TOP_DOWN:',        &
+           Default=.false., __RC__ )
+         if (met_wind_is_top_down) then
+            msg='Configured to expect ''top-down'' wind data from ''ExtData'''
+         else
+            msg='Configured to expect ''bottom-up'' wind data from ''ExtData'''
+         end if
+         call lgr%info(trim(msg))
+
+      endif
+      call lgr%info(trim(msg))
+
+      ! Get vertical direction of humidity
+      call ESMF_ConfigGetAttribute( CF,                &
+           value=met_humidity_is_top_down, &
+           label='MET_HUMIDITY_IS_TOP_DOWN:',          &
+           Default=.false., __RC__ )
+      if (met_humidity_is_top_down) then
+         msg='Configured to expect ''top-down'' humidity data from ''ExtData'''
+      else
+         msg='Configured to expect ''bottom-up'' humidity data from ''ExtData'''
       end if
       call lgr%info(trim(msg))
 
       ! Get whether to use total or dry air pressure in advection
-      ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=use_total_air_pressure_in_advection,      &
-                               label='USE_TOTAL_AIR_PRESSURE_IN_ADVECTION:',   &
-                               Default=0,                                      &
-                               __RC__ )
+      call ESMF_ConfigGetAttribute( CF,                    &
+           value=use_total_air_pressure_in_advection,      &
+           label='USE_TOTAL_AIR_PRESSURE_IN_ADVECTION:',   &
+           Default=0, __RC__ )
       if ( use_total_air_pressure_in_advection > 0 ) then
          msg='Configured to use total air pressure in advection'
       else
@@ -550,13 +570,10 @@ module GCHPctmEnv_GridComp
       call lgr%info(trim(msg))
 
       ! Get whether to correct mass flux for humidity (convert total to dry)
-      ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=correct_mass_flux_for_humidity,           &
-                               label='CORRECT_MASS_FLUX_FOR_HUMIDITY:',        &
-                               Default=1,                                      &
-                               __RC__ )
+      call ESMF_ConfigGetAttribute( CF,              &
+           value=correct_mass_flux_for_humidity,     &
+           label='CORRECT_MASS_FLUX_FOR_HUMIDITY:',  &
+           Default=1, __RC__ )
       if ( correct_mass_flux_for_humidity > 0 ) then
          msg='Configured to correct native mass flux (if using) for humidity'
       else
@@ -780,8 +797,7 @@ module GCHPctmEnv_GridComp
          call calculate_ple(          &
               PS=PS1_IMPORT,          &
               PLE=DryPLE0_EXPORT,     &
-              SPHU=SPHU1_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              SPHU=SPHU1_IMPORT )
 
          DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
          DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
@@ -789,8 +805,7 @@ module GCHPctmEnv_GridComp
          call calculate_ple(          &
               PS=PS2_IMPORT,          &
               PLE=DryPLE1_EXPORT,     &
-              SPHU=SPHU2_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              SPHU=SPHU2_IMPORT )
 
          DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
          DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
@@ -875,7 +890,7 @@ module GCHPctmEnv_GridComp
 
       ! Set export as copy of import casted to real8 and set vertical index
       ! as top-down (level 1 corresponds to TOA)
-      if (meteorology_vertical_index_is_top_down) then 
+      if (met_humidity_is_top_down) then
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
@@ -999,7 +1014,7 @@ module GCHPctmEnv_GridComp
          call MAPL_GetPointer(IMPORT, CY_IMPORT, 'CYC',  RC=STATUS)
          _VERIFY(STATUS)
 
-         if (meteorology_vertical_index_is_top_down) then
+         if (met_mass_flux_is_top_down) then
             MFX_EXPORT =  dble(MFX_IMPORT(:,:,:))
             MFY_EXPORT =  dble(MFY_IMPORT(:,:,:))
             CX_EXPORT  =  dble(CX_IMPORT(:,:,:))
@@ -1035,7 +1050,7 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          
          ! Copy imports to local arrays so that vertical index is top down
-         if (meteorology_vertical_index_is_top_down) then
+         if (met_wind_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
             VC(:,:,:) = VA_IMPORT(:,:,:)
          else
@@ -1130,13 +1145,12 @@ module GCHPctmEnv_GridComp
 !
 ! !INTERFACE:
 !
-   subroutine calculate_ple(PS, PLE, SPHU, topDownMet )
+   subroutine calculate_ple(PS, PLE, SPHU )
 !
 ! !INPUT PARAMETERS:
 !
       real(r4), intent(in)           :: PS(:,:)     ! Surface pressure [hPa]
       real(r4), intent(in), OPTIONAL :: SPHU(:,:,:) ! Specific humidity [kg/kg]
-      logical,  intent(in), OPTIONAL :: topDownMet  ! True if meteorology level 1 is TOA
 !
 ! !INPUT PARAMETERS:
 !
@@ -1229,7 +1243,7 @@ module GCHPctmEnv_GridComp
          je = ubound(PS,2)
          LM = size  (SPHU,3)
 
-         if ( topDownMet ) then
+         if ( met_humidity_is_top_down ) then
 
            do J=js,je
            do I=is,ie
@@ -1238,7 +1252,7 @@ module GCHPctmEnv_GridComp
               PSDry = AP(LM+1)
 
               ! Stack up dry delta-P to get surface dry pressure
-              ! Vertically flip humidity if using top-down meteorology (raw GMAO files)
+              ! Vertically flip humidity if SPHU import vertical direction is down
               do L=1,LM
                  PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
                  PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )
