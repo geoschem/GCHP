@@ -11,9 +11,9 @@ module GCHP_GridCompMod
   private
 
   public SetServices
-  private Initialize
-  private Run
-  private Finalize
+  public Initialize
+  public Run
+  public Finalize
 
   integer,  parameter :: r4 = REAL4
 
@@ -123,4 +123,12 @@ contains
 
 !=============================================================================
 
- end module GCHP_GridCompMod
+end module GCHP_GridCompMod
+
+subroutine SetServices(gc, rc)
+   use ESMF
+   use GCHP_GridCompMod, only : mySetservices=>SetServices
+   type(ESMF_GridComp) :: gc
+   integer, intent(out) :: rc
+   call mySetServices(gc, rc=rc)
+end subroutine SetServices
