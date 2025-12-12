@@ -23,7 +23,7 @@ cap:
       GCHP:
         dso: libMAPL.componentDriverGridComp.dylib
         setServices: setservices_
-        config_file: GCHP.yaml
+        config_file: gchp.yaml
       EXTDATA:
         dso: libMAPL.extdata3g.dylib
         config_file: extdata.yaml

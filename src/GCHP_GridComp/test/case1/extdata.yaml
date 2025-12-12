@@ -1,75 +1,76 @@
-######################################################################
+#######################################################################
 Collections:
-######################################################################
-  #-------------------------------------------------------------------
-  # Meteorology collections
-  #-------------------------------------------------------------------
+#######################################################################
+#  #-------------------------------------------------------------------
+#  # Meteorology collections
+#  #-------------------------------------------------------------------
   MERRA2.A3dyn.05x0625.nc4:
     template: ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.A3dyn.05x0625.nc4
   MERRA2.I3.05x0625.nc4:
     template: ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
-
-
-######################################################################
-# Samplings (rules for data read and interpolation)
-######################################################################
+#
+#
+#######################################################################
+## Samplings (rules for data read and interpolation)
+#######################################################################
 Samplings:
-  #-------------------------------------------------------------------
-  # Sampling rules for dynamic meteorology
-  #-------------------------------------------------------------------
-  offset_1hr30min_nointerp:
-    update_offset: PT1H30M
-    time_interpolation: False
-
+#  #-------------------------------------------------------------------
+#  # Sampling rules for dynamic meteorology
+#  #-------------------------------------------------------------------
+#  offset_1hr30min_nointerp:
+#    update_offset: PT1H30M
+#    time_interpolation: False
+#
   offset_10min_interp:
     update_offset: PT10M
     time_interpolation: True
-
-######################################################################
-# Exports (each entry is equivalent to one row in ExtData.rc)
-######################################################################
+#
+#######################################################################
+## Exports (each entry is equivalent to one row in ExtData.rc)
+#######################################################################
 Exports:
-  #-------------------------------------------------------------------
-  # Fields from MERRA2.A3dyn.05x0625.nc4:
-  #UA;VA m_s-1 N Y F0;013000 none none U;V ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.A3dyn.05x0625.nc4
-  #-------------------------------------------------------------------
-# ewl: comment out for now since MAPL3 does not yet handle vectors
-#  UA;VA:
-#    collection: MERRA2.A3dyn.05x0625.nc4
-#    regrid: CONSERVE
-#    sample: offset_1hr30min_nointerp
-#    variable: U;V
-
-  #-------------------------------------------------------------------
-  # Fields from MERRA2.I3.05x0625.nc4:
-  #PS1   Pa      N Y 0        none 0.01 PS ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
-  #PS2   Pa      N Y 0;001000 none 0.01 PS ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
-  #SPHU1 kg_kg-1 N Y 0        none none QV ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
-  #SPHU2 kg_kg-1 N Y 0;001000 none none QV ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
-  #-------------------------------------------------------------------
-  PS1:
-    collection: MERRA2.I3.05x0625.nc4
-    linear_transformation:
-      - 0.0
-      - 0.01
-    regrid: CONSERVE
-    variable: PS
-  PS2:
-    collection: MERRA2.I3.05x0625.nc4
-    linear_transformation:
-      - 0.0
-      - 0.01
-    regrid: CONSERVE
-    sample: offset_10min_interp
-    variable: PS
+#  #-------------------------------------------------------------------
+#  # Fields from MERRA2.A3dyn.05x0625.nc4:
+#  #UA;VA m_s-1 N Y F0;013000 none none U;V ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.A3dyn.05x0625.nc4
+#  #-------------------------------------------------------------------
+## ewl: comment out for now since MAPL3 does not yet handle vectors
+##  UA;VA:
+##    collection: MERRA2.A3dyn.05x0625.nc4
+##    regrid: CONSERVE
+##    sample: offset_1hr30min_nointerp
+##    variable: U;V
+#
+#  #-------------------------------------------------------------------
+#  # Fields from MERRA2.I3.05x0625.nc4:
+#  #PS1   Pa      N Y 0        none 0.01 PS ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
+#  #PS2   Pa      N Y 0;001000 none 0.01 PS ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
+#  #SPHU1 kg_kg-1 N Y 0        none none QV ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
+#  #SPHU2 kg_kg-1 N Y 0;001000 none none QV ./MetDir/%y4/%m2/MERRA2.%y4%m2%d2.I3.05x0625.nc4
+#  #-------------------------------------------------------------------
+##  PS1:
+##    collection: MERRA2.I3.05x0625.nc4
+##    linear_transformation:
+##      - 0.0
+##      - 0.01
+##    regrid: CONSERVE
+##    variable: PS
+##  PS2:
+##    collection: MERRA2.I3.05x0625.nc4
+##    linear_transformation:
+##      - 0.0
+##      - 0.01
+##    regrid: CONSERVE
+##    sample: offset_10min_interp
+##    variable: PS
   SPHU1:
     collection: MERRA2.I3.05x0625.nc4
     regrid: CONSERVE
-    variable: QV
-  SPHU2:
-    collection: MERRA2.I3.05x0625.nc4
-    regrid: CONSERVE
     sample: offset_10min_interp
     variable: QV
+#  SPHU2:
+#    collection: MERRA2.I3.05x0625.nc4
+#    regrid: CONSERVE
+#    sample: offset_10min_interp
+#    variable: QV
 
 

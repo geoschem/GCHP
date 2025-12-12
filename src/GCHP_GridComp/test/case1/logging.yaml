@@ -93,7 +93,7 @@ loggers:
       root_level: DEBUG
 
    cap:
-       level: WARNING
+       level: DEBUG
        root_level: DEBUG
        
    MAPL:
