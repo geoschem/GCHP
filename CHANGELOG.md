@@ -17,7 +17,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
-  
+- Updated the ESMF version used in ReadTheDocs installation instructions from 8.4.2 to 8.6.1
+
+
 ## [14.6.3] - 2025-07-28
 ### Added
 - Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks
