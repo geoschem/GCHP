@@ -477,6 +477,7 @@ module GCHPctmEnv_GridComp
       integer                    :: comm
       character(len=ESMF_MAXSTR) :: COMP_NAME
       character(len=ESMF_MAXSTR) :: msg
+      logical                    :: use_extdata2g
       type(ESMF_Config)          :: CF
       type(ESMF_Grid)            :: esmfGrid
       type(ESMF_VM)              :: VM
@@ -517,22 +518,30 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       
       ! Get whether meteorology vertical index is top down (native fields)
-      ! or bottom up (GEOS-Chem processed fields)
+      ! or bottom up (GEOS-Chem processed fields). If using ExtData2G then
+      ! fields are automatically flipped to bottom up regardless of source.
       ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=meteorology_vertical_index_is_top_down,   &
-                               label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:',&
-                               Default=.false.,                                &
-                               __RC__ )
-      if (meteorology_vertical_index_is_top_down) then
-         msg='Configured to expect ''top-down'' meteorological data'// &
-             ' from ''ExtData'''
+      call ESMF_ConfigGetAttribute(myState%myCF,value=use_extdata2g, &
+           label='USE_EXTDATA2G:', Default=.false., __RC__ )
+      if ( use_extdata2g ) then
+         meteorology_vertical_index_is_top_down = .false.
+         call lgr%info('Using MAPL ExtData2G; all ''top-down'' meteorological data will be automatically flipped to ''bottom-up'' prior to exporting to other gridcomps.')
       else
-         msg='Configured to expect ''bottom-up'' meteorological'// &
-             ' data from ''ExtData'''
-      end if
-      call lgr%info(trim(msg))
+         call ESMF_ConfigGetAttribute( &
+              CF,                                             &
+              value=meteorology_vertical_index_is_top_down,   &
+              label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:',&
+              Default=.false.,                                &
+              __RC__ )
+         if (meteorology_vertical_index_is_top_down) then
+            msg='Configured to expect ''top-down'' meteorological data'// &
+                 ' from ''ExtData'''
+         else
+            msg='Configured to expect ''bottom-up'' meteorological'// &
+                 ' data from ''ExtData'''
+         end if
+         call lgr%info(trim(msg))
+      endif
 
       ! Get whether to use total or dry air pressure in advection
       ! -----------------------------------------------------------------
