@@ -521,7 +521,7 @@ module GCHPctmEnv_GridComp
       ! or bottom up (GEOS-Chem processed fields). If using ExtData2G then
       ! fields are automatically flipped to bottom up regardless of source.
       ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute(myState%myCF,value=use_extdata2g, &
+      call ESMF_ConfigGetAttribute(CF,value=use_extdata2g, &
            label='USE_EXTDATA2G:', Default=.false., __RC__ )
       if ( use_extdata2g ) then
          meteorology_vertical_index_is_top_down = .false.
