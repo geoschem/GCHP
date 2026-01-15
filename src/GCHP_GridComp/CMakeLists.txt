@@ -21,7 +21,8 @@ endif()
 #--------------------------------
 # Create the GCHP_GridComp target
 #--------------------------------
-add_library(GCHP_GridComp STATIC
+# ewl: change STATIC to SHARED to test issue with SetServices in GCHP
+add_library(GCHP_GridComp SHARED
     GCHP_GridCompMod.F90
 )
 
