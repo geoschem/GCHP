@@ -1,4 +1,5 @@
 #include "MAPL_Generic.h"
+#include "MAPL.h"
 
 module GCHP_GridCompMod
 
@@ -29,16 +30,25 @@ contains
     integer :: status
     class(logger_t), pointer :: logger
 
+    _HERE, 'ewl debug: SetServices::GCHP:: starting...'
+    
     call MAPL_GridCompGet(gc, logger=logger, _RC)
-    call logger%info("SetServices::GCHP_GridCompMod: starting...")
+    _HERE, 'ewl debug: SetServices::GCHP:: 1'
+!    call logger%info("SetServices::GCHP_GridCompMod: starting...")
 
     ! Register services for this component
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
+    _HERE, 'ewl debug: SetServices::GCHP:: 2'
+    !    call logger%info("SetServices::GCHP_GridCompMod: 1")
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
+    !call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, _RC)
+    _HERE, 'ewl debug: SetServices::GCHP:: 3'
+    !    call logger%info("SetServices::GCHP_GridCompMod: 2")
+    _HERE, 'ewl debug: SetServices::GCHP:: 4'
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
+!    call logger%info("SetServices::GCHP_GridCompMod: complete")
+    _HERE, 'ewl debug: SetServices::GCHP:: complete'
     _RETURN(_SUCCESS)
-
-    call logger%info("SetServices::GCHP_GridCompMod: complete")
 
   end subroutine SetServices
 
@@ -56,12 +66,12 @@ contains
     class(logger_t), pointer :: logger
     character(len=:), allocatable :: gchp_file
 
-
+    _HERE, 'ewl debug: Initialize::GCHP:: starting...'
     call MAPL_GridCompGet(gc, logger=logger, _RC)
-    call logger%info("Initialize::GCHP_GridCompMod: starting...")
+!    call logger%info("Initialize::GCHP_GridCompMod: starting...")
 
-    call logger%info("Initialize::GCHP_GridCompMod: complete")
-
+!    call logger%info("Initialize::GCHP_GridCompMod: complete")
+    _HERE, 'ewl debug: Initialize::GCHP:: complete'
     _RETURN(_SUCCESS)
 
   end subroutine Initialize
@@ -84,8 +94,9 @@ contains
     type(ESMF_HConfig) :: hconfig
     real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
 
+    _HERE, 'ewl debug: Run::GCHP:: starting...'
     call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
-    call logger%info("Run::GCHP_GridCompMod: starting...")
+!    call logger%info("Run::GCHP_GridCompMod: starting...")
 
     call ESMF_GridValidate(esmfgrid, _RC)
     call MAPL_GridGet(esmfgrid, longitudes=lons, latitudes=lats, _RC)
@@ -93,8 +104,8 @@ contains
     if( associated(temp2D) ) temp2d = lons
     call MAPL_StateGetPointer(export, temp2d, "LATS", _RC)
     if( associated(temp2D) ) temp2d = lats
-
-    call logger%info("Run::GCHP_GridCompMod: complete")
+    _HERE, 'ewl debug: Run::GCHP:: complete'
+!    call logger%info("Run::GCHP_GridCompMod: complete")
 
     _RETURN(_SUCCESS)
 
@@ -114,9 +125,9 @@ contains
     class(logger_t), pointer :: logger
 
     call MAPL_GridCompGet(gc, logger=logger, _RC)
-    call logger%info("Finalize::GCHP_GridCompMod: starting...")
+!    call logger%info("Finalize::GCHP_GridCompMod: starting...")
 
-    call logger%info("Finalize::GCHP_GridCompMod: complete")
+!    call logger%info("Finalize::GCHP_GridCompMod: complete")
 
     _RETURN(ESMF_SUCCESS)
   end subroutine Finalize
