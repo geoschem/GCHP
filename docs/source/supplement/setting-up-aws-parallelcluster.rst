@@ -11,8 +11,16 @@ Set up AWS ParallelCluster
 
 
 AWS ParallelCluster is a service that lets you create your own HPC cluster. Using GCHP on AWS ParallelCluster is similar to using GCHP on any other HPC. 
-We offer up-to-date Amazon Machine Images (AMIs) with GCHP's dependencies built and GCHP compiled through `AMI list <https://github.com/yidant/GCHP-cloud/blob/main/aws/ami.md>`_. 
-These images contain pre-built GCHP source code and the tools for creating a GCHP run directory.
+We offer up-to-date Amazon Machine Images (AMIs) with GCHP's built dependencies. See the available AMIs below:
+
+=========================   ============    ===================      ===================
+AMI ID                      OS              architecture             pcluster version
+=========================   ============    ===================      ===================
+ami-061ca4ddb4e1ebd63       alinux2023      x86_64                   3.13.0
+=========================   ============    ===================      ===================
+
+
+The images contain pre-built tools for creating a GCHP run directory and compiling GCHP.
 This page has instructions on using the AMIs to create your own ParallelCluster. 
 You can also choose to set up AWS ParallelCluster for running GCHP simulations yourself, and the other GCHP documentation like :ref:`Build GCHP's dependencies <spackguide>`, :ref:`downloading_gchp`, :ref:`building_gchp`, :ref:`downloading_input_data`, and :ref:`running_gchp` is appropriate for using GCHP on AWS ParallelCluster.
 
@@ -29,7 +37,7 @@ The workflow for getting started with GCHP simulations using AWS ParallelCluster
   
 #. Running GCHP on ParallelCluster (:ref:`described on this page <create_fsx_for_lustre>`)
 
-These instructions were written using AWS ParallelCluster 3.7.0. 
+These instructions were written using AWS ParallelCluster 3.13.0. 
 
 .. _create_fsx_for_lustre:
 
