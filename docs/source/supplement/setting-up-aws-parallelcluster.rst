@@ -26,7 +26,7 @@ You may also choose to set up AWS ParallelCluster manually, and the other GCHP d
 
 **Workflow for getting started with GCHP simulations on AWS ParallelCluster using our public AMIs:**
 
-#. Create an FSx for Lustre file system for input data (:ref:`described on this page <create_fsx_for_lustre>`)
+#. Create an FSx for Lustre file system for input data (:ref:`described here <create_fsx_for_lustre>`)
 #. Configure AWS CLI (:ref:`described here <aws_cli_setup>`)
 #. Configure AWS ParallelCluster (:ref:`described here <creating_your_pcluster>`)
 #. Create AWS ParallelCluster with GCHP public AMIs (:ref:`described here <creating_your_pcluster>`)
@@ -102,9 +102,9 @@ If you lose the private key, you will need to create a new key pair. Set strict 
 
 .. code-block:: console
 
-    chmod 400 <your-keypair-name>.pem
+    $ chmod 400 <your-keypair-name>.pem
 
-**Step 3b Install AWS ParallelCluster**
+**Step 3b: Install AWS ParallelCluster**
 
 Install `AWS ParallelCluster <https://docs.aws.amazon.com/parallelcluster/latest/ug/parallelcluster-version-3.html>`_ using :literal:`pip` (requires Python 3).
 If you are using an AMI, make sure the parallelcluster version matches your AMI.
