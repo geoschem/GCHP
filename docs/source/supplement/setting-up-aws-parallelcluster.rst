@@ -236,4 +236,6 @@ AWS ParallelCluster supports Slurm and AWS Batch job schedulers. Your cluster is
 It might require the root permission to run Slurm commands or restart Slurm.
 Before you submit your job, you can start a shell as superuser by running :literal:`sudo -s`.
 
-You can follow :ref:`running_gchp` to run GCHP with Slurm scheduler.
+You can follow :ref:`running_gchp` to run GCHP with Slurm scheduler. 
+
+Sample run scripts can also be found at your **GCHP_source_dir/run/runScriptSamples/operational_examples/aws_pcluster**.
