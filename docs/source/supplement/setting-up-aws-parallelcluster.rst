@@ -89,6 +89,7 @@ For instructions on :literal:`aws configure`, refer to the `Official AWS Instruc
   The instructions on this page are meant to supplement the official instructions, and point out the important parts of the configuration for use with GCHP.
 
 **Step 3a: Create a Key Pair**
+
 Make sure you already have a key pair before moving on.
 A key pair is needed as your secure identity credential to access your cluster's head node. 
 You can create the key pair using the AWS Management Console or the AWS CLI:
@@ -104,15 +105,18 @@ If you lose the private key, you will need to create a new key pair. Set strict 
     chmod 400 <your-keypair-name>.pem
 
 **Step 3b Install `AWS ParallelCluster**
-Install `AWS ParallelCluster <https://docs.aws.amazon.com/parallelcluster/latest/ug/parallelcluster-version-3.html>`_ using :literal:`pip` (requires Python 3):
+
+Install `AWS ParallelCluster <https://docs.aws.amazon.com/parallelcluster/latest/ug/parallelcluster-version-3.html>`_ using :literal:`pip` (requires Python 3).
+If you are using an AMI, make sure the parallelcluster version matches your AMI. 
 
 .. code-block:: console
 
-   $ pip install aws-parallelcluster
+   $ pip install "aws-parallelcluster==3.13.0"
 
 You can use the :literal:`pcluster` command to performs actions like: creating a cluster, shutting your cluster down (temporarily), destroying a cluster, etc.
 
 **Step 3c: Configure Your Cluster**
+
 Generate a configuration file:
 
 .. code-block:: console
@@ -132,6 +136,7 @@ When prompted, we recommend the following settings:
   Execution nodes automatically spinup and shutdown according when there are jobs in your queue.
 
 **Step 3d: Customize Configuration**
+
 Now you should have a file name :file:`cluster-config.yaml`. 
 This is the configuration file with setting for a cluster. 
 
@@ -186,6 +191,7 @@ Use the template below, ensuring you replace the placeholder values (e.g., `subn
              VolumeType: gp3
 
 **Step 3e: Create the Cluster**
+
 When you are ready, run the :command:`pcluster create-cluster` command.
 
 .. code-block:: console
