@@ -20,7 +20,19 @@ ami-061ca4ddb4e1ebd63       alinux2023      x86_64                   3.13.0
 =========================   ============    ===================      ===================
 
 
-The images contain pre-built tools for creating a GCHP run directory and compiling the model.
+The image contains pre-built tools for creating a GCHP run directory and compiling the model. 
+
+.. important::
+
+   **Spack Environment Required**
+   
+   This AMI uses Spack to manage software dependencies. You must activate the GCHP environment 
+   before compiling or running the model:
+
+   .. code-block:: console
+
+      $ spack env activate gchp
+
 This page has instructions on using the AMIs to create your own ParallelCluster.
 You may also choose to set up AWS ParallelCluster manually, and the other GCHP documentation like :ref:`Build GCHP's dependencies <spackguide>`, :ref:`downloading_gchp`, :ref:`building_gchp`, :ref:`downloading_input_data`, and :ref:`running_gchp` is applicable for using GCHP on AWS ParallelCluster.
 
