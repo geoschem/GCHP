@@ -83,6 +83,8 @@ use Spack to install GCHP's dependencies if needed.
    :maxdepth: 1
    :caption: Supplemental Guides
 
+   supplement/horizontal-grids.rst
+   supplement/vertical-grids.rst
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
    supplement/setting-up-aws-parallelcluster.rst
@@ -101,6 +103,7 @@ use Spack to install GCHP's dependencies if needed.
    geos-chem-shared-docs/supplemental-guides/species-guide.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-standalone.rst
+   geos-chem-shared-docs/supplemental-guides/pm25-pm10-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
 .. toctree::
