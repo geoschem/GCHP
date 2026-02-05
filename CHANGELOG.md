@@ -9,6 +9,28 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
+- Added submodule for GFE (Goddard-Fortran-Ecosystem) which includes GMAO libraries yafYaml, pFlogger, gFTL, gFTL-shared, fArgParse, and pFUnit as its own submodules
+- Added connectivity from GEOS-Chem to FV3 dynamics to pass DELP_DRY in GEOS-Chem restart file to advection for restart file species mass conservation
+
+### Changed
+- Changed minimum CMake version from 3.13 to 3.24
+- Changed minimum ESMF version from 8.4.2 to 8.6.1
+- Updated docs to indicate timing information now printed to allPEs.log
+- Updated docs to include library requirement udunits2 and additional information about stretched grid parameters
+- Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
+- Updated badges on `README.md` and `docs/source/index.rst`
+- Updated submodule ESMA_cmake for GNU Fortran compiler compatibility with CPUs returning processor description INTEL
+
+### Fixed
+- Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
+- Fixed vertical flipping bug in GCHPctmEnv when using C720 fields with GEOS-FP processed data
+
+### Removed
+- Removed individual submodules for yafYaml, pFlogger, and gFTL-shared since now located in new submodule GFE
+
 ## [14.6.3] - 2025-07-28
 ### Added
 - Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks

@@ -62,7 +62,7 @@ configures the exact dates for the next GCHP run.
 
    Toggles printed output of runtime MAPL timing profilers. This is
    set to :literal:`YES`. Timing profiles are output at the end of
-   every GCHP run.
+   every GCHP run in output log file :literal:`allPEs.log`.
 
 .. option:: MAPL_ENABLE_MEMUTILS
 
