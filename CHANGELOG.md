@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated submodule ESMA_cmake for GNU Fortran compiler compatibility with CPUs returning processor description INTEL
 - Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
 - Updated the ESMF version used in ReadTheDocs installation instructions from 8.4.2 to 8.6.1
+- Updated GEOS-Chem submodule to version 14.7.0
+- Updated HEMCO submodule to version 3.12.0
+- Updated ESMA_cmake submodule to commit 01bbf2f (Merge PR #9)
+- Updated geos-chem-shared-docs submodule to commit 03078d4
 
 ### Fixed
 - Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
