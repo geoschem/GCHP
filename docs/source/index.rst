@@ -4,15 +4,14 @@ GEOS-Chem High Performance
 .. raw:: html
 
    <p>
-   <a href="https://github.com/geoschem/GCHP/releases"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?include_prereleases&label=Latest%20Pre-Release"></a>
-   <a href="http://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_versions"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Stable%20Release"></a>
-   <a href="https://github.com/geoschem/GCHP/releases/"><img src="https://img.shields.io/github/release-date/geoschem/GCHP"></a><br/>
-   <a href="https://zenodo.org/badge/latestdoi/200900441"><img src="https://zenodo.org/badge/200900441.svg"></a>
-   <a href="https://github.com/geoschem/GCHP/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
-   <a href="https://gchp.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/gchp?label=ReadTheDocs"></a>
-   <a href="https://dev.azure.com/geoschem/GCHP/_build"><img src="https://img.shields.io/azure-devops/build/geoschem/GCHP/20/main?label=Build%20Matrix"></a>
+     <a href="https://github.com/geoschem/GCHP/releases/"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Stable%20Release" alt="Latest release"></a>
+     <a href="https://github.com/geoschem/GCHP/"><img src="https://img.shields.io/github/release-date/geoschem/GCHP" alt="Release date"></a><br/>
+     <a href="https://doi.org/10.5281/zenodo.4428926"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4428926.svg" alt="DOI"></a>
+     <a href="https://github.com/geoschem/GCHP/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+     <a href="https://gchp.readthedocs.io"><img src="https://img.shields.io/readthedocs/gchp?label=ReadTheDocs"></a>
    </p>
 
+   
 The `GEOS--Chem model <http://geos-chem.org/>`_ is a global 3-D model
 of atmospheric composition driven by assimilated meteorological
 observations from the Goddard Earth Observing System (GEOS) of the
@@ -84,6 +83,8 @@ use Spack to install GCHP's dependencies if needed.
    :maxdepth: 1
    :caption: Supplemental Guides
 
+   supplement/horizontal-grids.rst
+   supplement/vertical-grids.rst
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
    supplement/setting-up-aws-parallelcluster.rst
@@ -102,6 +103,7 @@ use Spack to install GCHP's dependencies if needed.
    geos-chem-shared-docs/supplemental-guides/species-guide.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-standalone.rst
+   geos-chem-shared-docs/supplemental-guides/pm25-pm10-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
 .. toctree::

@@ -48,7 +48,9 @@ module GCHPctmEnv_GridComp
    integer, parameter :: r8     = 8
    integer, parameter :: r4     = 4
    
-   logical :: meteorology_vertical_index_is_top_down
+   logical :: met_mass_flux_is_top_down
+   logical :: met_wind_is_top_down
+   logical :: met_humidity_is_top_down
    integer :: use_total_air_pressure_in_advection
    integer :: correct_mass_flux_for_humidity
    
@@ -156,14 +158,6 @@ module GCHPctmEnv_GridComp
       call MAPL_AddImportSpec(gc, &
                               SHORT_NAME='PS2', &
                               LONG_NAME='pressure_at_surface_after_advection',&
-                              UNITS='hPa', &
-                              DIMS=MAPL_DimsHorzOnly, &
-                              VLOCATION=MAPL_VLocationEdge, &
-                              RC=STATUS)
-      _VERIFY(STATUS)
-      call MAPL_AddImportSpec(gc, &
-                              SHORT_NAME='PS2', &
-                              LONG_NAME='pressure_at_surface_after_advection', &
                               UNITS='hPa', &
                               DIMS=MAPL_DimsHorzOnly, &
                               VLOCATION=MAPL_VLocationEdge, &
@@ -341,6 +335,89 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
 
+      ! Add the same exports as R4 as a work-around to a MAPL 2.55 History
+      ! bug where R8 cannot be converted to R4 for output (ewl, 5/28/25)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='SPHU0_R4', &
+                              LONG_NAME='specific_humidity_before_advection', &
+                              UNITS='kg kg-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='PLE0_R4', &
+                              LONG_NAME='pressure_at_layer_edges_before_advection',&
+                              UNITS='Pa', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='PLE1_R4', &
+                              LONG_NAME='pressure_at_layer_edges_after_advection', &
+                              UNITS='Pa', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc,                                    &
+                              SHORT_NAME = 'DryPLE0_R4',                &
+                              LONG_NAME  = 'dry_pressure_at_layer_edges_before_advection',&
+                              UNITS      = 'Pa',                     &
+                              DIMS       = MAPL_DimsHorzVert,        &
+                              VLOCATION  = MAPL_VLocationEdge,       &
+                              RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc,                                   &
+                              SHORT_NAME = 'DryPLE1_R4',                &
+                              LONG_NAME  = 'dry_pressure_at_layer_edges_after_advection',&
+                              UNITS      = 'Pa',                     &
+                              DIMS       = MAPL_DimsHorzVert,        &
+                              VLOCATION  = MAPL_VLocationEdge,       &
+                              RC=STATUS  )
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='CX_R4', &
+                              LONG_NAME='xward_accumulated_courant_number', &
+                              UNITS='', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='CY_R4', &
+                              LONG_NAME='yward_accumulated_courant_number', &
+                              UNITS='', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='MFX_R4', &
+                              LONG_NAME='pressure_weighted_accumulated_xward_mass_flux', &
+                              UNITS='Pa m+2 s-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='MFY_R4', &
+                              LONG_NAME='pressure_weighted_accumulated_yward_mass_flux', &
+                              UNITS='Pa m+2 s-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='UpwardsMassFlux_R4', &
+                              LONG_NAME='upward_mass_flux_of_air', &
+                              UNITS='kg m-2 s-1', &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationEdge, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+
       ! Set profiling timers
       !-------------------------
       call lgr%debug('Adding timers')
@@ -436,29 +513,55 @@ module GCHPctmEnv_GridComp
       ! Get whether meteorology vertical index is top down (native fields)
       ! or bottom up (GEOS-Chem processed fields)
       ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=meteorology_vertical_index_is_top_down,   &
-                               label='METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN:',&
-                               Default=.false.,                                &
-                               __RC__ )
-      if (meteorology_vertical_index_is_top_down) then
-         msg='Configured to expect ''top-down'' meteorological data'// &
-             ' from ''ExtData'''
+
+      ! Get vertical direction of flux that will be used
+      if ( import_mass_flux_from_extdata) then
+
+         ! Get vertical direction of mass flux import
+         call ESMF_ConfigGetAttribute( CF,        &
+              value=met_mass_flux_is_top_down,    &
+              label='MET_MASS_FLUX_IS_TOP_DOWN:', &
+              Default=.true., __RC__ )
+         if (met_mass_flux_is_top_down) then
+            msg='Configured to expect ''top-down'' mass flux data from ''ExtData'''
+         else
+            msg='Configured to expect ''bottom-up'' mass flux data data from ''ExtData'''
+         end if
+
       else
-         msg='Configured to expect ''bottom-up'' meteorological'// &
-             ' data from ''ExtData'''
+
+         ! Get vertical direction of wind import
+         call ESMF_ConfigGetAttribute( CF,       &
+           value=met_wind_is_top_down,           &
+           label='MET_WIND_IS_TOP_DOWN:',        &
+           Default=.false., __RC__ )
+         if (met_wind_is_top_down) then
+            msg='Configured to expect ''top-down'' wind data from ''ExtData'''
+         else
+            msg='Configured to expect ''bottom-up'' wind data from ''ExtData'''
+         end if
+         call lgr%info(trim(msg))
+
+      endif
+      call lgr%info(trim(msg))
+
+      ! Get vertical direction of humidity
+      call ESMF_ConfigGetAttribute( CF,                &
+           value=met_humidity_is_top_down, &
+           label='MET_HUMIDITY_IS_TOP_DOWN:',          &
+           Default=.false., __RC__ )
+      if (met_humidity_is_top_down) then
+         msg='Configured to expect ''top-down'' humidity data from ''ExtData'''
+      else
+         msg='Configured to expect ''bottom-up'' humidity data from ''ExtData'''
       end if
       call lgr%info(trim(msg))
 
       ! Get whether to use total or dry air pressure in advection
-      ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=use_total_air_pressure_in_advection,      &
-                               label='USE_TOTAL_AIR_PRESSURE_IN_ADVECTION:',   &
-                               Default=0,                                      &
-                               __RC__ )
+      call ESMF_ConfigGetAttribute( CF,                    &
+           value=use_total_air_pressure_in_advection,      &
+           label='USE_TOTAL_AIR_PRESSURE_IN_ADVECTION:',   &
+           Default=0, __RC__ )
       if ( use_total_air_pressure_in_advection > 0 ) then
          msg='Configured to use total air pressure in advection'
       else
@@ -467,13 +570,10 @@ module GCHPctmEnv_GridComp
       call lgr%info(trim(msg))
 
       ! Get whether to correct mass flux for humidity (convert total to dry)
-      ! -----------------------------------------------------------------
-      call ESMF_ConfigGetAttribute( &
-                               CF,                                             &
-                               value=correct_mass_flux_for_humidity,           &
-                               label='CORRECT_MASS_FLUX_FOR_HUMIDITY:',        &
-                               Default=1,                                      &
-                               __RC__ )
+      call ESMF_ConfigGetAttribute( CF,              &
+           value=correct_mass_flux_for_humidity,     &
+           label='CORRECT_MASS_FLUX_FOR_HUMIDITY:',  &
+           Default=1, __RC__ )
       if ( correct_mass_flux_for_humidity > 0 ) then
          msg='Configured to correct native mass flux (if using) for humidity'
       else
@@ -630,6 +730,12 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: DryPLE0_EXPORT => null()
       real(r8), pointer, dimension(:,:,:) :: DryPLE1_EXPORT => null()
 
+      ! R4 exports used for diagnostics
+      real(r4), pointer, dimension(:,:,:) :: PLE0_R4_EXPORT    => null()
+      real(r4), pointer, dimension(:,:,:) :: PLE1_R4_EXPORT    => null()
+      real(r4), pointer, dimension(:,:,:) :: DryPLE0_R4_EXPORT => null()
+      real(r4), pointer, dimension(:,:,:) :: DryPLE1_R4_EXPORT => null()
+
       !================================
       ! prepare_ple_exports starts here
       !================================
@@ -683,14 +789,15 @@ module GCHPctmEnv_GridComp
       PLE1_EXPORT = 100.0d0 * PLE1_EXPORT
       PLE1_EXPORT = PLE1_EXPORT(:,:,LM:0:-1)
 
+      ! Set R4 diagnostics
+      
       ! Also compute dry pressures if using dry pressure in advection
       if ( use_total_air_pressure_in_advection < 1 ) then
 
          call calculate_ple(          &
               PS=PS1_IMPORT,          &
               PLE=DryPLE0_EXPORT,     &
-              SPHU=SPHU1_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              SPHU=SPHU1_IMPORT )
 
          DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
          DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
@@ -698,14 +805,25 @@ module GCHPctmEnv_GridComp
          call calculate_ple(          &
               PS=PS2_IMPORT,          &
               PLE=DryPLE1_EXPORT,     &
-              SPHU=SPHU2_IMPORT,      &
-              topDownMet=meteorology_vertical_index_is_top_down )
+              SPHU=SPHU2_IMPORT )
 
          DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
          DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
 
+         ! Set DryPLE R4 exports for diagnostics
+         call MAPL_GetPointer(EXPORT, DryPLE0_R4_EXPORT, 'DryPLE0_R4', NotFoundOK=.TRUE., _RC)
+         IF ( ASSOCIATED(DryPLE0_R4_EXPORT) ) DryPLE0_R4_EXPORT = DryPLE0_EXPORT
+         call MAPL_GetPointer(EXPORT, DryPLE1_R4_EXPORT, 'DryPLE1_R4', NotFoundOK=.TRUE., _RC)
+         IF ( ASSOCIATED(DryPLE1_R4_EXPORT) ) DryPLE1_R4_EXPORT = DryPLE1_EXPORT
+
       endif
 
+      ! Set PLE R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, PLE0_R4_EXPORT, 'PLE0_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(PLE0_R4_EXPORT) ) PLE0_R4_EXPORT = PLE0_EXPORT
+      call MAPL_GetPointer(EXPORT, PLE1_R4_EXPORT, 'PLE1_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(PLE1_R4_EXPORT) ) PLE1_R4_EXPORT = PLE1_EXPORT
+      
       ! Set PLE output which will be used to compute mass fluxes in FV3
       if ( use_total_air_pressure_in_advection > 0 ) then
          PLE => PLE0_EXPORT
@@ -748,6 +866,7 @@ module GCHPctmEnv_GridComp
       integer :: STATUS
       real,     pointer, dimension(:,:,:) :: SPHU1_IMPORT => null()
       real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT => null()
+      real(r4), pointer, dimension(:,:,:) :: SPHU0_R4_EXPORT => null()
 
       !================================
       ! prepare_sphu_export starts here
@@ -771,12 +890,16 @@ module GCHPctmEnv_GridComp
 
       ! Set export as copy of import casted to real8 and set vertical index
       ! as top-down (level 1 corresponds to TOA)
-      if (meteorology_vertical_index_is_top_down) then 
+      if (met_humidity_is_top_down) then
          SPHU0_EXPORT = dble(SPHU1_IMPORT)
       else
          SPHU0_EXPORT(:,:,:) = dble(SPHU1_IMPORT(:,:,LM:1:-1))
       end if
 
+      ! R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, SPHU0_R4_EXPORT, 'SPHU0_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(SPHU0_R4_EXPORT) ) SPHU0_R4_EXPORT = SPHU0_EXPORT
+      
       _RETURN(ESMF_SUCCESS)
 
    end subroutine prepare_sphu_export
@@ -825,6 +948,12 @@ module GCHPctmEnv_GridComp
       real(r8), pointer, dimension(:,:,:) :: CY_EXPORT  => null()
       real(r8), pointer, dimension(:,:,:) :: SPHU0_EXPORT  => null()
 
+      ! Pointers to R4 exports for diagnostics
+      real(r4), pointer, dimension(:,:,:) :: MFX_R4_EXPORT => null()
+      real(r4), pointer, dimension(:,:,:) :: MFY_R4_EXPORT => null() 
+      real(r4), pointer, dimension(:,:,:) :: CX_R4_EXPORT  => null()
+      real(r4), pointer, dimension(:,:,:) :: CY_R4_EXPORT  => null()
+
       ! Pointers to imports
       real,     pointer, dimension(:,:,:) :: MFX_IMPORT => null()
       real,     pointer, dimension(:,:,:) :: MFY_IMPORT => null()
@@ -835,6 +964,7 @@ module GCHPctmEnv_GridComp
 
       ! Pointer to diagnostic export
       real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
+      real(r4), pointer, dimension(:,:,:) :: UpwardsMassFlux_R4 => null()
 
       ! Pointers to local arrays
       real,     pointer, dimension(:,:,:) :: UC        => null()
@@ -884,7 +1014,7 @@ module GCHPctmEnv_GridComp
          call MAPL_GetPointer(IMPORT, CY_IMPORT, 'CYC',  RC=STATUS)
          _VERIFY(STATUS)
 
-         if (meteorology_vertical_index_is_top_down) then
+         if (met_mass_flux_is_top_down) then
             MFX_EXPORT =  dble(MFX_IMPORT(:,:,:))
             MFY_EXPORT =  dble(MFY_IMPORT(:,:,:))
             CX_EXPORT  =  dble(CX_IMPORT(:,:,:))
@@ -920,7 +1050,7 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          
          ! Copy imports to local arrays so that vertical index is top down
-         if (meteorology_vertical_index_is_top_down) then
+         if (met_wind_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
             VC(:,:,:) = VA_IMPORT(:,:,:)
          else
@@ -949,11 +1079,21 @@ module GCHPctmEnv_GridComp
          endif
          firstRun = .false.
 #endif
-         
+
          ! Deallocate local arrays
          DEALLOCATE(UC, VC, UCr8, VCr8)
 
       end if
+
+      ! Set R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, MFX_R4_EXPORT, 'MFX_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(MFX_R4_EXPORT) ) MFX_R4_EXPORT = MFX_EXPORT
+      call MAPL_GetPointer(EXPORT, MFY_R4_EXPORT, 'MFY_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(MFY_R4_EXPORT) ) MFY_R4_EXPORT = MFY_EXPORT
+      call MAPL_GetPointer(EXPORT, CX_R4_EXPORT, 'CX_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(CX_R4_EXPORT) ) CX_R4_EXPORT  = CX_EXPORT
+      call MAPL_GetPointer(EXPORT, CY_R4_EXPORT, 'CY_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(CY_R4_EXPORT) ) CY_R4_EXPORT  = CY_EXPORT
 
       ! Set vertical motion diagnostic if enabled in HISTORY.rc
       call MAPL_GetPointer(EXPORT, UpwardsMassFlux, 'UpwardsMassFlux', &
@@ -988,6 +1128,12 @@ module GCHPctmEnv_GridComp
       UCr8            => null()
       VCr8            => null()
 
+      ! Nullify R4 exports used for diagnostics
+      MFX_R4_EXPORT      => null()
+      MFY_R4_EXPORT      => null()
+      CX_R4_EXPORT       => null()
+      CY_R4_EXPORT       => null()
+
       _RETURN(ESMF_SUCCESS)
 
    end subroutine prepare_massflux_exports
@@ -999,13 +1145,12 @@ module GCHPctmEnv_GridComp
 !
 ! !INTERFACE:
 !
-   subroutine calculate_ple(PS, PLE, SPHU, topDownMet )
+   subroutine calculate_ple(PS, PLE, SPHU )
 !
 ! !INPUT PARAMETERS:
 !
       real(r4), intent(in)           :: PS(:,:)     ! Surface pressure [hPa]
       real(r4), intent(in), OPTIONAL :: SPHU(:,:,:) ! Specific humidity [kg/kg]
-      logical,  intent(in), OPTIONAL :: topDownMet  ! True if meteorology level 1 is TOA
 !
 ! !INPUT PARAMETERS:
 !
@@ -1098,7 +1243,7 @@ module GCHPctmEnv_GridComp
          je = ubound(PS,2)
          LM = size  (SPHU,3)
 
-         if ( topDownMet ) then
+         if ( met_humidity_is_top_down ) then
 
            do J=js,je
            do I=is,ie
@@ -1107,7 +1252,7 @@ module GCHPctmEnv_GridComp
               PSDry = AP(LM+1)
 
               ! Stack up dry delta-P to get surface dry pressure
-              ! Vertically flip humidity if using top-down meteorology (raw GMAO files)
+              ! Vertically flip humidity if SPHU import vertical direction is down
               do L=1,LM
                  PEdge_Bot = AP(L  ) + ( BP(L  ) * dble(PS(I,J)) )
                  PEdge_Top = AP(L+1) + ( BP(L+1) * dble(PS(I,J)) )

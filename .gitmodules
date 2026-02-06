@@ -7,9 +7,6 @@
 [submodule "ESMA_cmake"]
 	path = ESMA_cmake
 	url = https://github.com/geoschem/ESMA_cmake
-[submodule "gFTL-shared"]
-	path = src/gFTL-shared
-	url = https://github.com/geoschem/gFTL-shared.git
 [submodule "FMS"]
 	path = src/FMS
 	url = https://github.com/geoschem/FMS.git
@@ -22,12 +19,6 @@
 [submodule "HEMCO"]
 	path = src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO
 	url = https://github.com/geoschem/HEMCO.git
-[submodule "yaFyaml"]
-	path = src/yaFyaml
-	url = https://github.com/geoschem/yaFyaml.git
-[submodule "pFlogger"]
-	path = src/pFlogger
-	url = https://github.com/geoschem/pFlogger.git
 [submodule "geos-chem-shared-docs"]
 	path = docs/source/geos-chem-shared-docs
 	url = https://github.com/geoschem/geos-chem-shared-docs.git
@@ -37,3 +28,6 @@
 [submodule "HETP"]
 	path = src/GCHP_GridComp/GEOSChem_GridComp/HETP
 	url = https://github.com/geoschem/HETerogeneous-vectorized-or-Parallel.git
+[submodule "src/GFE"]
+	path = src/GFE
+	url = https://github.com/Goddard-Fortran-Ecosystem/GFE

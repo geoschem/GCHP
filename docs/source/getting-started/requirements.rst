@@ -15,27 +15,31 @@ following software:
 
 * Git
 * Make (or GNUMake)
-* CMake version ≥ 3.13
+* CMake version ≥ 3.24
+* UDUNITS2
 * Compilers (C, C++, and Fortran):
 
-   * Intel compilers versions 2019-2021, or
-   * GNU compilers versions ≥ 10 and < 13
+  - Intel compilers versions 2019-2021, or
+  - GNU compilers versions ≥ 10 and < 13
 
-* MPI (Message Passing Interface)
+- MPI (Message Passing Interface)
 
-   * OpenMPI ≥ 4.0, or
-   * IntelMPI, or
-   * MVAPICH2, or
-   * MPICH, or
-   * other MPI libraries might work too
+  - OpenMPI ≥ 4.0, or
+  - IntelMPI, or
+  - MVAPICH2, or
+  - MPICH, or
+  - other MPI libraries might work too
 
 * HDF5
 * NetCDF (with C, C++, and Fortran support)
-* Earth System Modeling Framework (ESMF) version 8.4.2+. Problems with 8.1 and prior have been reported.
+* Earth System Modeling Framework (ESMF) version 8.6.1+. Prior
+  versions are not compatible with the version of MAPL used in GCHP.
 
-Your system administrator should be able to tell you if this software is already available on your cluster, and if so, how to activate it.
-If it is not already available, they might be able to build it for you.
-If you need to build GCHP's dependencies yourself other than ESMF then see the supplemental guide for building required software with Spack.
+Your system administrator should be able to tell you if this software
+is already available on your cluster, and if so, how to activate
+it. If it is not already available, they might be able to build it for
+you. If you need to build GCHP's dependencies yourself other than ESMF
+then see our supplemental guide entitled :ref:`spackguide`.
 
 Environment File
 ----------------
@@ -48,16 +52,19 @@ but there are notes in the comments on how to use Intel instead. The commands
 to load modules on your system may be different than in this example. Contact
 your system administrator if you need help finding libraries on your system.
 
-.. code-block:: console
+.. code-block:: bash
 
+   # NOTE: Modules listed here are for the Harvard Cannon cluster,
+   # but modules on your system will probably be named differently
    module purge
-   module load gcc/10.2.0-fasrc01             # GNU compiler collection (C, C++, Fortran)
-   module load openmpi/4.1.0-fasrc01          # MPI
-   module load netcdf-c/4.8.0-fasrc01         # Netcdf-C
-   module load netcdf-fortran/4.5.3-fasrc01   # Netcdf-Fortran
-   module load cmake/3.25.2-fasrc01           # CMake
+   module load gcc/12.2.0-fasrc01             # gcc / g++ / gfortran
+   module load openmpi/4.1.4-fasrc01          # MPI
+   module load netcdf-c/4.9.2-fasrc01         # netcdf-c
+   module load netcdf-fortran/4.6.0-fasrc02   # netcdf-fortran
+   module load flex/2.6.4-fasrc01             # Flex lexer (needed for KPP)
+   module load cmake/3.25.2-fasrc01           # CMake (needed to compile)
 
-   umask 022                             # Make all files world-readable by default
+   umask 022                                  # Make all files world-readable by default
 
    # NetCDF
    if [[ "x{NETCDF_HOME}" == "x" ]]; then
@@ -78,15 +85,20 @@ your system administrator if you need help finding libraries on your system.
    export ESMF_COMPILER=gfortran         # Fortran compiler (use intel for Intel)
    export ESMF_COMM=openmpi              # MPI (use intelmpi for IntelMPI)
    export ESMF_DIR=/home/ESMF/ESMF       # Path to ESMF repository within a generic directory called ESMF
-   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_gnu10.2_openmpi4.1.0
+   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_gnu12.2_openmpi4.1
    export ESMF_ROOT=${ESMF_INSTALL_PREFIX}
+   #----------------------------------------------------------------------------
+   # ESMF does not build with GCC12 without the following work-around
+   # for a type mismatch error (https://trac.macports.org/ticket/60954)
+   export ESMF_F90COMPILEOPTS="-fallow-argument-mismatch -fallow-invalid-boz"
+   #----------------------------------------------------------------------------
 
-Note that this example is set up with environment variables needed to build ESMF so
-that you may use it for both the initial ESMF build as well as subsequent GCHP runs.
-Not all of these ESMF environment variables are needed to actually run GCHP, but including
-them is useful to keep track of the ESMF install you are using. More information on
-installing ESMF is in the next section.
-
+Note that this example is set up with environment variables needed to
+build ESMF so that you may use it for both the initial ESMF build as
+well as subsequent GCHP runs. Not all of these ESMF environment
+variables are needed to actually run GCHP, but including them is
+useful to keep track of the ESMF install you are using. More
+information on installing ESMF is in the next section.
 
 Installing ESMF
 ---------------
@@ -99,10 +111,10 @@ checkout tags/tag_name` to checkout the version.
 
 .. code-block:: console
 
-   git clone https://github.com/esmf-org/esmf ESMF
-   cd ESMF
-   git tag
-   git checkout tags/v8.4.2
+   $ git clone https://github.com/esmf-org/esmf ESMF
+   $ cd ESMF
+   $ git tag
+   $ git checkout tags/v8.6.1
 
 If you have previously downloaded ESMF you can use your same clone to
 checkout and build a new ESMF version. Use the same steps as above
@@ -134,9 +146,9 @@ builds you should export environment variable
 :envvar:`ESMF_DIR`. Include details about that particular build
 to distinguish it from others. For example:
 
-.. code-block:: console
+.. code-block:: bash
 
-   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_ESMF8.4.1_gfortran10.2_openmpi4.1
+   export ESMF_INSTALL_PREFIX=${ESMF_DIR}/INSTALL_ESMF8.6.1_gfortran12.2_openmpi4.1
 
 Using this install in GCHP will require setting :envvar:`ESMF_ROOT` to
 the install directory. Add the following line to your ESMF environment
@@ -144,7 +156,7 @@ file if you plan on repurposing it for use with GCHP. Otherwise
 remember to add it to your GCHP environment file along with the
 assignment of :envvar:`ESMF_INSTALL_PREFIX`.
 
-.. code-block:: console
+.. code-block:: bash
 
    export ESMF_ROOT=${ESMF_INSTALL_PREFIX}
 
@@ -243,9 +255,9 @@ compared to GEOS-Chem Classic.
 Bare Minimum Requirements
 -------------------------
 
-* 6 cores
-* 32 GB of memory
-* 100 GB of storage for input and output data
+- 6 cores
+- 32 GB of memory
+- 100 GB of storage for input and output data
 
 Running GCHP on one node with as few as six cores is possible but we
 recommend this only for testing short low resolution runs such as
@@ -256,10 +268,10 @@ we recommend running at C90 or greater for scientific applications.
 Recommended Minimum Requirements
 --------------------------------
 
-* 2 nodes, preferably ≥24 cores per node
-* Gigabit Ethernet (GbE) interconnect or better
-* 100+ GB memory per node
-* 1 TB of storage, depending on your input and output needs
+- 2 nodes, preferably ≥24 cores per node
+- Gigabit Ethernet (GbE) interconnect or better
+- 100+ GB memory per node
+- 1 TB of storage, depending on your input and output needs
 
 These recommended minimums are adequate to effectively use GCHP in
 scientific applications. These runs should be at grid resolutions at
@@ -269,11 +281,11 @@ or above C90 which is approximately 1x1 degree.
 Big Compute Recommendations
 ---------------------------
 
-* 5--50 nodes, or more if running at C720 (12 km grid)
-* >24 cores per node (the more the better), preferably Intel Xeon
-* High throughput and low-latency interconnect, preferably InfiniBand
+- 5--50 nodes, or more if running at C720 (12 km grid)
+- >24 cores per node (the more the better), preferably Intel Xeon
+- High throughput and low-latency interconnect, preferably InfiniBand
   if using ≥500 cores
-* 1 TB of storage, depending on your input and output needs
+- 1 TB of storage, depending on your input and output needs
 
 These requirements can be met by using a high-performance-computing
 cluster or a cloud-HPC service like AWS.
@@ -282,9 +294,10 @@ cluster or a cloud-HPC service like AWS.
 General Hardware and Software Recommendations
 ---------------------------------------------
 
-* Hyper-threading may improve simulation throughput, particularly at low core counts
+- Hyper-threading may improve simulation throughput, particularly at
+  low core counts
 
-* MPI processes should be bound sequentially across cores and
+- MPI processes should be bound sequentially across cores and
   nodes. For example, a simulation using two nodes with 24 processes
   per node should bind ranks 0-23  on the first node and ranks 24-47
   on the second node. This should be the default, but it's worth
@@ -292,7 +305,7 @@ General Hardware and Software Recommendations
   the :literal:`--report-bindings` argument will show you how
   processes are ranked and binded.
 
-* If using IntelMPI include the following your environment setup to
+- If using IntelMPI include the following your environment setup to
   avoid a run-time error:
 
 .. code-block:: bash
@@ -300,8 +313,8 @@ General Hardware and Software Recommendations
     export I_MPI_ADJUST_GATHERV=3
     export I_MPI_ADJUST_ALLREDUCE=12
 
-* If using OpenMPI and a large number of cores (>1000) we recommend
+- If using OpenMPI and a large number of cores (>1000) we recommend
   enabling the MAPL o-server functionality for writing restart files,
   thereby speeding up the model. This is set automatically when
   executing :file:`setCommonRunSettings.sh` if using over 1000
-  cores. You can also toggle whether to use it manually in that file.
+  cores. You can also toggle whether to use it manually in that file..

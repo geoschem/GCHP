@@ -9,6 +9,38 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [14.7.0] - 2026-02-06
+### Added
+- Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
+- Added submodule for GFE (Goddard-Fortran-Ecosystem) which includes GMAO libraries yafYaml, pFlogger, gFTL, gFTL-shared, fArgParse, and pFUnit as its own submodules
+- Added connectivity from GEOS-Chem to FV3 dynamics to pass DELP_DRY in GEOS-Chem restart file to advection for restart file species mass conservation
+- Added supplemental guides for GCHP horizontal and vertical grids to ReadTheDocs
+- Added "Particulate matter in GEOS-Chem" supplemental guide to ReadTheDocs
+- Added `docs/read_the_docs_environment.yml` Conda environment file
+
+### Changed
+- Changed minimum CMake version from 3.13 to 3.24
+- Changed minimum ESMF version from 8.4.2 to 8.6.1
+- Updated docs to indicate timing information now printed to allPEs.log
+- Updated docs to include library requirement udunits2 and additional information about stretched grid parameters
+- Updated `lint-ci-workflows` to run on `main` and `dev/*` branches
+- Updated badges on `README.md` and `docs/source/index.rst`
+- Updated submodule ESMA_cmake for GNU Fortran compiler compatibility with CPUs returning processor description INTEL
+- Updated `geos-chem-shared-docs/editing_these_docs.rst` with instructions for using a Conda environment to build RTD doc
+- Updated the ESMF version used in ReadTheDocs installation instructions from 8.4.2 to 8.6.1
+- Updated GEOS-Chem submodule to version 14.7.0
+- Updated HEMCO submodule to version 3.12.0
+- Updated ESMA_cmake submodule to commit 01bbf2f (Merge PR #9)
+- Updated geos-chem-shared-docs submodule to commit 03078d4
+- Updated `.github/workflows/cloud-benchmarking-workflow.yml` to skip submodule clone (that is done on AWS) and clear cached state
+
+### Fixed
+- Fixed security issues in GitHub Actions that caused the `lint-ci-workflows` action to fail
+- Fixed vertical flipping bug in GCHPctmEnv when using C720 fields with GEOS-FP processed data
+
+### Removed
+- Removed individual submodules for yafYaml, pFlogger, and gFTL-shared since now located in new submodule GFE
+
 ## [14.6.3] - 2025-07-28
 ### Added
 - Added `-DSANITIZE` option for use with GNU Fortran compiler to check for memory leaks
