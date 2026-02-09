@@ -180,66 +180,67 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
 
-      ! Different imports depending on where mass fluxes will come from
-      if ( import_mass_flux_from_extdata ) then
-
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='MFXC', &
-                                 LONG_NAME='pressure_weighted_xward_mass_flux',&
-                                 UNITS='Pa m+2 s-1', &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         VERIFY_(STATUS)
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='MFYC', &
-                                 LONG_NAME='pressure_weighted_yward_mass_flux',&
-                                 UNITS='Pa m+2 s-1', &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         VERIFY_(STATUS)
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='CXC', &
-                                 LONG_NAME='xward_accumulated_courant_number', &
-                                 UNITS='', &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         VERIFY_(STATUS)
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='CYC', &
-                                 LONG_NAME='yward_accumulated_courant_number', &
-                                 UNITS='', &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         VERIFY_(STATUS)
-
-      else
-
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='UA', &
-                                 LONG_NAME='eastward_wind_on_A-Grid', &
-                                 UNITS='m s-1', &
-                                 STAGGERING=MAPL_AGrid, &
-                                 ROTATION=MAPL_RotateLL, &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         _VERIFY(STATUS)
-         call MAPL_AddImportSpec(gc, &
-                                 SHORT_NAME='VA', &
-                                 LONG_NAME='northward_wind_on_A-Grid', &
-                                 UNITS='m s-1', &
-                                 STAGGERING=MAPL_AGrid, &
-                                 ROTATION=MAPL_RotateLL, &
-                                 DIMS=MAPL_DimsHorzVert, &
-                                 VLOCATION=MAPL_VLocationCenter, &
-                                 RC=STATUS)
-         _VERIFY(STATUS)
-
-      endif
+! ewl: comment out these imports for now
+!      ! Different imports depending on where mass fluxes will come from
+!      if ( import_mass_flux_from_extdata ) then
+!
+!         call MAPL_AddImportSpec(gc, &
+!                                 SHORT_NAME='MFXC', &
+!                                 LONG_NAME='pressure_weighted_xward_mass_flux',&
+!                                 UNITS='Pa m+2 s-1', &
+!                                 DIMS=MAPL_DimsHorzVert, &
+!                                 VLOCATION=MAPL_VLocationCenter, &
+!                                 RC=STATUS)
+!         VERIFY_(STATUS)
+!         call MAPL_AddImportSpec(gc, &
+!                                 SHORT_NAME='MFYC', &
+!                                 LONG_NAME='pressure_weighted_yward_mass_flux',&
+!                                 UNITS='Pa m+2 s-1', &
+!                                 DIMS=MAPL_DimsHorzVert, &
+!                                 VLOCATION=MAPL_VLocationCenter, &
+!                                 RC=STATUS)
+!         VERIFY_(STATUS)
+!         call MAPL_AddImportSpec(gc, &
+!                                 SHORT_NAME='CXC', &
+!                                 LONG_NAME='xward_accumulated_courant_number', &
+!                                 UNITS='', &
+!                                 DIMS=MAPL_DimsHorzVert, &
+!                                 VLOCATION=MAPL_VLocationCenter, &
+!                                 RC=STATUS)
+!         VERIFY_(STATUS)
+!         call MAPL_AddImportSpec(gc, &
+!                                 SHORT_NAME='CYC', &
+!                                 LONG_NAME='yward_accumulated_courant_number', &
+!                                 UNITS='', &
+!                                 DIMS=MAPL_DimsHorzVert, &
+!                                 VLOCATION=MAPL_VLocationCenter, &
+!                                 RC=STATUS)
+!         VERIFY_(STATUS)
+!
+!      else
+!
+!         call MAPL_AddImportSpec(gc, &
+!                                 SHORT_NAME='UA', &
+!                                 LONG_NAME='eastward_wind_on_A-Grid', &
+!                                 UNITS='m s-1', &
+!                                 STAGGERING=MAPL_AGrid, &
+!                                 ROTATION=MAPL_RotateLL, &
+!                                 DIMS=MAPL_DimsHorzVert, &
+!                                 VLOCATION=MAPL_VLocationCenter, &
+!                                 RC=STATUS)
+!         _VERIFY(STATUS)
+!         call MAPL_AddImportSpec(gc, &
+!                                 SHORT_NAME='VA', &
+!                                 LONG_NAME='northward_wind_on_A-Grid', &
+!                                 UNITS='m s-1', &
+!                                 STAGGERING=MAPL_AGrid, &
+!                                 ROTATION=MAPL_RotateLL, &
+!                                 DIMS=MAPL_DimsHorzVert, &
+!                                 VLOCATION=MAPL_VLocationCenter, &
+!                                 RC=STATUS)
+!         _VERIFY(STATUS)
+!
+!      endif
       
       ! Define Export State
       ! -----------------------------------------------------------------
@@ -679,10 +680,12 @@ module GCHPctmEnv_GridComp
       ! Compute the exports
       call prepare_ple_exports(IMPORT, EXPORT, PLE, RC=STATUS)
       _VERIFY(STATUS)
-      call prepare_sphu_export(IMPORT, EXPORT, RC=STATUS)
-      _VERIFY(STATUS)
-      call prepare_massflux_exports(IMPORT, EXPORT, PLE, dt, RC=STATUS)
-      _VERIFY(STATUS)
+      ! ewl debug: comment this out for now
+      !call prepare_sphu_export(IMPORT, EXPORT, RC=STATUS)
+      !_VERIFY(STATUS)
+      ! ewl debug: comment this out for now too, to avoid winds
+      !call prepare_massflux_exports(IMPORT, EXPORT, PLE, dt, RC=STATUS)
+      !_VERIFY(STATUS)
 
       ! Turn off timers
       call MAPL_TimerOff(ggState,"RUN")
@@ -1057,13 +1060,19 @@ module GCHPctmEnv_GridComp
             UC(:,:,:) = UA_IMPORT(:,:,LM:1:-1)
             VC(:,:,:) = VA_IMPORT(:,:,LM:1:-1)
          end if
-         
-         ! Restagger winds (A-grid to C-grid) (requires real4)
-         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
-         
-         ! Store as real8 for input to FV3 subroutine to compute mass fluxes
+
+         ! ewl debug: try putting this here and passing to A2D2C as real8...
+         ! Seems to work! Clean up later.
          UCr8  = dble(UC)
          VCr8  = dble(VC)
+         call A2D2C(U=UCr8, V=VCr8, npz=lm, getC=.true.)
+
+!         ! Restagger winds (A-grid to C-grid) (requires real4)
+!         call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
+!
+!         ! Store as real8 for input to FV3 subroutine to compute mass fluxes
+!         UCr8  = dble(UC)
+!         VCr8  = dble(VC)
          
 #ifndef ADJOINT
          ! Calculate mass fluxes and courant numbers
