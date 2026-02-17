@@ -19,6 +19,9 @@ set(FASTJX OFF CACHE BOOL
 set(KPPSA OFF CACHE BOOL
   "Switch to build the KPP-Standalone Box Model"
 )
+set(MPI_LOAD_BALANCE ON CACHE BOOL
+  "Switch to apply MPI load balance in chemistry if using GCHP"
+)
 
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
@@ -48,6 +51,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<STREQUAL:${TOMAS_BINS},40>:TOMAS40>
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
   $<$<BOOL:${FASTJX}>:FASTJX>
+  $<$<BOOL:${MPI_LOAD_BALANCE}>:MPI_LOAD_BALANCE>
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
@@ -151,3 +155,4 @@ gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
 gc_pretty_print(VARIABLE FASTJX IS_BOOLEAN)
 gc_pretty_print(VARIABLE KPPSA IS_BOOLEAN)
+gc_pretty_print(VARIABLE MPI_LOAD_BALANCE IS_BOOLEAN)
