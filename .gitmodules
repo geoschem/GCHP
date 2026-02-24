@@ -17,7 +17,7 @@
 	path = src/GCHP_GridComp/GEOSChem_GridComp/geos-chem
 	url = https://github.com/geoschem/geos-chem.git
 [submodule "HEMCO"]
-	path = src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO
+	path = src/GCHP_GridComp/GEOSChem_GridComp/HEMCO
 	url = https://github.com/geoschem/HEMCO.git
 [submodule "geos-chem-shared-docs"]
 	path = docs/source/geos-chem-shared-docs
