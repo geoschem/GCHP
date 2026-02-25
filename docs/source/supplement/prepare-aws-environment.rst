@@ -42,8 +42,8 @@ AWS ParallelCluster supports various shared file system options, such as Amazon 
 1. IAM Permissions for Cluster Creation
 ---------------------------------------
 
-AWS ParallelCluster uses AWS CloudFormation to automatically provision resources on your behalf, including VPCs, EC2 instances, and IAM roles. 
-And We need to set up the necessary IAM permissions for this to work correctly.
+AWS ParallelCluster uses (:ref:`AWS CloudFormation <term-cloudformation>`) to automatically provision resources on your behalf, including VPCs, EC2 instances, and IAM roles. 
+And We need to set up the necessary (:ref:`IAM permissions <term-iam>`) for this to work correctly.
 
 How you set this up depends on whether you own the AWS account or are using an institution's account.
 

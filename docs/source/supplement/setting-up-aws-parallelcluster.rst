@@ -5,7 +5,7 @@ Set up AWS ParallelCluster
 
 .. important::
 
-    AWS ParallelCluster and FSx for Lustre costs hundreds or thousands of dollars per month.
+    AWS ParallelCluster and (:ref:`FSx for Lustre <term-fsx-lustre>`) costs hundreds or thousands of dollars per month.
     Please review `FSx for Lustre Pricing <https://aws.amazon.com/fsx/lustre/pricing/>`_ and
     `EC2 Pricing <https://aws.amazon.com/ec2/pricing/on-demand/>`_ for details.
 
