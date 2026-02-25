@@ -29,10 +29,13 @@ How AWS ParallelCluster Works
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 The AWS ParallelCluster operates using three main components:
+
 1. **Head Node:** This is the central management node of your cluster. It installs your AMI libraries and dependencies (if using a custom AMI) and serves as the entry point when you SSH into your cluster. 
 The head node also manages job scheduling and resource allocation for the compute nodes.
+
 2. **Compute Nodes:** These are the worker nodes that perform the actual computations for your GCHP simulations. 
 They are dynamically provisioned based on the workload and can be configured to use specific instance types optimized for HPC workloads.
+
 3. **Shared File System:** This is a high-performance storage that allows all nodes in the cluster to access the same data. This is where you will download GCHP input data, compile the model, and configure your run directories. 
 AWS ParallelCluster supports various shared file system options, such as Amazon FSx for Lustre, which is ideal for HPC workloads.
 
@@ -82,8 +85,7 @@ Crucially, it also provisions customized IAM Roles for the cluster's Head Node a
    You can then reference those existing roles in your ``cluster-config.yaml`` file. Refer them to the official AWS documentation on `Using an existing IAM role <https://docs.aws.amazon.com/parallelcluster/latest/ug/iam-roles-in-parallelcluster-v3.html>`_ for details.
 
 * **Recommended for Individuals:** If you manage your own AWS account, ensuring your IAM user has ``AdministratorAccess`` is the simplest path forward.
-* **Restricted Environments:** If you are operating within a university or corporate AWS environment, you might not have the permissions to create a cluster yourself. 
-You will need your AWS Administrator to attach the ``AWSParallelClusterAdmin`` managed policy to your user, along with permissions to pass and create IAM roles (``iam:CreateRole``, ``iam:PassRole``).
+* **Restricted Environments:** If you are operating within a university or corporate AWS environment, you might not have the permissions to create a cluster yourself. You will need your AWS Administrator to attach the ``AWSParallelClusterAdmin`` managed policy to your user, along with permissions to pass and create IAM roles (``iam:CreateRole``, ``iam:PassRole``).
 
 .. warning::
    The issue of missing Permissions could be discovered in a later stage. If you encounter a ``User is not authorized to perform: cloudformation:CreateStack`` error during cluster creation, your IAM user lacks the required authority.
