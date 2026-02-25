@@ -1,11 +1,13 @@
-.. _aws-terminology:
+==========================
+AWS Terminology for GCHP Users
+==========================
 
 .. _term-cloudformation:
 AWS CloudFormation
-==========================
+----------------------
 
 What is AWS CloudFormation?
---------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 AWS CloudFormation is a service that allows you to define and provision AWS infrastructure using code. You can create templates that describe the resources you want (like EC2 instances, VPCs, IAM roles, etc.) 
 and CloudFormation will take care of provisioning and configuring those resources for you. This is particularly useful for managing HPC clusters.
 
@@ -13,7 +15,7 @@ AWS ParallelCluster uses AWS CloudFormation to automate the provisioning of reso
 This template is then deployed to AWS, which creates the necessary resources (VPCs, EC2 instances, IAM roles, etc.) based on the specifications in the template. 
 
 Checking Cluster Status and Troubleshooting
---------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 Because ParallelCluster relies entirely on CloudFormation to build your environment, the AWS CloudFormation Console is the best place to check your cluster's deployment status or troubleshoot errors. 
 
 If your ``pcluster create-cluster`` command fails, the CLI will usually provide a general error message. To find the exact underlying cause:
@@ -34,7 +36,7 @@ If your ``pcluster create-cluster`` command fails, the CLI will usually provide 
 .. _term-iam:
 
 IAM (Identity and Access Management)
-====================================
+----------------------
 
 **AWS Identity and Access Management (IAM)** is the security framework that controls who can access which AWS services and resources. It works by assigning specific "Policies" (lists of allowed actions) to "Identities" (like Users or Roles). 
 
@@ -43,13 +45,13 @@ IAM (Identity and Access Management)
 In the context of AWS ParallelCluster and GCHP, IAM permissions operate at two completely different levels:
 
 1. Your IAM User Permissions (The Builder)
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 This is the identity you use when you configure the AWS CLI and run the ``pcluster create-cluster`` command. In order to build the cluster on your behalf, your IAM user needs broad permissions. 
 
 You must have the authority to provision VPCs, launch EC2 instances, use CloudFormation, and—crucially—create and pass *new* IAM roles to the cluster. If your university or corporate IT department restricts your ability to create IAM roles, your cluster creation will fail.
 
 2. The Cluster's IAM Roles (The Operators)
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 Once the cluster is built, the EC2 instances themselves need permission to communicate with other AWS services. Instead of using a username and password, AWS assigns an **IAM Role** directly to the Head Node and the Compute Fleet.
 
 * **The Head Node Role:** Needs permission to monitor the Slurm queue and tell AWS to spin up new compute nodes when you submit a job.
@@ -62,14 +64,14 @@ Once the cluster is built, the EC2 instances themselves need permission to commu
 .. _term-fsx-lustre:
 
 Amazon FSx for Lustre
-=====================
+----------------------
 
 **Amazon FSx for Lustre** is a fully managed, high-performance file system optimized for compute-intensive workloads. "Lustre" is a popular open-source parallel file system used by many of the world's largest supercomputers. 
 
 
 
 How FSx for Lustre is Used in AWS ParallelCluster
--------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 When you run a GCHP simulation on ParallelCluster, your Head Node and all of your dynamic Compute Nodes need to access the exact same files at the exact same time. 
 
@@ -77,7 +79,7 @@ If you define an FSx for Lustre file system in your cluster configuration (or mo
 When your compute instances spin up to process a Slurm job, they instantly have read and write access to your GEOS-Chem run directories, input data catalogs, and output folders.
 
 Benefits for GCHP Users
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 GCHP is I/O (Input/Output) intensive. In the cloud, storage speed is just as important as CPU power. 
 
