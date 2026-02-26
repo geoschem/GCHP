@@ -1,5 +1,5 @@
 ==========================
-AWS Terminology for GCHP Users
+AWS Reference: AWS Terminology
 ==========================
 
 .. _term-cloudformation:

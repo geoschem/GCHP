@@ -1,6 +1,6 @@
 .. _prepare-aws-environment:
 
-Understand and Prepare Your AWS Environment for Running GCHP
+AWS Guide I: Prepare Your AWS Environment
 =====================================
 
 This tutorial aims to guide you through the necessary steps to prepare your AWS environment for configuring AWS ParallelCluster for GCHP. 
