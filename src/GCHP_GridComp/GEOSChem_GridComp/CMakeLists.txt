@@ -23,6 +23,11 @@ set(MPI_LOAD_BALANCE ON CACHE BOOL
   "Switch to apply MPI load balance in chemistry if using GCHP"
 )
 
+# Turn off load balancing if KPP standalone is on
+if(${KPPSA})
+  set(MPI_LOAD_BALANCE OFF)
+endif()
+
 # Local variables
 set(GC_EXTERNAL_CONFIG      TRUE)
 set(CLOUDJ_EXTERNAL_CONFIG  TRUE) # Not Cloud-J standalone
@@ -43,7 +48,8 @@ add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 # Configure build properties for GEOS-Chem
 target_compile_definitions(GEOSChemBuildProperties INTERFACE
   ESMF_ EXTERNAL_GRID NC_HAS_COMPRESSION MODEL_GCHPCTM MODEL_GCHP
-  $<$<BOOL:${USE_REAL8}>:USE_REAL8> $<$<BOOL:${RRTMG}>:RRTMG>
+  $<$<BOOL:${USE_REAL8}>:USE_REAL8>
+  $<$<BOOL:${RRTMG}>:RRTMG>
   $<$<BOOL:${ADJOINT}>:ADJOINT>
   $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
   $<$<BOOL:${TOMAS}>:TOMAS>
@@ -51,6 +57,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<STREQUAL:${TOMAS_BINS},40>:TOMAS40>
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
   $<$<BOOL:${FASTJX}>:FASTJX>
+  $<$<BOOL:${KPPSA}>:KPPSA>
   $<$<BOOL:${MPI_LOAD_BALANCE}>:MPI_LOAD_BALANCE>
 )
 
