@@ -39,6 +39,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
           persist-credentials: false
           # We don't need to check out submodules, as we only need
           # to get the git tags.  Submodules will be checked out on
