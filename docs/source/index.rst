@@ -11,7 +11,7 @@ GEOS-Chem High Performance
      <a href="https://gchp.readthedocs.io"><img src="https://img.shields.io/readthedocs/gchp?label=ReadTheDocs"></a>
    </p>
 
-   
+
 The `GEOS--Chem model <http://geos-chem.org/>`_ is a global 3-D model
 of atmospheric composition driven by assimilated meteorological
 observations from the Goddard Earth Observing System (GEOS) of the
@@ -72,24 +72,36 @@ use Spack to install GCHP's dependencies if needed.
 
 .. toctree::
    :caption: GEOS-Chem Simulations
-   :maxdepth: 4
+   :maxdepth: 1
 
+   supplement/gchp-simulations.rst
    geos-chem-shared-docs/simulations/carbon.rst
    geos-chem-shared-docs/simulations/fullchem.rst
    geos-chem-shared-docs/simulations/tago3.rst
    geos-chem-shared-docs/simulations/transport-tracers.rst
 
 .. toctree::
+   :caption: Supplemental Science Guides
    :maxdepth: 1
-   :caption: Supplemental Guides
 
+   geos-chem-shared-docs/supplemental-guides/science-guides.rst
+   geos-chem-shared-docs/supplemental-guides/aer-thermodyn-equilib.rst
+   geos-chem-shared-docs/supplemental-guides/cloud-convection.rst
+   geos-chem-shared-docs/supplemental-guides/photolysis.rst
+   geos-chem-shared-docs/supplemental-guides/rrtmg-guide.rst
+   geos-chem-shared-docs/supplemental-guides/physical-constants.rst
+   geos-chem-shared-docs/supplemental-guides/pm25-pm10-guide.rst
+
+.. toctree::
+   :caption: Supplemental Technical Guides
+   :maxdepth: 1
+
+   supplement/technical-guides.rst
    supplement/horizontal-grids.rst
    supplement/vertical-grids.rst
+   supplement/run-gchp-on-cloud.rst
    geos-chem-shared-docs/supplemental-guides/load-libraries-guide.rst
    geos-chem-shared-docs/supplemental-guides/spack-guide.rst
-   supplement/prepare-aws-environment.rst
-   supplement/setting-up-aws-parallelcluster.rst
-   supplement/aws-terminology.rst
    supplement/caching-input-data.rst
    supplement/containers.rst
    supplement/stretched-grid.rst
@@ -105,7 +117,6 @@ use Spack to install GCHP's dependencies if needed.
    geos-chem-shared-docs/supplemental-guides/species-guide.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-with-gc.rst
    geos-chem-shared-docs/supplemental-guides/using-kpp-standalone.rst
-   geos-chem-shared-docs/supplemental-guides/pm25-pm10-guide.rst
    geos-chem-shared-docs/supplemental-guides/related-docs.rst
 
 .. toctree::
