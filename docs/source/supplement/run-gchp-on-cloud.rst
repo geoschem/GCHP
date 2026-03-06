@@ -1,3 +1,5 @@
+.. _gchp-on-cloud:
+
 #####################
 Run GCHP on the cloud
 #####################
