@@ -85,8 +85,10 @@ use Spack to install GCHP's dependencies if needed.
    :caption: Supplemental Science Guides
 
    geos-chem-shared-docs/supplemental-guides/science-guides.rst
+   geos-chem-shared-docs/supplemental-guides/apm-guide.rst
    geos-chem-shared-docs/supplemental-guides/ate-guide.rst
    geos-chem-shared-docs/supplemental-guides/cloud-conv-guide.rst
+   geos-chem-shared-docs/supplemental-guides/pbl-mixing-guide.rst
    geos-chem-shared-docs/supplemental-guides/photolysis-guide.rst
    geos-chem-shared-docs/supplemental-guides/phys-consts-guide.rst
    geos-chem-shared-docs/supplemental-guides/pm25-pm10-guide.rst
