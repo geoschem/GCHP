@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated Cloud-J submodule to commit 16d18b0 ("Fixed issues in format statements for verbose output")
 - Updated GEOS-Chem submodule to 14.7.1
 - Updated HEMCO submodule to 3.12.1
+- Turned off vertical flipping of top-down meteorology in GCHPctmEnv if using ExtData2G
 
 ## [14.7.0] - 2026-02-06
 ### Added
