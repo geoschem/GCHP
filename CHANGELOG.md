@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Changed default settings to use MPI load balancing in chemistry to speed up GCHP runs unless KPP standalone is enabled
+- Turned off vertical flipping of top-down meteorology in GCHPctmEnv if using ExtData2G
 
 ## [14.7.0] - 2026-02-06
 ### Added
