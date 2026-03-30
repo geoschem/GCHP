@@ -11,10 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [14.7.1] - Unreleased
 ### Added
-- Added build option MPI_LOAD_BALANCE to enable MPI load balancing in GEOS-Chem chemistry
+- Added build option `MPI_LOAD_BALANCE` to enable MPI load balancing in GEOS-Chem chemistry
 
 ### Changed
 - Changed default settings to use MPI load balancing in chemistry to speed up GCHP runs unless KPP standalone is enabled
+- Updated GitHub Actions to the latest versions
 
 ## [14.7.0] - 2026-02-06
 ### Added
