@@ -1,5 +1,16 @@
 # GEOSChem_GridComp/CMakeLists.txt
 
+# Local variables
+set(GC_EXTERNAL_CONFIG      TRUE)
+set(CLOUDJ_EXTERNAL_CONFIG  TRUE) # Not Cloud-J standalone
+set(HETP_EXTERNAL_CONFIG    TRUE) # Not HETP standalone test
+set(HEMCO_EXTERNAL_CONFIG   TRUE) # Not HEMCO standalone
+set(GTMM                    FALSE)
+set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
+set(GCHP                    TRUE)
+set(MODEL_GCHP              TRUE)
+set(MODEL_GCHPCTM           TRUE)
+
 # Cached variables
 set(USE_REAL8 ON CACHE BOOL
   "Switch to set flexible precision 8-byte floating point real"
@@ -19,25 +30,24 @@ set(FASTJX OFF CACHE BOOL
 set(KPPSA OFF CACHE BOOL
   "Switch to build the KPP-Standalone Box Model"
 )
+
+# Only allow turning on Jacobian run if using carbon simulation
+set(JACOBIAN OFF CACHE BOOL
+  "Switch to build the Jacobian carbon run"
+)
+if(${JACOBIAN})
+  if(NOT ${MECH} MATCHES "carbon")
+    message(FATAL_ERROR "JACOBIAN can only be used with the carbon mechanism!")
+  endif()
+endif()
+
+# Load balancing on by default, but turn off if using KPP standalone
 set(MPI_LOAD_BALANCE ON CACHE BOOL
   "Switch to apply MPI load balance in chemistry if using GCHP"
 )
-
-# Turn off load balancing if KPP standalone is on
 if(${KPPSA})
   set(MPI_LOAD_BALANCE OFF)
 endif()
-
-# Local variables
-set(GC_EXTERNAL_CONFIG      TRUE)
-set(CLOUDJ_EXTERNAL_CONFIG  TRUE) # Not Cloud-J standalone
-set(HETP_EXTERNAL_CONFIG    TRUE) # Not HETP standalone test
-set(HEMCO_EXTERNAL_CONFIG   TRUE) # Not HEMCO standalone
-set(GTMM                    FALSE)
-set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
-set(GCHP                    TRUE)
-set(MODEL_GCHP              TRUE)
-set(MODEL_GCHPCTM           TRUE)
 
 # Add directories to build
 add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
@@ -58,6 +68,7 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
   $<$<BOOL:${FASTJX}>:FASTJX>
   $<$<BOOL:${KPPSA}>:KPPSA>
+  $<$<BOOL:${JACOBIAN}>:JACOBIAN>
   $<$<BOOL:${MPI_LOAD_BALANCE}>:MPI_LOAD_BALANCE>
 )
 
@@ -162,4 +173,5 @@ gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
 gc_pretty_print(VARIABLE FASTJX IS_BOOLEAN)
 gc_pretty_print(VARIABLE KPPSA IS_BOOLEAN)
+gc_pretty_print(VARIABLE JACOBIAN IS_BOOLEAN)
 gc_pretty_print(VARIABLE MPI_LOAD_BALANCE IS_BOOLEAN)

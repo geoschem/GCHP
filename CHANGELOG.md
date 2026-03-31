@@ -9,9 +9,10 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [14.7.1] - Unreleased
+## [Unreleased] - TBD
 ### Added
 - Added build option `MPI_LOAD_BALANCE` to enable MPI load balancing in GEOS-Chem chemistry
+- Added CMake build switch called `JACOBIAN` for carbon Jacobian runs
 
 ### Changed
 - Changed default settings to use MPI load balancing in chemistry to speed up GCHP runs unless KPP standalone is enabled
