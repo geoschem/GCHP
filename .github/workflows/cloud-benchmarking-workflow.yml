@@ -36,7 +36,7 @@ jobs:
           mkdir -p ${{ github.workspace }}
       
        # For now both use Spot instances -- may need to update to use on demand
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false

@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     container: continuumio/miniconda3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
