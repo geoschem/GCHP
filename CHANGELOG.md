@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Changed default settings to use MPI load balancing in chemistry to speed up GCHP runs unless KPP standalone is enabled
 - Updated GitHub Actions to the latest versions
+- Added several supplemental science guides to ReadTheDocs
+- Added splash pages for "Supplemental Science Guides" and "Supplemental Technical Guides" to ReadTheDocs
 
 ## [14.7.0] - 2026-02-06
 ### Added
