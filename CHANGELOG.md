@@ -24,6 +24,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated HEMCO submodule to 3.12.1
 - Turned off vertical flipping of top-down meteorology in GCHPctmEnv if using ExtData2G
 
+### Fixed
+- Fixed zero UpwardsMassFlux diagnostic
+
 ## [14.7.0] - 2026-02-06
 ### Added
 - Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken
