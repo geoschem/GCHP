@@ -325,15 +325,6 @@ module GCHPctmEnv_GridComp
                               VLOCATION=MAPL_VLocationCenter, &
                               RC=STATUS)
       _VERIFY(STATUS)
-      call MAPL_AddExportSpec(gc, &
-                              SHORT_NAME='UpwardsMassFlux', &
-                              LONG_NAME='upward_mass_flux_of_air', &
-                              UNITS='kg m-2 s-1', &
-                              PRECISION=ESMF_KIND_R8, &
-                              DIMS=MAPL_DimsHorzVert, &
-                              VLOCATION=MAPL_VLocationEdge, &
-                              RC=STATUS)
-      _VERIFY(STATUS)
 
       ! Add the same exports as R4 as a work-around to a MAPL 2.55 History
       ! bug where R8 cannot be converted to R4 for output (ewl, 5/28/25)
@@ -410,7 +401,7 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &
-                              SHORT_NAME='UpwardsMassFlux_R4', &
+                              SHORT_NAME='UpwardsMassFlux', &
                               LONG_NAME='upward_mass_flux_of_air', &
                               UNITS='kg m-2 s-1', &
                               DIMS=MAPL_DimsHorzVert, &
@@ -976,8 +967,7 @@ module GCHPctmEnv_GridComp
       real,     pointer, dimension(:,:,:) :: VA_IMPORT  => null()
 
       ! Pointer to diagnostic export
-      real(r8), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
-      real(r4), pointer, dimension(:,:,:) :: UpwardsMassFlux_R4 => null()
+      real(r4), pointer, dimension(:,:,:) :: UpwardsMassFlux => null()
 
       ! Pointers to local arrays
       real,     pointer, dimension(:,:,:) :: UC        => null()
@@ -1135,7 +1125,6 @@ module GCHPctmEnv_GridComp
       CY_IMPORT       => null()
       UA_IMPORT       => null()
       VA_IMPORT       => null()
-      UpwardsMassFlux => null()
       UC              => null()
       VC              => null()
       UCr8            => null()
@@ -1146,6 +1135,7 @@ module GCHPctmEnv_GridComp
       MFY_R4_EXPORT      => null()
       CX_R4_EXPORT       => null()
       CY_R4_EXPORT       => null()
+      UpwardsMassFlux    => null()
 
       _RETURN(ESMF_SUCCESS)
 
