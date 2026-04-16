@@ -9,6 +9,20 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [14.7.1] - 2026-04-14
+### Added
+- Added build option `MPI_LOAD_BALANCE` to enable MPI load balancing in GEOS-Chem chemistry
+- Added CMake build switch called `JACOBIAN` for carbon Jacobian runs
+
+### Changed
+- Changed default settings to use MPI load balancing in chemistry to speed up GCHP runs unless KPP standalone is enabled
+- Updated GitHub Actions to the latest versions
+- Added several supplemental science guides to ReadTheDocs
+- Added splash pages for "Supplemental Science Guides" and "Supplemental Technical Guides" to ReadTheDocs
+- Updated Cloud-J submodule to commit 16d18b0 ("Fixed issues in format statements for verbose output")
+- Updated GEOS-Chem submodule to 14.7.1
+- Updated HEMCO submodule to 3.12.1
+
 ## [14.7.0] - 2026-02-06
 ### Added
 - Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken

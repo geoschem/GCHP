@@ -1,3 +1,5 @@
+.. _gchp-containers:
+
 ###################
 Use GCHP Containers
 ###################

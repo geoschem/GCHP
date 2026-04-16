@@ -1,5 +1,16 @@
 # GEOSChem_GridComp/CMakeLists.txt
 
+# Local variables
+set(GC_EXTERNAL_CONFIG      TRUE)
+set(CLOUDJ_EXTERNAL_CONFIG  TRUE) # Not Cloud-J standalone
+set(HETP_EXTERNAL_CONFIG    TRUE) # Not HETP standalone test
+set(HEMCO_EXTERNAL_CONFIG   TRUE) # Not HEMCO standalone
+set(GTMM                    FALSE)
+set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
+set(GCHP                    TRUE)
+set(MODEL_GCHP              TRUE)
+set(MODEL_GCHPCTM           TRUE)
+
 # Cached variables
 set(USE_REAL8 ON CACHE BOOL
   "Switch to set flexible precision 8-byte floating point real"
@@ -20,16 +31,23 @@ set(KPPSA OFF CACHE BOOL
   "Switch to build the KPP-Standalone Box Model"
 )
 
-# Local variables
-set(GC_EXTERNAL_CONFIG      TRUE)
-set(CLOUDJ_EXTERNAL_CONFIG  TRUE) # Not Cloud-J standalone
-set(HETP_EXTERNAL_CONFIG    TRUE) # Not HETP standalone test
-set(HEMCO_EXTERNAL_CONFIG   TRUE) # Not HEMCO standalone
-set(GTMM                    FALSE)
-set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
-set(GCHP                    TRUE)
-set(MODEL_GCHP              TRUE)
-set(MODEL_GCHPCTM           TRUE)
+# Only allow turning on Jacobian run if using carbon simulation
+set(JACOBIAN OFF CACHE BOOL
+  "Switch to build the Jacobian carbon run"
+)
+if(${JACOBIAN})
+  if(NOT ${MECH} MATCHES "carbon")
+    message(FATAL_ERROR "JACOBIAN can only be used with the carbon mechanism!")
+  endif()
+endif()
+
+# Load balancing on by default, but turn off if using KPP standalone
+set(MPI_LOAD_BALANCE ON CACHE BOOL
+  "Switch to apply MPI load balance in chemistry if using GCHP"
+)
+if(${KPPSA})
+  set(MPI_LOAD_BALANCE OFF)
+endif()
 
 # Add directories to build
 add_subdirectory(Cloud-J EXCLUDE_FROM_ALL)
@@ -40,7 +58,8 @@ add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 # Configure build properties for GEOS-Chem
 target_compile_definitions(GEOSChemBuildProperties INTERFACE
   ESMF_ EXTERNAL_GRID NC_HAS_COMPRESSION MODEL_GCHPCTM MODEL_GCHP
-  $<$<BOOL:${USE_REAL8}>:USE_REAL8> $<$<BOOL:${RRTMG}>:RRTMG>
+  $<$<BOOL:${USE_REAL8}>:USE_REAL8>
+  $<$<BOOL:${RRTMG}>:RRTMG>
   $<$<BOOL:${ADJOINT}>:ADJOINT>
   $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
   $<$<BOOL:${TOMAS}>:TOMAS>
@@ -48,6 +67,9 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<STREQUAL:${TOMAS_BINS},40>:TOMAS40>
   $<$<BOOL:${LUO_WETDEP}>:LUO_WETDEP>
   $<$<BOOL:${FASTJX}>:FASTJX>
+  $<$<BOOL:${KPPSA}>:KPPSA>
+  $<$<BOOL:${JACOBIAN}>:JACOBIAN>
+  $<$<BOOL:${MPI_LOAD_BALANCE}>:MPI_LOAD_BALANCE>
 )
 
 target_link_libraries(GEOSChemBuildProperties INTERFACE
@@ -151,3 +173,5 @@ gc_pretty_print(VARIABLE GTMM IS_BOOLEAN)
 gc_pretty_print(VARIABLE LUO_WETDEP IS_BOOLEAN)
 gc_pretty_print(VARIABLE FASTJX IS_BOOLEAN)
 gc_pretty_print(VARIABLE KPPSA IS_BOOLEAN)
+gc_pretty_print(VARIABLE JACOBIAN IS_BOOLEAN)
+gc_pretty_print(VARIABLE MPI_LOAD_BALANCE IS_BOOLEAN)
