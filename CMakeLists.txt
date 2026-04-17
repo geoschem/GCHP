@@ -92,8 +92,8 @@ set_target_properties(
   post_nompi                      nc_diag_write   nc_diag_res
   nc_diag_read                    nc_diag_cat     parpack
   putil                           util            GMAO_gfio_r4
-  MAPL.generic MAPL.oomph MAPL MAPL.gridcomps MAPL.cap MAPL.history
-  MAPL.orbit MAPL.ExtData MAPL.griddedio GEOS_Shared
+  MAPL.generic MAPL.oomph MAPL MAPL.gridcomps
+  MAPL.orbit MAPL.griddedio GEOS_Shared
   GMAO_hermes CICE4 GMAO_pyobs GMAO_gfio_r8 FVdycoreCubed_GridComp
   fvdycore
   MAPL_cfio_r4 MAPL.pfio MAPL.profiler MAPL.shared MAPL.constants
