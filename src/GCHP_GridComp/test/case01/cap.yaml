@@ -1,0 +1,50 @@
+cap:
+  name: cap
+  restart: cap_restart.yaml
+
+  clock:
+    dt: PT10M
+    start: 2004-01-20T00:00:00
+    stop: 2999-03-02T21:00:00
+    segment_duration: P1D
+
+  extdata_name: EXTDATA
+  history_name: HIST
+  root_name: GCHP
+
+  checkpointing:
+    enabled: true
+    final: true
+    path: checkpoints
+    alarms: {}
+
+  mapl:
+    children:
+      GCHP:
+        dso: libMAPL.componentDriverGridComp.dylib
+        setServices: setservices_
+        config_file: gchp.yaml
+      EXTDATA:
+        dso: libMAPL.extdata3g.dylib
+        config_file: extdata.yaml
+      HIST:
+        dso: libMAPL.history3g.dylib
+        config_file: history.yaml
+
+esmf:
+  logKindFlag: ESMF_LOGKIND_MULTI_ON_ERROR
+  defaultCalKind: ESMF_CALKIND_GREGORIAN
+  logAppendFlag: false
+
+mapl:
+  model_petcount: 6
+  pflogger_cfg_file: logging.yaml
+#
+#  servers:
+#    pfio:
+#       nodes: 1
+#    mit:
+#       nodes: 0
+
+
+

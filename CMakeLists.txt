@@ -98,6 +98,7 @@ set_target_properties(
   fvdycore
   MAPL_cfio_r4 MAPL.pfio MAPL.profiler MAPL.shared MAPL.constants
   MAPL.base GMAO_mpeu GMAO_eu mpi0 fms_r8
+  mapl3g MAPL.cap3g
 
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )

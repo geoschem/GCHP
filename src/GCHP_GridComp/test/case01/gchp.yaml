@@ -1,0 +1,49 @@
+RUN_MODE: FillImports
+
+mapl:
+
+# This gives typekind conversion error in ESMF:
+  states:
+    import:
+      SPHU1:
+        standard_name: "SPHU1"
+        units: "NA"
+        typekind: R4
+        default_value: 17.
+        vertical_dim_spec: NONE
+    export:
+      E_1:
+        standard_name: "NA"
+        units: "NA"
+        typekind: R4
+        default_value: 18.
+        vertical_dim_spec: NONE
+
+  geometry:
+    esmf_geom:
+      class: CubedSphere
+      im_world: 24
+      nx: 1
+      ny: 1
+    vertical_grid:
+      class: model
+      standard_name: air_pressure
+      units: hPa
+      num_levels: 72
+      field_edge: PLE
+      field_center: PE
+
+#  children:
+#    GCHPctmEnv:
+#      dso: libconfigurable_gridcomp.dylib
+#      setServices: setservices_
+#      config_file: gchpctmenv.yaml
+#    DYNAMICS:
+#      dso: libFVdycoreCubed_GridComp.so
+#      setServices: setservices_
+#      config_file: dynamics.yaml
+##    GCHPchem:
+##      dso: ?
+##      setServices: setservices_
+##      config_file: gchpchem.yaml
+    
