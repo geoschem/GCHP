@@ -13,6 +13,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
 
+## [14.7.1] - 2026-04-14
+### Added
+- Added build option `MPI_LOAD_BALANCE` to enable MPI load balancing in GEOS-Chem chemistry
+- Added CMake build switch called `JACOBIAN` for carbon Jacobian runs
+
+### Changed
+- Changed default settings to use MPI load balancing in chemistry to speed up GCHP runs unless KPP standalone is enabled
+- Updated GitHub Actions to the latest versions
+- Added several supplemental science guides to ReadTheDocs
+- Added splash pages for "Supplemental Science Guides" and "Supplemental Technical Guides" to ReadTheDocs
+- Updated Cloud-J submodule to commit 16d18b0 ("Fixed issues in format statements for verbose output")
+- Updated GEOS-Chem submodule to 14.7.1
+- Updated HEMCO submodule to 3.12.1
+- Turned off vertical flipping of top-down meteorology in GCHPctmEnv if using ExtData2G
+
 ## [14.7.0] - 2026-02-06
 ### Added
 - Added R4 exports in GCHPctmEnv for diagnostics since R8 to R4 conversion in MAPL 2.55 History is broken

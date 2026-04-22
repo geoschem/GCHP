@@ -471,6 +471,7 @@ module GCHPctmEnv_GridComp
       integer                    :: comm
       character(len=ESMF_MAXSTR) :: COMP_NAME
       character(len=ESMF_MAXSTR) :: msg
+      logical                    :: use_extdata2g
       type(ESMF_Config)          :: CF
       type(ESMF_Grid)            :: esmfGrid
       type(ESMF_VM)              :: VM
@@ -509,53 +510,65 @@ module GCHPctmEnv_GridComp
       ! -----------------------------------------------------------------
       call ESMF_GridCompGet(GC, GRID=esmfGrid, rc=STATUS)
       _VERIFY(STATUS)
+
+      ! Get whether using ExtData (first generation) or ExtData 2G
+      ! -----------------------------------------------------------------
+      call ESMF_ConfigGetAttribute(CF, value=use_extdata2g, &
+           label='USE_EXTDATA2G:', Default=.false., __RC__ )
       
       ! Get whether meteorology vertical index is top down (native fields)
-      ! or bottom up (GEOS-Chem processed fields)
+      ! or bottom up (GEOS-Chem processed fields) in import from MAPL ExtData.
+      ! If using ExtData2G then fields are already flipped to bottom up
+      ! within MAPL.
       ! -----------------------------------------------------------------
-
-      ! Get vertical direction of flux that will be used
-      if ( import_mass_flux_from_extdata) then
-
-         ! Get vertical direction of mass flux import
-         call ESMF_ConfigGetAttribute( CF,        &
-              value=met_mass_flux_is_top_down,    &
-              label='MET_MASS_FLUX_IS_TOP_DOWN:', &
-              Default=.true., __RC__ )
-         if (met_mass_flux_is_top_down) then
-            msg='Configured to expect ''top-down'' mass flux data from ''ExtData'''
-         else
-            msg='Configured to expect ''bottom-up'' mass flux data data from ''ExtData'''
-         end if
-
+      if ( use_extdata2g ) then
+         met_mass_flux_is_top_down = .false.
+         met_wind_is_top_down = .false.
+         met_humidity_is_top_down = .false.
+         call lgr%info('Using MAPL ExtData2G; all ''top-down'' meteorological data is flipped to ''bottom-up'' within MAPL.')
       else
+         if ( import_mass_flux_from_extdata) then
 
-         ! Get vertical direction of wind import
-         call ESMF_ConfigGetAttribute( CF,       &
-           value=met_wind_is_top_down,           &
-           label='MET_WIND_IS_TOP_DOWN:',        &
-           Default=.false., __RC__ )
-         if (met_wind_is_top_down) then
-            msg='Configured to expect ''top-down'' wind data from ''ExtData'''
+            ! Get vertical direction of mass flux import
+            call ESMF_ConfigGetAttribute( CF,        &
+                 value=met_mass_flux_is_top_down,    &
+                 label='MET_MASS_FLUX_IS_TOP_DOWN:', &
+                 Default=.true., __RC__ )
+            if (met_mass_flux_is_top_down) then
+               msg='Configured to expect ''top-down'' mass flux data from ''ExtData'''
+            else
+               msg='Configured to expect ''bottom-up'' mass flux data data from ''ExtData'''
+            end if
+
          else
-            msg='Configured to expect ''bottom-up'' wind data from ''ExtData'''
+
+            ! Get vertical direction of wind import
+            call ESMF_ConfigGetAttribute( CF,   &
+                 value=met_wind_is_top_down,    &
+                 label='MET_WIND_IS_TOP_DOWN:', &
+                 Default=.false., __RC__ )
+            if (met_wind_is_top_down) then
+               msg='Configured to expect ''top-down'' wind data from ''ExtData'''
+            else
+               msg='Configured to expect ''bottom-up'' wind data from ''ExtData'''
+            end if
+
+         endif
+         call lgr%info(trim(msg))
+
+         ! Get vertical direction of humidity
+         call ESMF_ConfigGetAttribute( CF,       &
+              value=met_humidity_is_top_down,    &
+              label='MET_HUMIDITY_IS_TOP_DOWN:', &
+              Default=.false., __RC__ )
+         if (met_humidity_is_top_down) then
+            msg='Configured to expect ''top-down'' humidity data from ''ExtData'''
+         else
+            msg='Configured to expect ''bottom-up'' humidity data from ''ExtData'''
          end if
          call lgr%info(trim(msg))
 
       endif
-      call lgr%info(trim(msg))
-
-      ! Get vertical direction of humidity
-      call ESMF_ConfigGetAttribute( CF,                &
-           value=met_humidity_is_top_down, &
-           label='MET_HUMIDITY_IS_TOP_DOWN:',          &
-           Default=.false., __RC__ )
-      if (met_humidity_is_top_down) then
-         msg='Configured to expect ''top-down'' humidity data from ''ExtData'''
-      else
-         msg='Configured to expect ''bottom-up'' humidity data from ''ExtData'''
-      end if
-      call lgr%info(trim(msg))
 
       ! Get whether to use total or dry air pressure in advection
       call ESMF_ConfigGetAttribute( CF,                    &
