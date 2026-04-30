@@ -19,7 +19,7 @@ master_doc = 'index'
 # -- Project information -----------------------------------------------------
 
 project = 'GCHP'
-copyright = '2024, GEOS-Chem Support Team'
+copyright = '2026, GEOS-Chem Support Team'
 author = 'GEOS-Chem Support Team'
 
 # The full version, including alpha/beta/rc tags
@@ -34,7 +34,7 @@ release = '14.7.1'
 extensions = [
     "sphinx_rtd_theme",
     "sphinxcontrib.bibtex",
-    "recommonmark",
+    "myst_parser",
 ]
 bibtex_default_style = 'gcrefstyle'
 bibtex_reference_style = "author_year"
