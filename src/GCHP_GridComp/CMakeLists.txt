@@ -4,9 +4,6 @@
 # Set cmake logicals needed for subprojects
 #---------------
 set(FV_PRECISION           R8    ) # FV3 precision is R8
-set(GCHP_WRAPPER           TRUE  ) # GCHP model configuration
-set(GC_EXTERNAL_CONFIG     TRUE  ) # Not GEOS-Chem Classic
-set(MAPL_ESMF              TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
 set(MAPL_ACG ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/Apps/mapl_acg.pl)
 
 #-------------------------------------------
