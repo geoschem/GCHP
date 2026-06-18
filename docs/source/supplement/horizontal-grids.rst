@@ -69,6 +69,17 @@ The table below shows some common cubed-sphere configurations.
      - 223,948,800
      - 0.125° x 0.15625°
 
+A horizontal grid resolution of C90 is generally the minimum recommended 
+for most scientific applications, as it is known that representation of 
+transport processes begins to degrade below this threshold. As of GCHP 
+14.8.0, the default grid resolution is C90. C24 and C48 resolutions 
+are still available, and are sufficient for some applications, such as 
+testing new model configurations and feature implementations.
+
+Switching to a higher horizontal grid resolution will likely result in 
+increased computational cost and longer run times. Think carefully about
+your specific requirements before submitting new jobs.
+
 See our :ref:`stretched-grid` chapter for information about how
 you can stretch one of the grid faces to achieve extra-fine resolution
 over a target location.
