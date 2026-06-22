@@ -218,6 +218,15 @@ You therefore need to run it to actually apply the settings:
    $ vim setCommonRunSettings.sh           # edit simulation settings here
    $ ./setCommonRunSettings.sh             # applies the updated settings
 
+..attention::
+   Note that as of GCHP 14.8.0 the default grid resolution is C90. If you 
+   are using an older version of GCHP, the default grid resolution is C24.
+   C90 is approximately equal to 1x1 degrees and is recommended for most 
+   scientific outputs. As it is known that representation of some transport 
+   processes degrades at coarser resolutions, C48 and C24 are recommended 
+   primarily for testing and debugging purposes. See :ref:`horizontal-grids` 
+   for more information about different GCHP grid resolutions.
+
 Simulation start date is set in :file:`cap_restart`.  Run directories
 come with this file filled in based on date of the initial restart
 file in subdirectory :file:`Restarts`.  You can change the start date
