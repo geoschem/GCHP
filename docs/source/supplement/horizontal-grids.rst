@@ -71,8 +71,10 @@ The table below shows some common cubed-sphere configurations.
 
 As of GCHP 14.8.0, the default grid resolution is C90, which is approximately
 equal to 1x1 degrees. As there are known issues with representation of some transport 
-processes at coarser resolutions, C48 and C24 are recommended primarily for testing and 
-debugging purposes. It is encouraged to use C90 or greater for most scientific outputs.
+processes at coarser model resolutions [:cite:`Strahan_Polansky._2006`], C48 and C24 are 
+recommended primarily for testing and debugging purposes. It is encouraged to use C90 or 
+greater for most scientific outputs, unless you are confident these issues will not affect 
+your results. 
 
 Switching from C24 or C48 to C90 or higher will require some changes to your run configuration, 
 as the computational cost of running GCHP increases with grid resolution. As a result, runs may 
