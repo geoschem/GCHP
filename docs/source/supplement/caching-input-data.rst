@@ -17,7 +17,7 @@ Install the bashdatacatalog with the following command. Follow the prompts and r
 
 .. code-block:: console
 
-   gcuser:~$ bash <(curl -s https://raw.githubusercontent.com/LiamBindle/bashdatacatalog/main/install.sh)
+   gcuser:~$ bash <(curl -s https://raw.githubusercontent.com/geoschem/bashdatacatalog/main/install.sh)
 
 .. note:: You can rerun this command to upgrade to the latest version.
 
@@ -147,6 +147,6 @@ Now your GCHP simulation will use input data from ExtDataCache.
 See Also
 --------
 
-* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/LiamBindle/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
-* `bashdatacatalog - List of useful commands <https://github.com/LiamBindle/bashdatacatalog/wiki/3.-Useful-Commands>`_
+* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
+* `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`_
 * `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs/>`_
