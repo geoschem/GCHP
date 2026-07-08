@@ -47,6 +47,13 @@ dedicated `Spack guide <supplement/spack.html>`__ describes how to
 install GCHP and create a run directory with Spack, as well as how to
 use Spack to install GCHP's dependencies if needed.
 
+.. note::
+
+   **Develop and test locally.** GCHP can be built and run at
+   coarse resolution (e.g. 4° x 5°) on a personal laptop using the prebuilt
+   dependency image ``billzhuge/geos-chem-deps`` on Docker Hub — no manual
+   library setup required.
+
 .. toctree::
    :maxdepth: 1
    :caption: Getting Started
