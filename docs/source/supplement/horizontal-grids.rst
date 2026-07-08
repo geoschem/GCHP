@@ -69,17 +69,61 @@ The table below shows some common cubed-sphere configurations.
      - 223,948,800
      - 0.125° x 0.15625°
 
-As of GCHP 14.8.0, the default grid resolution is C90, which is approximately
-equal to 1x1 degrees. As there are known issues with representation of some transport 
-processes at coarser model resolutions [:cite:`Strahan_Polansky._2006`], C48 and C24 are 
-recommended primarily for testing and debugging purposes. It is encouraged to use C90 or 
-greater for most scientific outputs, unless you are confident these issues will not affect 
-your results. 
+As of GCHP 14.8.0, the default grid resolution is C90. Users are encouraged to 
+think carefully about their run's needs and available resources when choosing a 
+grid resolution. Higher-resolution simulations provide a more faithful
+representation of transport :cite:`Strahan_Polansky._2006`, as the model can better
+resolve nonlinearities and heterogeneity, albeit at greater computational expense. 
+Current GCHP applications commonly span within C48 to C360, and lower resolutions are
+generally recommended for testing and debugging over scientific output. Determing a
+"sufficient" model resolution is highly dependent on your exact research question. 
 
-Switching from C24 or C48 to C90 or higher will require some changes to your run configuration, 
-as the computational cost of running GCHP increases with grid resolution. As a result, runs may 
-require more cores, nodes, memory, and wall time. Users are encouraged to think carefully about 
-their run's needs and available resources when choosing a grid resolution.
+Switching from C24/30/48 to C90 or higher will require some changes to your run 
+configuration, as the computational cost of running GCHP increases with grid 
+resolution. To aid with this, the below table provides rough timing estimates for 
+GCHP runs at different resolutions. These exact timings are specific to the Harvard
+Cannon cluster, but can illustrate roughly the expected change in run duration as 
+resolution is increased.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Resolution
+     - Simulation length
+     - Nodes/Cores
+     - Memory
+     - Run duration (dd:hh:mm:ss)
+   * - C24
+     - 1 week
+     - 96/2
+     - 360GB (3.8GB per CPU-core)
+     - 00:02:37:43
+   * - C48
+     - 1 week
+     - 96/2
+     - 
+     - 
+   * - C90
+     - 1 week
+     - 96/2
+     - 
+     - 
+   * - C24
+     - 1 month
+     - 96/2
+     - 
+     - 
+   * - C48
+     - 1 month
+     - 96/2
+     - 
+     - 
+   * - C90
+     - 1 month
+     - 96/2
+     - 
+     - 
+
 
 See our :ref:`stretched-grid` chapter for information about how
 you can stretch one of the grid faces to achieve extra-fine resolution
