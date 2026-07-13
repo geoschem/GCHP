@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
 - Added MAPL3 code blocks for developing MAPL3 compatibility
+- Added MODEL_CTMENV compile option for ctmEnv-only GCHP option which skips GEOS-Chem and advection
 
 ## [14.7.1] - 2026-04-14
 ### Added
