@@ -49,9 +49,12 @@ Program GCHPctm_Main
    type (ESMF_HConfig)    :: hconfig
    type (ESMF_GridComp), allocatable :: servers(:)
 
+   print *, "Calling MAPL_Initialize"
    call MAPL_Initialize(hconfig=hconfig, is_model_pet=is_model_pet, &
         servers=servers, configFileNameFromArgNum=1, _RC)
+   _HERE, "Calling run_gchp"
    call run_gchp(hconfig, is_model_pet=is_model_pet, servers=servers, _RC)
+   _HERE, "Calling MAPL_Finalize"
    call MAPL_Finalize(_RC)
 
 contains
@@ -71,9 +74,11 @@ contains
 
       has_cap_hconfig = ESMF_HConfigIsDefined(hconfig, keystring='cap', _RC)
       _ASSERT(has_cap_hconfig, 'No cap section found in configuration file')
+      _HERE, "Found cap.yaml"
       cap_hconfig = ESMF_HConfigCreateAt(hconfig, keystring='cap', _RC)
-
+      _HERE, "cap hconfig created; calling MAPL_run_driver"
       call MAPL_run_driver(cap_hconfig, is_model_pet=is_model_pet, servers=servers, _RC)
+      _HERE, "Destroying cap_hconfig"
       call ESMF_HConfigDestroy(cap_hconfig, _RC)
 
       _RETURN(_SUCCESS)
