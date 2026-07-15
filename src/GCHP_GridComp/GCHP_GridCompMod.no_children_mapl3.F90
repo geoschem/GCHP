@@ -99,11 +99,11 @@ contains
 !    call logger%info("Run::GCHP_GridCompMod: starting...")
 
     call ESMF_GridValidate(esmfgrid, _RC)
-    call MAPL_GridGet(esmfgrid, longitudes=lons, latitudes=lats, _RC)
-    call MAPL_StateGetPointer(export, temp2d, "LONS", _RC)
-    if( associated(temp2D) ) temp2d = lons
-    call MAPL_StateGetPointer(export, temp2d, "LATS", _RC)
-    if( associated(temp2D) ) temp2d = lats
+    !call MAPL_GridGet(esmfgrid, longitudes=lons, latitudes=lats, _RC)
+    !call MAPL_StateGetPointer(export, temp2d, "LONS", _RC)
+    !if( associated(temp2D) ) temp2d = lons
+    !call MAPL_StateGetPointer(export, temp2d, "LATS", _RC)
+    !if( associated(temp2D) ) temp2d = lats
     _HERE, 'ewl debug: Run::GCHP:: complete'
 !    call logger%info("Run::GCHP_GridCompMod: complete")
 
