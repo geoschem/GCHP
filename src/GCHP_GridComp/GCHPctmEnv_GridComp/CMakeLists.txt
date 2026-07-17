@@ -5,8 +5,8 @@ add_library(GCHPctmEnv_GridComp SHARED
 )
 target_link_libraries(GCHPctmEnv_GridComp PUBLIC
   GeosCore
-  $<LINK_ONLY:mapl3g>
+  $<LINK_ONLY:MAPL.base3g>
 )
 target_include_directories(GCHPctmEnv_GridComp PUBLIC
-  $<TARGET_PROPERTY:mapl3g,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:MAPL.base3g,INTERFACE_INCLUDE_DIRECTORIES>
 )

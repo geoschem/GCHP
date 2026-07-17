@@ -51,13 +51,13 @@ target_link_libraries(GCHP_GridComp PUBLIC
   GCHPctmEnv_GridComp
   GCHP
   $<LINK_ONLY:HCOI_MAPL_ESMF>
-  $<LINK_ONLY:mapl3g>
+  $<LINK_ONLY:MAPL.base3g>
 )
 target_link_libraries(GCHP_GridComp INTERFACE
   $<LINK_ONLY:MAPL.cap3g>
 )
 target_include_directories(GCHP_GridComp PUBLIC
-  $<TARGET_PROPERTY:mapl3g,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:MAPL.base3g,INTERFACE_INCLUDE_DIRECTORIES>
 )
 target_include_directories(GCHP_GridComp INTERFACE
   $<TARGET_PROPERTY:MAPL.cap3g,INTERFACE_INCLUDE_DIRECTORIES>
