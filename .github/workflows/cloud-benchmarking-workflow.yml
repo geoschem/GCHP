@@ -84,7 +84,12 @@ jobs:
       - name: Trigger Step Function
         env:
           # Set config options for aws cli
-          NUM_CORES: 62
+          # Require 96 vcpus in AWS instance used for benchmarking. See
+          # gc-cloud-infrastructure for actual number of cores used for the
+          # GCHP benchmark runs. Due to performance issues with multi-threading
+          # on AWS, GCHP benchmarks are limited to using only physical cores,
+          # which may be half the number of vcpus available in the instance.
+          NUM_CORES: 96
           EC2_TYPE: SPOT # SPOT or DEMAND
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
