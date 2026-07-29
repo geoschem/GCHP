@@ -8,82 +8,33 @@
 
 #define I_AM_MAIN
 
-! Legacy code (MAPL2):
-!!!#include "MAPL_Generic.h"
-!!!
-!!!Program GCHPctm_Main
-!!!   use MAPL
-!!!   use GCHP_GridCompMod, only:  ROOT_SetServices => SetServices
-!!!
-!!!   implicit none
-!!!
-!!!!EOP
-!!!
-!!!   character(len=18)      :: Iam="GCHP_Main"
-!!!   type (MAPL_Cap)        :: cap
-!!!   type (MAPL_CapOptions) :: cap_options
-!!!   integer                :: status
-!!!
-!!!   cap_options = MAPL_CapOptions(cap_rc_file='CAP.rc')
-!!!   cap_options%logging_config = 'logging.yml'
-!!!   cap = MAPL_CAP('GCHP', ROOT_SetServices, cap_options=cap_options)
-!!!   call cap%run(_RC)
-!!!   _VERIFY(status)
-!!!
-!!! end Program GCHPctm_Main
-
-! Implementation using MAPL3:
 #include "MAPL.h"
 
 Program GCHPctm_Main
-   use mapl3
-   use mapl3g_Cap
-   use esmf
-   use GCHP_GridCompMod, only:  ROOT_SetServices => SetServices
+  use MAPL
+  use MAPL_Cap_Mod, only: MAPL_CapCreate, MAPL_CapRun
+  use ESMF
 
-   implicit none
+  implicit none
 
-   logical                :: is_model_pet
-   integer                :: status
-   character(len=18)      :: Iam="GCHP_Main"
-   type (ESMF_HConfig)    :: hconfig
-   type (ESMF_GridComp), allocatable :: servers(:)
+  integer           :: status
+  character(len=18) :: Iam="GCHP_Main"
+  type(MAPL_GriddedComponentDriver) :: driver
+  type(ESMF_GridComp), allocatable  :: servers(:)
 
-   print *, "Calling MAPL_Initialize"
-   call MAPL_Initialize(hconfig=hconfig, is_model_pet=is_model_pet, &
-        servers=servers, configFileNameFromArgNum=1, _RC)
-   _HERE, "Calling run_gchp"
-   call run_gchp(hconfig, is_model_pet=is_model_pet, servers=servers, _RC)
-   _HERE, "Calling MAPL_Finalize"
-   call MAPL_Finalize(_RC)
-
-contains
-
-#undef I_AM_MAIN
-#include "MAPL.h"
-
-   subroutine run_gchp(hconfig, is_model_pet, servers, rc)
-      type(ESMF_HConfig),            intent(inout) :: hconfig
-      logical,                       intent(in)    :: is_model_pet
-      type(ESMF_GridComp), optional, intent(in)    :: servers(:)
-      integer,             optional, intent(out)   :: rc
-
-      logical            :: has_cap_hconfig
-      integer            :: status
-      type(ESMF_HConfig) :: cap_hconfig
-
-      has_cap_hconfig = ESMF_HConfigIsDefined(hconfig, keystring='cap', _RC)
-      _ASSERT(has_cap_hconfig, 'No cap section found in configuration file')
-      _HERE, "Found cap.yaml"
-      cap_hconfig = ESMF_HConfigCreateAt(hconfig, keystring='cap', _RC)
-      _HERE, "cap hconfig created; calling MAPL_run_driver"
-      call MAPL_run_driver(cap_hconfig, is_model_pet=is_model_pet, servers=servers, _RC)
-      _HERE, "Destroying cap_hconfig"
-      call ESMF_HConfigDestroy(cap_hconfig, _RC)
-
-      _RETURN(_SUCCESS)
-   end subroutine run_gchp
+  _HERE, 'GCHPctm_Main started'
+  _HERE, 'Calling MAPL_Initialize'
+  call MAPL_Initialize(configFileNameFromArgNum=1, _RC)
+  _HERE, 'Calling MAPL_CreateServers'
+  call MAPL_CreateServers(servers, _RC)
+  _HERE, 'Calling MAPL_CapCreate'
+  call MAPL_CapCreate(driver, _RC)
+  _HERE, 'Calling MAPL_RunServers'
+  call MAPL_RunServers(servers, _RC)
+  _HERE, 'Calling MAPL_CapRun'
+  call MAPL_CapRun(driver, _RC)
+  _HERE, 'Calling MAPL_Finalize'
+  call MAPL_Finalize(_RC)
+  _HERE, 'GCHPctm_Main finished'
 
 end program GCHPctm_Main
-
-!EOC
