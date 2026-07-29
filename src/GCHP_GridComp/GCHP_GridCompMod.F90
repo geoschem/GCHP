@@ -1,10 +1,9 @@
-#include "MAPL_Generic.h"
 #include "MAPL.h"
 
 module GCHP_GridCompMod
 
   use ESMF
-  use mapl3
+  use MAPL
   use fv_arrays_mod, only: REAL4
   use pflogger, only: logger_t => logger
 
@@ -80,7 +79,9 @@ contains
 
   subroutine Run( GC, IMPORT, EXPORT, CLOCK, RC )
 
+#ifndef MAPL3
     use MAPL_MemUtilsMod                         ! Optional memory prints
+#endif
 
     type(ESMF_GridComp):: gc   ! composite gridded component
     type(ESMF_State) :: import ! import state
