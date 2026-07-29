@@ -50,31 +50,16 @@ target_compile_definitions(GEOSChemBuildProperties INTERFACE
   $<$<BOOL:${FASTJX}>:FASTJX>
 )
 
-# Old MAPL3
-#target_link_libraries(GEOSChemBuildProperties INTERFACE
-#    $<LINK_ONLY:MAPL.base>
-#    $<LINK_ONLY:FVdycoreCubed_GridComp>
-#    $<LINK_ONLY:HCOI_MAPL_ESMF>
-#    $<$<BOOL:${OMP}>:OpenMP::OpenMP_Fortran>
-#    MPI::MPI_C MPI::MPI_Fortran
-#)
-#target_include_directories(GEOSChemBuildProperties INTERFACE
-#    $<TARGET_PROPERTY:MAPL.base,INTERFACE_INCLUDE_DIRECTORIES>
-#    $<TARGET_PROPERTY:FVdycoreCubed_GridComp,INTERFACE_INCLUDE_DIRECTORIES>
-#    $<TARGET_PROPERTY:HCOI_MAPL_ESMF,INTERFACE_INCLUDE_DIRECTORIES>
-#    ${CMAKE_Fortran_MODULE_DIRECTORY}
-#)
-# New MAPL3
 target_link_libraries(GEOSChemBuildProperties INTERFACE
-    $<LINK_ONLY:MAPL.base3g>
     $<LINK_ONLY:FVdycoreCubed_GridComp>
+    $<LINK_ONLY:MAPL>
     $<LINK_ONLY:HCOI_MAPL_ESMF>
     $<$<BOOL:${OMP}>:OpenMP::OpenMP_Fortran>
     MPI::MPI_C MPI::MPI_Fortran
 )
 target_include_directories(GEOSChemBuildProperties INTERFACE
-    $<TARGET_PROPERTY:MAPL.base3g,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:FVdycoreCubed_GridComp,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:MAPL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:HCOI_MAPL_ESMF,INTERFACE_INCLUDE_DIRECTORIES>
     ${CMAKE_Fortran_MODULE_DIRECTORY}
 )

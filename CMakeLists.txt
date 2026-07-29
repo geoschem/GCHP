@@ -81,60 +81,15 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
 # Add the directory with gchp_ctm's source code
 add_subdirectory(src)
 
-# Fix the "all" target so it only contains GCHP: add EXCLUDE_FROM_ALL=TRUE to every
-# GMAO target. 
-# Old MAPL3:
-#set_target_properties(
-#  MAPL_cfio_r8                    GMAO_pilgrim
-#  NSIDC-OSTIA_SST-ICE_blend       GEOS_PertShared
-#  GEOS_PertSvecs                  Tapenade        GMAO_psas
-#  GMAO_transf                     GMAO_stoch      arpack
-#  lanso                           planso          post
-#  post_nompi                      nc_diag_write   nc_diag_res
-#  nc_diag_read                    nc_diag_cat     parpack
-#  putil                           util            GMAO_gfio_r4
-#  MAPL.generic MAPL.oomph MAPL MAPL.gridcomps
-#  MAPL.orbit MAPL.griddedio GEOS_Shared
-#  GMAO_hermes CICE4 GMAO_pyobs GMAO_gfio_r8 FVdycoreCubed_GridComp
-#  fvdycore
-#  MAPL_cfio_r4 MAPL.pfio MAPL.profiler MAPL.shared MAPL.constants
-#  MAPL.base GMAO_mpeu GMAO_eu mpi0 fms_r8
-#  mapl3g MAPL.cap3g MAPL.generic3g
-#
-#  PROPERTIES EXCLUDE_FROM_ALL TRUE
-#)
-# New MAPL3:
+# Fix the "all" target so it only contains GCHP: add EXCLUDE_FROM_ALL=TRUE to every GMAO target. 
 set_target_properties(
   GMAO_mpeu
   GMAO_hermes
   GEOS_Shared
-  MAPL.base3g
-  MAPL.cap3g
-  MAPL.constants
-  MAPL.generic3g
-  MAPL.pfio
-  MAPL.profiler
-  MAPL.shared
+  MAPL
   fms_r8
   FVdycoreCubed_GridComp
   fvdycore
 
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
-
-#  NSIDC-OSTIA_SST-ICE_blend       GEOS_PertShared
-#  GEOS_PertSvecs                  Tapenade        GMAO_psas
-#  GMAO_transf                     GMAO_stoch      arpack
-#  lanso                           planso          post
-#  post_nompi                      nc_diag_write   nc_diag_res
-#  nc_diag_read                    nc_diag_cat     parpack
-#  putil                           util            GMAO_gfio_r4
-#  MAPL MAPL.gridcomps
-#  MAPL.orbit
-#  CICE4 GMAO_pyobs GMAO_gfio_r8
-
-#target_compile_definitions(Baselibs INTERFACE 
-#    $<$<BOOL:${ADJOINT}>:ADJOINT>
-#    $<$<BOOL:${REVERSE_OPERATORS}>:REVERSE_OPERATORS> 
-#    ""
-#)
