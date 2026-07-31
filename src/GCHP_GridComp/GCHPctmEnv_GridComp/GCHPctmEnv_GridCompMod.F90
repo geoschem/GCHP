@@ -82,7 +82,7 @@ contains
     call MAPL_GridCompGet(gc, logger=logger, _RC)
     call logger%debug("GCHctmEnvP_GridCompMod.F90::SetServices starting...")
 
-!!#include "GCHPctmEnv_Import___.h"
+#include "GCHPctmEnv_Import___.h"
 ! Comment this section out. For now just use gchpctmenv.yaml
 !    ! Add Imports
 !    call MAPL_GridCompAddSpec(gridcomp=gc, &
@@ -176,7 +176,7 @@ contains
 !!      !      rotation=MAPL_RotateLL, & ! from mapl2
 !    endif
 
-!!!#include "GCHPctmEnv_Export___.h"
+#include "GCHPctmEnv_Export___.h"
 !    ! Add Exports
 !    call MAPL_GridCompAddSpec(gridcomp=gc, &
 !         short_name='PLE0', &
