@@ -1,9 +1,9 @@
 # GCHPctmEnv_GridComp/CMakeLists.txt
 
-add_library(GCHPctmEnv_GridComp SHARED
-    GCHPctmEnv_GridCompMod.F90
+add_library (GCHPctmEnv_GridComp SHARED
+  GCHPctmEnv_GridCompMod.F90
 )
-target_link_libraries(GCHPctmEnv_GridComp PUBLIC
+target_link_libraries (GCHPctmEnv_GridComp PUBLIC
   GeosCore
   $<LINK_ONLY:MAPL>
 )

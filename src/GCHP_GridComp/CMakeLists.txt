@@ -1,59 +1,29 @@
 # GCHP_GridComp/CMakeLists.txt
 
-#---------------
-# Set cmake logicals needed for subprojects
-#---------------
-set(FV_PRECISION           R8    ) # FV3 precision is R8
-set(GCHP_WRAPPER           TRUE  ) # GCHP model configuration
-set(GC_EXTERNAL_CONFIG     TRUE  ) # Not GEOS-Chem Classic
-set(MAPL_ESMF              TRUE  ) # HEMCO and GEOS-Chem will use MAPL/ESMF
+# Set cmake logicals
+set(FV_PRECISION R8)         # Set FV3 precision to R8
+set(GCHP_WRAPPER TRUE)       # ewl: what is this used for?
+set(GC_EXTERNAL_CONFIG TRUE) # ewl: what is this used for?
+set(MAPL_ESMF TRUE)          # HEMCO and GEOS-Chem will use MAPL/ESMF
 
-#---------------
-# Set MAPL automatic code generator (acg) location - comment out for now since might not be needed with USE MAPL
-#---------------
-#set(mapl_acg ${CMAKE_CURRENT_SOURCE_DIR}/../MAPL/apps/MAPL_GridCompSpecs_ACG.py)
-
-#---------------
-# Set whether running in CTMenv-only mode, with GEOS-chem not added
-# as a gridded component and FV3 not run
-#---------------
-option(MODEL_CTMENV "Enable CTMenv-only mode in GCHP" OFF)
-if(MODEL_CTMENV)
-  message(STATUS "WARNING: Running in CTMenv-only mode in GCHP!")
-endif()
-
-#--------------------------------
-# Create the GCHP_GridComp target
-#--------------------------------
-# ewl: change STATIC to SHARED to test issue with SetServices in GCHP
-add_library(GCHP_GridComp SHARED
-    GCHP_GridCompMod.F90
+# Create the target
+add_library (GCHP_GridComp SHARED
+  GCHP_GridCompMod.F90
 )
 
-#-------------------------------------------
-# Add DYNAMICS gridded component (advection)
-#-------------------------------------------
-add_subdirectory(FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
+# Add gridded components
+add_subdirectory (FVdycoreCubed_GridComp EXCLUDE_FROM_ALL)
+add_subdirectory (GEOSChem_GridComp EXCLUDE_FROM_ALL)
+add_subdirectory (GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 
-#-------------------------------------------
-# Add GCHPchem gridded component (GEOS-Chem)
-#-------------------------------------------
-add_subdirectory(GEOSChem_GridComp EXCLUDE_FROM_ALL)
-
-#----------------------------------------------------
-# Add GCHPctmEnv gridded component (pre-advection)
-#----------------------------------------------------
-add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
-
-#----------------------------------------------------
 # Set compile definitions and link libraries
-#----------------------------------------------------
-target_compile_definitions(GCHP_GridComp PRIVATE
+target_compile_definitions (GCHP_GridComp PRIVATE
   $<$<BOOL:${MODEL_CTMENV}>:MODEL_CTMENV>
 )
-target_link_libraries(GCHP_GridComp PUBLIC
+target_link_libraries (GCHP_GridComp PUBLIC
   GCHPctmEnv_GridComp
   GCHP
   $<LINK_ONLY:MAPL>
   $<LINK_ONLY:HCOI_MAPL_ESMF>
 )
+
