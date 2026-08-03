@@ -123,6 +123,7 @@ use Spack to install GCHP's dependencies if needed.
    geos-chem-shared-docs/supplemental-guides/netcdf-guide.rst
    geos-chem-shared-docs/supplemental-guides/coards-guide.rst
    geos-chem-shared-docs/supplemental-guides/customize-guide.rst
+   geos-chem-shared-docs/supplemental-guides/custom-emissions-guide.rst
    geos-chem-shared-docs/supplemental-guides/error-guide.rst
    geos-chem-shared-docs/supplemental-guides/debug-guide.rst
    geos-chem-shared-docs/supplemental-guides/species-guide.rst
