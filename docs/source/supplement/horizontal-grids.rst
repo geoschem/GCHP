@@ -80,50 +80,7 @@ generally recommended for testing and debugging over scientific output. Determin
 
 Switching from C24/30/48 to C90 or higher will require some changes to your run 
 configuration, as the computational cost of running GCHP increases with grid 
-resolution. To aid with this, the below table provides rough timing estimates for 
-GCHP runs at different resolutions. These exact timings are specific to the Harvard
-Cannon cluster, but can illustrate roughly the expected change in run duration as 
-resolution is increased.
-
-.. list-table::
-   :header-rows: 1
-
-   * - Resolution
-     - Simulation length
-     - Nodes/Cores
-     - Memory
-     - Run duration (dd:hh:mm:ss)
-   * - C24
-     - 1 week
-     - 96/2
-     - 360GB (3.8GB per CPU-core)
-     - 00:02:37:43
-   * - C48
-     - 1 week
-     - 96/2
-     - 
-     - 
-   * - C90
-     - 1 week
-     - 96/2
-     - 
-     - 
-   * - C24
-     - 1 month
-     - 96/2
-     - 
-     - 
-   * - C48
-     - 1 month
-     - 96/2
-     - 
-     - 
-   * - C90
-     - 1 month
-     - 96/2
-     - 
-     - 
-
+resolution. 
 
 See our :ref:`stretched-grid` chapter for information about how
 you can stretch one of the grid faces to achieve extra-fine resolution
