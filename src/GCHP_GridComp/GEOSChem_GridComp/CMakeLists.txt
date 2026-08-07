@@ -63,6 +63,15 @@ target_include_directories (GEOSChemBuildProperties INTERFACE
   ${CMAKE_Fortran_MODULE_DIRECTORY}
 )
 
+# Run automatic code generator to create header files for GEOS-Chem states
+mapl_acg (GEOSChemBuildProperties GEOSChem_StateSpecs.acg
+  IMPORT_SPECS
+  EXPORT_SPECS
+  INTERNAL_SPECS
+  GET_POINTERS
+  DECLARE_POINTERS
+)
+
 set (GEOSChem_Fortran_FLAGS_Intel
   -cpp -w -auto -noalign "SHELL:-convert big_endian" "SHELL:-fp-model source"
   -mcmodel=medium -shared-intel -traceback -DLINUX_IFORT
