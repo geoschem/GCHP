@@ -137,10 +137,10 @@ contains
 
 end module GCHP_GridCompMod
 
-subroutine SetServices(gc, rc)
+subroutine GCHP_SetServices(gc, rc)
    use ESMF
    use GCHP_GridCompMod, only : mySetservices=>SetServices
    type(ESMF_GridComp) :: gc
    integer, intent(out) :: rc
    call mySetServices(gc, rc=rc)
-end subroutine SetServices
+end subroutine GCHP_SetServices
