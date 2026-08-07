@@ -1,10 +1,10 @@
 # GCHP_GridComp/CMakeLists.txt
 
 # Set cmake logicals
-set(FV_PRECISION R8)         # Set FV3 precision to R8
-set(GCHP_WRAPPER TRUE)       # ewl: what is this used for?
-set(GC_EXTERNAL_CONFIG TRUE) # ewl: what is this used for?
-set(MAPL_ESMF TRUE)          # HEMCO and GEOS-Chem will use MAPL/ESMF
+set(FV_PRECISION R8)
+set(GCHP_WRAPPER TRUE)
+set(GC_EXTERNAL_CONFIG TRUE)
+set(MAPL_ESMF TRUE)
 
 # Create the target
 add_library (GCHP_GridComp SHARED
