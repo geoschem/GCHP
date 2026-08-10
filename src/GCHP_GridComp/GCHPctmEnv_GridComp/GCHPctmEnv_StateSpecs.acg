@@ -20,8 +20,8 @@ category: IMPORT
 #------------------------------------------------------------------------
  SHORT_NAME | UNITS      | TYPEKIND | DIMS | VLOC | ITEMTYPE | LONG_NAME
 #------------------------------------------------------------------------
- PS1        | hPa        | R4       | xy   | E    |          | pressure_at_surface_before_advection
- PS2        | hPa        | R4       | xy   | E    |          | pressure_at_surface_after_advection
+ PS1        | hPa        | R4       | xy   | N    |          | pressure_at_surface_before_advection
+ PS2        | hPa        | R4       | xy   | N    |          | pressure_at_surface_after_advection
  SPHU1      | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_after_advection
  SPHU2      | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_before_advection
 # UV         | m s-1      | R4       | xyz  | C    | V        | (eastward,northward)_wind
