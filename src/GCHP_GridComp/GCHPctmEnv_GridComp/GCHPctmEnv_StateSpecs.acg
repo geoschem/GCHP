@@ -5,22 +5,33 @@ category: EXPORT
 #--------------------------------------------------------------------------------------
  SHORT_NAME      | ALIAS       | UNITS      | TYPEKIND | DIMS | VLOC | LONG_NAME
 #--------------------------------------------------------------------------------------
+ #-------------------------------------------------------------------------------------
+ # Exports computed in this gridcomp
+ #
  SPHU0           | SPHU0_out   | kg kg-1    | R8       | xyz  | C    | specific_humidity_before_advection
  PLE0            | PLE0_out    | Pa         | R8       | xyz  | E    | pressure_at_layer_edges_before_advection
  PLE1            | PLE1_out    | Pa         | R8       | xyz  | E    | pressure_at_layer_edges_after_advection
  DryPLE0         | DryPLE0_out | Pa         | R8       | xyz  | E    | dry_pressure_at_layer_edges_before_advection
  DryPLE1         | DryPLE1_out | Pa         | R8       | xyz  | E    | dry_pressure_at_layer_edges_after_advection
-# MFX             | MFX_out     | Pa m+2     | R8       | xyz  | C    | pressure_weighted_accumulated_eastward_mass_flux
-# MFY             | MFY_out     | Pa m+2     | R8       | xyz  | C    | pressure_weighted_accumulated_northward_mass_flux
-# CX              | CX_out      | 1          | R8       | xyz  | C    | eastward_accumulated_courant_number
-# CY              | CY_out      | 1          | R8       | xyz  | C    | northward_accumulated_courant_number
+ #MFX             | MFX_out     | Pa m+2     | R8       | xyz  | C    | pressure_weighted_accumulated_eastward_mass_flux
+ #MFY             | MFY_out     | Pa m+2     | R8       | xyz  | C    | pressure_weighted_accumulated_northward_mass_flux
+ #CX              | CX_out      | 1          | R8       | xyz  | C    | eastward_accumulated_courant_number
+ #CY              | CY_out      | 1          | R8       | xyz  | C    | northward_accumulated_courant_number
+ #UpwardsMassFlux | UMF_out     | kg m-2 s-1 | R8       | xyz  | E    | upwards_mass_flux_of_air
+ #
+ #-------------------------------------------------------------------------------------
+ # Exports that are identical to imports from ExtData
+ #
  SPHU1           | SPHU1_out   | kg kg-1    | R4       | xyz  | C    | specific_humidity_after_advection
-# UpwardsMassFlux | UMF_out     | kg m-2 s-1 | R8       | xyz  | E    | upwards_mass_flux_of_air
+ #
 
 category: IMPORT
 #-------------------------------------------------------------------------------------
  SHORT_NAME | ALIAS      | UNITS      | TYPEKIND | DIMS | VLOC | ITEMTYPE | LONG_NAME
 #-----------|--------------------------------------------------------------------------
+ #-------------------------------------------------------------------------------------
+ # Imports from MAPL ExtData
+ #
  PS1        | PS1_in     | hPa        | R4       | xy   |      |          | pressure_at_surface_before_advection
  PS2        | PS2_in     | hPa        | R4       | xy   |      |          | pressure_at_surface_after_advection
  SPHU1      | SPHU1_in   | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_after_advection
