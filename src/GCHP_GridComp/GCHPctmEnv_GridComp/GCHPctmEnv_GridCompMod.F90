@@ -87,19 +87,19 @@ contains
 
 #include "GCHPctmEnv_GetPointer___.h"
 
-    ! Initialize exports
-    SPHU0 = 0.0d0
-    PLE0 = 0.0d0
-    PLE1 = 0.0d0
-    DryPLE0 = 0.0d0
-    DryPLE1 = 0.0d0
-    MFX = 0.0d0
-    MFY = 0.0d0
-    CX = 0.0d0
-    CY = 0.0d0
+!    ! Initialize exports
+!    SPHU0 = 0.0d0
+!    PLE0 = 0.0d0
+!    PLE1 = 0.0d0
+!    DryPLE0 = 0.0d0
+!    DryPLE1 = 0.0d0
+!    MFX = 0.0d0
+!    MFY = 0.0d0
+!    CX = 0.0d0
+!    CY = 0.0d0
 
     ! Get number of levels
-    nlev = size(PLE0,3) - 1
+    nlev = size(PLE0_out,3) - 1
 
     ! Get run timestep [sec]
     call MAPL_GridCompGetResource(gc, 'RUN_DT', run_dt, default=0, _RC)
@@ -189,51 +189,54 @@ contains
     ! expects top-down pressure in [Pa].
 
     ! Compute edge pressures for time before advection
-    call calculate_ple(PS1, PLE0)
+    call calculate_ple(PS1_in, PLE0_out)
 
     ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
-    PLE0 = 100.0d0 * PLE0
-    PLE0 = PLE0(:,:,nlev:0:-1)
+    PLE0_out = 100.0d0 * PLE0_out
+    PLE0_out = PLE0_out(:,:,nlev:0:-1)
 
     ! Compute edge pressures for time after advection
-    call calculate_ple(PS2, PLE1)
+    call calculate_ple(PS2_in, PLE1_out)
 
     ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
-    PLE1 = 100.0d0 * PLE1
-    PLE1 = PLE1(:,:,nlev:0:-1)
+    PLE1_out = 100.0d0 * PLE1_out
+    PLE1_out = PLE1_out(:,:,nlev:0:-1)
 
     ! Also compute dry pressures if using dry pressure in advection
     if ( .not. use_total_air_pressure_in_advection ) then
 
        ! Compute dry edge pressures for time before advection
-       call calculate_ple( PS1, DryPLE0, SPHU=SPHU1,           &
+       call calculate_ple( PS1_in, DryPLE0_out, SPHU=SPHU1_in,           &
             topDownMet=meteorology_vertical_index_is_top_down )
 
        ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
-       DryPLE0 = 100.0d0 * DryPLE0
-       DryPLE0 = DryPLE0(:,:,nlev:0:-1)
+       DryPLE0_out = 100.0d0 * DryPLE0_out
+       DryPLE0_out = DryPLE0_out(:,:,nlev:0:-1)
 
        ! Compute dry edge pressures for time after advection
-       call calculate_ple( PS2, DryPLE1, SPHU=SPHU2,           &
+       call calculate_ple( PS2_in, DryPLE1_out, SPHU=SPHU2_in,           &
             topDownMet=meteorology_vertical_index_is_top_down )
 
        ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
-       DryPLE1 = 100.0d0 * DryPLE1
-       DryPLE1 = DryPLE1(:,:,nlev:0:-1)
+       DryPLE1_out = 100.0d0 * DryPLE1_out
+       DryPLE1_out = DryPLE1_out(:,:,nlev:0:-1)
 
     endif
 
-    ! Prepare the specific humidity export (ewl: only if needed?)
+    ! Prepare the pre-advection specific humidity export (ewl: only if needed?)
     ! Set specific humidity export as copy of import casted to real8
     ! and vertically flip if needed
     if ( meteorology_vertical_index_is_top_down ) then
-       SPHU0 = dble(SPHU1)
+       SPHU0_out = dble(SPHU1_in)
     else
-       SPHU0 = dble(SPHU1(:,:,nlev:1:-1))
+       SPHU0_out = dble(SPHU1_in(:,:,nlev:1:-1))
     end if
 
     !     call prepare_massflux_exports(import, export, PLE, run_dt, _RC)
 
+    ! Set the exports that are the same as imports
+    SPHU1_out = SPHU1_in
+    
     call logger%debug("GCHPctmEnv_GridCompMod.F90::Run done")
 
     firstRun = .false.
