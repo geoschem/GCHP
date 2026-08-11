@@ -4,7 +4,7 @@ Configuration files
 
 All GCHP run directories have default simulation-specific run-time
 settings that are set in the configuration files. This section gives
-an high-level overview of all run directory configuration files used
+a high-level overview of all run directory configuration files used
 at run-time in GCHP, as well as links to detailed descriptions if you
 wish to learn more.
 
@@ -23,7 +23,7 @@ wish to learn more.
 List of GCHP configuration files
 ================================
 
-Detailed information about most of GCHP's configuration file can be
+Detailed information about most of GCHP's configuration files can be
 found in the following pages.  You can also reach these pages by
 continuing with the "next" button in this user guide. See further down
 on this page for a high-level summary of all configuration files.
@@ -110,14 +110,14 @@ This high-level summary of GCHP configuration files gives a short description of
 
 :ref:`cfg-hco-cfg`
    Contains emissions information used by `HEMCO
-   <https://hemco.readthedocs.io>`_. Same function as in `GEOS-Chem
-   Classic <https://geos-chem.readthedocs.io>`_ except only HEMCO
+   <https://hemco.readthedocs.io>`__. Same function as in `GEOS-Chem
+   Classic <https://geos-chem.readthedocs.io>`__ except only HEMCO
    name, species, scale IDs, category, and hierarchy are
    used. Diagnostic frequency, file path, read frequency, and units
-   are ignored, and are instead stored in  GCHP config file
+   are ignored, and are instead stored in GCHP config file
    :ref:`extdata-rc`. All HEMCO variables listed in
-   :file:`cfg-hco-cfg` for enabled emissions must also have an entry
-   in :file:`extdata-rc`.
+   :ref:`cfg-hco-cfg` for enabled emissions must also have an entry
+   in :ref:`extdata-rc`.
 
 :ref:`cfg-hco-diagn`
    Contains information mapping :ref:`history-rc` diagnostic names to

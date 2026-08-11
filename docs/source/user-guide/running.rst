@@ -90,7 +90,7 @@ less prone to user error.  These commands include:
 
 #. Rename the output restart file to include run start date and grid
    resolution (format
-   :literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`).
+   :literal:`GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc4`).
 
 .. _running_gchp_int:
 

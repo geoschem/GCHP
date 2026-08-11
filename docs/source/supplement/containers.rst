@@ -11,7 +11,7 @@ for GCHP `through Docker Hub
 These images contain pre-built GCHP source code and the tools for
 creating a GCHP run directory. The instructions below show how to
 create a run directory and run GCHP using `Singularity
-<https://sylabs.io/guides/3.0/user-guide/installation.html>`__ , which
+<https://sylabs.io/guides/3.0/user-guide/installation.html>`__, which
 can be installed using instructions at the previous link or through
 Spack. Singularity is a container software that is preferred over
 Docker for many HPC applications due to security issues. Singularity

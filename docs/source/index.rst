@@ -12,17 +12,17 @@ GEOS-Chem High Performance
    </p>
 
 
-The `GEOS--Chem model <http://geos-chem.org/>`_ is a global 3-D model
+The `GEOS-Chem model <http://geos-chem.org/>`__ is a global 3-D model
 of atmospheric composition driven by assimilated meteorological
 observations from the Goddard Earth Observing System (GEOS) of the
 `NASA Global Modeling and Assimilation Office
-<http://gmao.gsfc.nasa.gov/>`_. It is applied by `research groups
+<http://gmao.gsfc.nasa.gov/>`__. It is applied by `research groups
 around the world
-<http://acmg.seas.harvard.edu/geos/geos_people.html>`_ to a wide range
+<http://acmg.seas.harvard.edu/geos/geos_people.html>`__ to a wide range
 of atmospheric composition problems.
 
-* `GEOS-Chem Overview <http://geos-chem.org/geos-overview>`_
-* `Narrative description of GEOS-Chem <http://geos-chem.org/geos-chem-narrative>`_
+* `GEOS-Chem Overview <http://geos-chem.org/geos-overview>`__
+* `Narrative description of GEOS-Chem <http://geos-chem.org/geos-chem-narrative>`__
 
 This site provides instructions for GEOS-Chem High Performance,
 GEOS-Chem's multi-node variant. We provide two different instruction
@@ -43,7 +43,7 @@ Our `Quick Start Guide <getting-started/quick-start.html>`__ and the
 <user-guide/compiling.html>`__, and `creating a run directory
 <user-guide/rundir-init.html>`__ sections of the User Guide give
 instructions specifically for using a clone of the source code. Our
-dedicated `Spack guide <supplement/spack.html>`__ describes how to
+dedicated `Spack guide <geos-chem-shared-docs/supplemental-guides/spack-guide.html>`__ describes how to
 install GCHP and create a run directory with Spack, as well as how to
 use Spack to install GCHP's dependencies if needed.
 

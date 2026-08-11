@@ -124,8 +124,8 @@ would like to use from the dataset.
    only if the simulation does not cross the 01 June 2020 boundary. We
    therefore recommend splitting up GEOS-FP runs in time such that a
    single simulation does not span this date. For example, configure
-   one run to end on 01 June 2020 and then use  its output restart to
-   start another run on 01 June 2020.. Alternatively consider using
+   one run to end on 01 June 2020 and then use its output restart to
+   start another run on 01 June 2020. Alternatively consider using
    MERRA2 which was entirely generated with RAS, or GEOS-IT which was
    entirely generated with Grell-Freitas. If you wish to use a GEOS-FP
    meteorology year different from your simulation year please create
@@ -192,7 +192,7 @@ created and brief instructions for us. For example:
      -- Restart files for this date at different grid resolutions are in the
         Restarts subdirectory
      -- To update start time, edit configuration file cap_restart and
-        add or symlink file Restarts/GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc
+        add or symlink file Restarts/GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc4
         where YYYYMMDD_HHmm is start date and time
      -- Edit other commonly changed run settings in setCommonRunSettings.sh
      -- See build/README for compilation instructions
@@ -205,7 +205,7 @@ Build KPP-Standalone Box Model (optional)
 -----------------------------------------
 
 If you are creating a run directory for a fullchem simulation, the
-next (and final) menu will aks you:
+next (and final) menu will ask you:
 
 .. code-block:: console
 
@@ -214,7 +214,7 @@ next (and final) menu will aks you:
    -----------------------------------------------------------
    >>>
 
-Type :program:`y` and then :command:`ENTER` you wish to build the
+Type :program:`y` and then :command:`ENTER` if you wish to build the
 :program:`KPP-Standalone Box Model`, or :program:`n` then
 :program:`ENTER` to skip this step. If you choose to build
 KPP-Standalone, you will be given this reminder:

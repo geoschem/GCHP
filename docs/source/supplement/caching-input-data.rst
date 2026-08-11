@@ -53,7 +53,7 @@ These instructions will put a demo set of catalog files in :file:`ExtDataCache/C
    gcuser:/scratch$ mkdir ExtDataCache/CatalogFiles/DemoSimulation  # for storing catalog files for a specific simulation
 
 
-Next, download the catalog files for the appropriate version of GEOS-Chem. You can find the GEOS-Chem catalog files `here <http://geoschemdata.wustl.edu/ExtData/DataCatalogs>`_.
+Next, download the catalog files for the appropriate version of GEOS-Chem. You can find the GEOS-Chem catalog files `here <http://geoschemdata.wustl.edu/ExtData/DataCatalogs>`__.
 
 .. code-block:: console
 
@@ -88,7 +88,7 @@ Copy Data to ExtDataCache
 -------------------------
 
 Navigate to :file:`ExtDataCache/`. 
-One you are there, run :command:`bashdatacatalog-fetch` to fetch metadata from ExtData.
+Once you are there, run :command:`bashdatacatalog-fetch` to fetch metadata from ExtData.
 The arguments to :command:`bashdatacatalog-fetch` are catalog files.
 This metadata includes the file list for each data collection, and the details to classify each file as a temporal or static file.
 
@@ -103,7 +103,7 @@ For example, add the :literal:`-s` to list "static" files (input files that are 
 You can list "temporal" files with the :literal:`-t` flag.
 You can filter temporal files according to a date range with the :literal:`-r START,END` argument.
 You can filter out files that exist using the :literal:`-m` flag (lists files that are missing).
-You can specify different file list formats using the `-f FORMAT` argument. 
+You can specify different file list formats using the :literal:`-f FORMAT` argument.
 Below is a command that lists all the files in ExtDataCache that are missing for a simulation starting on 2017-01-01 and ending on 2017-12-31.
 
 .. code-block:: console
@@ -147,6 +147,6 @@ Now your GCHP simulation will use input data from ExtDataCache.
 See Also
 --------
 
-* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
-* `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`_
-* `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs/>`_
+* `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`__
+* `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`__
+* `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs/>`__

@@ -19,7 +19,7 @@ change in the run directory based on what you would like to do.
 
    If there is topic not covered on this page that you would like to
    see added please create an issue on the `GCHP issues page
-   <https://github.com/geoschem/GCHP/issues>`_ with your request.
+   <https://github.com/geoschem/GCHP/issues>`__ with your request.
 
 =================
 Compute resources
@@ -49,7 +49,7 @@ requires that each core cover a domain size of at least 4x4 grid
 cells. For C24 this means there needs to be at least 36 cores per face
 because a 24x24 face can be broken into 36 4x4 regions. This
 translates into a maximum of 216 cores for C24, 864 cores for C48,
-3174 cores for C90, 12150 cores for C180, and so on.
+2904 cores for C90, 12150 cores for C180, and so on.
 
 Communication between the cores occurs only during transport processes
 and you will typically start to see negative effects due to excessive
@@ -73,7 +73,7 @@ optimal communication.  Maximizing squareness of grid cells per core
 is done automatically for you within
 :file:`setCommonRunSettings.sh`. You may disable that feature by
 changing variable :samp:`AutoUpdate_NXNY` to :samp:`OFF` in the
-"DOMAIN DECOMPOSITON" section of the file. Beware that disabling it
+"DOMAIN DECOMPOSITION" section of the file. Beware that disabling it
 will require you to set :literal:`NX` and :literal:`NY` yourself in
 the file.
 
@@ -150,12 +150,12 @@ quarter degree, and so on.
 
 To change your grid resolution in the run directory edit
 :literal:`CS_RES` in the "GRID RESOLUTION" section of
-:file:`setCommonRunSettings.sh`. The paramter should be an
+:file:`setCommonRunSettings.sh`. The parameter should be an
 integer value of the cube side length you wish to use.
 To use a uniform global grid resolution make sure
 :literal:`STRETCH_GRID` is set to :literal:`OFF` in the "STRETCHED
 GRID" section of the file. To use a stretched grid rather
-han a globally uniform grid see the section on this page for
+than a globally uniform grid see the section on this page for
 setting stretched grid parameters.
 
 Set stretched grid parameters
@@ -218,10 +218,10 @@ every time you run GCHP.
 If you poke around the GCHP configuration files you may notice that
 file :file:`CAP.rc` contains entries for :literal:`BEG_DATE` and
 :literal:`END_DATE`. You can ignore these fields for most
-cases. :file:`BEG_DATE` is not used for start date if
+cases. :literal:`BEG_DATE` is not used for start date if
 :file:`cap_restart` is present. However, it must be prior to your
 start date for use in GEOS-Chem's "ELAPSED_TIME" variable. We set it
-to year 1960 to be safe. :file:`BEG_DATE` can also be ignored as long
+to year 1960 to be safe. :literal:`END_DATE` can also be ignored as long
 as it is the same as or later than your start date plus run
 duration. For safety we set it to year 2200. The only time you would
 need to adjust these settings is for simulations way in the past or
@@ -251,7 +251,7 @@ file you want to use in the :file:`Restarts` directory using the
 expected filename format with the start date you configure in
 :file:`cap_restart` and the grid resolution you configure in
 :file:`setCommonRunSettings.sh`. The expected format is
-:literal:`GEOSChem.Restarts.YYYYMMDD_HHmmz.cN.nc4`. Running
+:literal:`GEOSChem.Restart.YYYYMMDD_HHmmz.cN.nc4`. Running
 :file:`setRestartLink.sh` will update
 :file:`gchp_restart.nc4` to use it.
 
@@ -269,8 +269,8 @@ Most simulations by default do not allow missing species in the
 restart file. The model will exit with an error if species are not
 found. However, there is a switch in :file:`setCommonRunSetting.sh` to
 disable this behavior. This toggle is located in the section on
-infrequently changed settings under the header :file:`REQUIRE ALL
-SPECIES IN INITIAL RESTART FILE`. Setting the switch to :file:`NO`
+infrequently changed settings under the header :literal:`REQUIRE ALL
+SPECIES IN INITIAL RESTART FILE`. Setting the switch to :literal:`NO`
 will use background values set in :file:`species_database.yml` as
 initial values for species that are missing.
 
@@ -425,11 +425,11 @@ frequency and duration auto-set within
 :file:`setCommonRunSettings.sh`.  The file contains a list of
 time-averaged collections and instantaneous collections, and
 allows setting a frequency and duration to apply to all
-collections listed for each. Time-avraged collections also have
+collections listed for each. Time-averaged collections also have
 a monthly mean option (see separate section on this page about
 monthly mean).  To avoid auto-update of a certain collection, remove
 it from the list in :file:`setCommonRunSettings.sh`, or set
-"AutUpdate_Diagnostics" to :literal:`OFF`.  See section "DIAGNOSTICS"
+"AutoUpdate_Diagnostics" to :literal:`OFF`.  See section "DIAGNOSTICS"
 within :file:`setCommonRunSettings.sh` for examples.
 
 Add a new diagnostics collection

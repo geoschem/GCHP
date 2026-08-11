@@ -115,6 +115,5 @@ html_logo = "geos-chem-shared-docs/_static/GEOS-Chem_Logo_Light_Background.png"
 # More theme settings
 html_theme_options = {
     'logo_only': False,                        # Show logo & top text
-    'display_version': False,                  # Don't show version number
     'style_nav_header_background': '#FCFCFC',  # 99% white for top left bkgrnd
 }

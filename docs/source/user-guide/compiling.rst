@@ -22,7 +22,7 @@ Compile
 .. note::
 
    Another resource for GCHP build instructions is our `YouTube
-   tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_. It is for
+   tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`__. It is for
    version 13 but the build information is still applicable.
 
 
@@ -43,10 +43,10 @@ specify them.
 .. important::
 
    These instructions assume you have loaded a computing environment
-   that satisfies    :ref:`GCHP's software requirements
-   <software_requirements>` You can find instructions for building
-   GCHP's    dependencies yourself in the `Spack instructions
-   <../supplement/spack.html>`__.
+   that satisfies :ref:`GCHP's software requirements
+   <software_requirements>`. You can find instructions for building
+   GCHP's dependencies yourself in the `Spack instructions
+   <../geos-chem-shared-docs/supplemental-guides/spack-guide.html>`__.
 
 ========================
 Create a build directory
@@ -55,8 +55,8 @@ Create a build directory
 A build directory is the working directory for a
 "build". Conceptually, a "build" is a case/instance of you compiling
 GCHP. A build directory stores configuration files and intermediate
-files related to the build.  These files and generated and used by
-CMake, Make, and compilers. You can think a  build directory like the
+files related to the build.  These files are generated and used by
+CMake, Make, and compilers. You can think of a build directory like the
 blueprints for a construction project.
 
 Create a new directory and initialize it as a build directory by running CMake.
@@ -159,7 +159,7 @@ Most errors are caused by one or more of the following issues:
      $ cmake . -DCMAKE_PREFIX_PATH=/path/to/missing/files
 
   * If ESMF is missing, point CMake to your ESMF install with
-    :option:`-DCMAKE_PREFIX_PATH`
+    :literal:`-DCMAKE_PREFIX_PATH`
 
 * Software modules that are not compatible. Fix this by loading
   compatible modules/dependencies/compilers. Some hints:
@@ -219,7 +219,7 @@ useful information for troubleshooting.
       $ cd build           # ... and navigate to it
       $ export CC=icc      # select "icc" as C compiler
       $ export CXX=icpc    # select "icpc" as C++ compiler
-      $ export FC=icc      # select "ifort" as Fortran compiler
+      $ export FC=ifort    # select "ifort" as Fortran compiler
       $ cmake ~/Code.GCHP  # initialize new build dir
       -- The Fortran compiler identification is Intel 19.1.0.20191121
       -- The CXX compiler identification is Intel 19.1.0.20191121
@@ -262,7 +262,7 @@ build settings, to your run directory/directories.
    :program:`make` and (optionally) :program:`make install`, and the
    build system will automatically figure out what needs to be recompiled.
 
-Since there are no required build settings, so here, we will stick
+Since there are no required build settings, we will stick
 with the default settings.
 
 You should notice that when you run :program:`cmake` it ends with:
@@ -297,7 +297,7 @@ You compile GCHP with:
 .. note::
 
    If you run out of memory while compiling, restrict the number of
-   processes that can run concurrently (e.g., use :option:`-j20` to
+   processes that can run concurrently (e.g., use :literal:`-j20` to
    restrict to 20 processes).
 
 Compiling GCHP creates :file:`./bin/gchp` (the GCHP executable). You
@@ -357,71 +357,71 @@ list of build settings for GCHP.
 
 .. _build_setting_rundir:
 
-.. option:: RUNDIR
+.. describe:: RUNDIR
 
    Paths to run directories where :command:`make install` installs
    GCHP. Multiple run directories can be specified by a semicolon
-   separated list. A warning is issues if one of these directories
+   separated list. A warning is issued if one of these directories
    does not look like a run directory.
 
    These paths can be relative paths or absolute paths. Relative paths
    are interpreted as relative to your build directory.
 
-.. option:: CMAKE_BUILD_TYPE
+.. describe:: CMAKE_BUILD_TYPE
 
    The build type. Valid values are :literal:`Release`,
    :literal:`Debug`, and :literal:`RelWithDebInfo`.     Set this to
    :literal:`Debug` if you want to build in debug mode.
 
-.. option:: CMAKE_PREFIX_PATH
+.. describe:: CMAKE_PREFIX_PATH
 
    Extra directories that CMake will search when it's looking for
    dependencies. Directories in :literal:`CMAKE_PREFIX_PATH` have
    the highest precedence when CMake is searching for dependencies.
    Multiple directories can be specified with a semicolon-separated list.
 
-.. option:: GEOSChem_Fortran_FLAGS_<COMPILER_ID>
+.. describe:: GEOSChem_Fortran_FLAGS_<COMPILER_ID>
 
    Compiler options for GEOS-Chem for all build types. Valid values
    for :literal:`<COMPILER_ID>` are :literal:`GNU` and
    :literal:`Intel`.
 
-.. option:: GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
+.. describe:: GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
 
    Additional compiler options for GEOS-Chem for build type
    :literal:`<BUILD_TYPE>`.
 
-.. option:: HEMCO_Fortran_FLAGS_<COMPILER_ID>
+.. describe:: HEMCO_Fortran_FLAGS_<COMPILER_ID>
 
    Same as :literal:`GEOSChem_Fortran_FLAGS_<COMPILER_ID>`, but for HEMCO.
 
-.. option:: HEMCO_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
+.. describe:: HEMCO_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
 
    Same as
    :literal:`GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>`,
    but for HEMCO.
 
-.. option:: RRTMG
+.. describe:: RRTMG
 
    Switch to enable the RRTMG component. Set value to :literal:`y` to turn on.
 
-.. option:: FASTJX
+.. describe:: FASTJX
 
    Switch to enable the legacy FAST-JX v7.0 photolysis mechanism. Set
    value :literal:`y` to turn on FAST-JX and turn off Cloud-J. If
-   FASTJX is not set then Cloud-J will be to compute photolysis
+   FASTJX is not set then Cloud-J will be used to compute photolysis
    rates.
 
-.. option:: OMP
+.. describe:: OMP
 
    Switch to enable/disable OpenMP multithreading. As is standard in
    CMake (see `if documentation
-   <https://cmake.org/cmake/help/latest/command/if.html>`_) valid
+   <https://cmake.org/cmake/help/latest/command/if.html>`__) valid
    values are :literal:`ON`, :literal:`YES`, :literal:`Y`,
    :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
    false values are their opposites.
 
-.. option:: INSTALLCOPY
+.. describe:: INSTALLCOPY
 
    Similar to :literal:`RUNDIR`, except the directories do not need
    to be run directories.

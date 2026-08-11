@@ -7,11 +7,11 @@ GCHP horizontal grids
 GCHP uses cubed-sphere horizontal grids instead of the traditional
 cartesian grids.  For a good general description of cubed sphere
 grids, please see our `Cubed-sphere grid illustrations
-<https://geoschem.github.io/cube-sphere.html>`_ page at `geos-chem.org
-<https://geoschem.github.io>`_.
+<https://geoschem.github.io/cube-sphere.html>`__ page at `geos-chem.org
+<https://geoschem.github.io>`__.
 
 Cubed-sphere grid resolutions are denoted using the number of grid
-cells along each face, which must be divisible by 6.  At present GCHP
+cells along each face.  At present GCHP
 uses :ref:`grids with 72 vertical layers <gchp-vgrids>`, but this may
 increase to 132 layers in the near future.
 
