@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added MAPL3 code blocks for developing MAPL3 compatibility
 - Added  `.gitattributes`, `GOVERNANCE.md`, `SECURITY.md`, and `CITATION.cff` files for GitHub
 - Added `CLAUDE.md`, which gives guidance to Claude Code AI
+- Added "AI disclosure" section to `.github/PULL_REQUEST_TEMPLATE.md`
 
 ### Changed
 - Updated `.release/changeVersionNumbers.sh` to only update the version number and date in `CITATION.cff` and to only update changelog files in the GCHP repo
