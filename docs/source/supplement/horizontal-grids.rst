@@ -69,6 +69,18 @@ The table below shows some common cubed-sphere configurations.
      - 223,948,800
      - 0.125° x 0.15625°
 
+The default GCHP grid resolution is C90. Users are encouraged to 
+think carefully about their run's needs and available resources when choosing a 
+grid resolution. Higher-resolution simulations provide a more faithful
+representation of transport :cite:`Strahan_Polansky._2006`, as the model can better
+resolve nonlinearities and heterogeneity, albeit at greater computational expense. 
+Current GCHP applications commonly span within C48 to C360. Determing a
+"sufficient" model resolution is highly dependent on your exact research question. 
+
+Switching from C24/30/48 to C90 or higher will require some changes to your run 
+configuration, as the computational cost of running GCHP increases with grid 
+resolution. 
+
 See our :ref:`stretched-grid` chapter for information about how
 you can stretch one of the grid faces to achieve extra-fine resolution
 over a target location.
