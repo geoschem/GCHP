@@ -219,12 +219,13 @@ You therefore need to run it to actually apply the settings:
    $ ./setCommonRunSettings.sh             # applies the updated settings
 
 .. attention::
-   When creating a GCHP run directory, the default grid resolution in 
+
+   When creating a GCHP run directory, the default grid resolution in
    configuration file setCommonRunSettings.sh is set to C90. C90 has a
-   resolution of approximately 110km globally, similar to the average 
+   resolution of approximately 110km globally, similar to the average
    resolution of a 1x1 degree lat-lon grid, and is sufficient for most
-   scientific outputs. See :ref:`horizontal-grids` for more information
-   about different GCHP grid resolutions and notes on selecting the 
+   scientific outputs. See :ref:`gchp_hgrids` for more information
+   about different GCHP grid resolutions and notes on selecting the
    appropriate resolution for your runs.
 
 Simulation start date is set in :file:`cap_restart`.  Run directories

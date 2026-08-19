@@ -19,8 +19,6 @@ Compile
    instructions have a linear flow. The Quickstart Guide, on the other
    hand, shows how to make a run directory prior to compiling.
 
-.. note::
-
    Another resource for GCHP build instructions is our `YouTube
    tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`__. It is for
    version 13 but the build information is still applicable.
@@ -256,7 +254,7 @@ or more run directories to install GCHP to. Here, "install" refers to
 copying the compiled executable, and some supplemental files with
 build settings, to your run directory/directories.
 
-.. note::
+.. tip::
 
    You can update build settings after you compile GCHP. Simply rerun
    :program:`make` and (optionally) :program:`make install`, and the
@@ -290,11 +288,11 @@ You compile GCHP with:
    $ cd ~/Code.GCHP/build  # Skip if you are already in the build/ folder
    $ make -j               # -j enables compiling in parallel
 
-.. note::
+.. tip::
 
    You can add :literal:`VERBOSE=1` to see all the compiler commands.
 
-.. note::
+.. tip::
 
    If you run out of memory while compiling, restrict the number of
    processes that can run concurrently (e.g., use :literal:`-j20` to
@@ -332,12 +330,12 @@ To recompile GCHP, simply do
 
 and then optionally, :command:`make install`.
 
-.. note::
-    GNU compilers recompile GCHP faster than Intel compilers. This is because of how :program:`gfortran`
-    formats Fortran modules files (:file:`*.mod` files). Therefore, if you want to be able to recompile quickly, consider
-    using GNU compilers.
+.. tip::
 
-------------
+   GNU compilers recompile GCHP faster than Intel compilers. This is
+   because of how :program:`gfortran` formats Fortran modules files
+   (:file:`*.mod` files). Therefore, if you want to be able to
+   recompile quickly, consider using GNU compilers.
 
 .. _gchp_build_options:
 
@@ -357,21 +355,42 @@ list of build settings for GCHP.
 
 .. _build_setting_rundir:
 
-.. describe:: RUNDIR
+.. option:: RUNDIR
 
-   Paths to run directories where :command:`make install` installs
-   GCHP. Multiple run directories can be specified by a semicolon
-   separated list. A warning is issued if one of these directories
-   does not look like a run directory.
+   Specfies paths to run directories where :command:`make install`
+   installs GCHP. Multiple run directories can be specified by a
+   semicolon separated list. A warning is issued if one of these
+   directories does not look like a run directory.
 
    These paths can be relative paths or absolute paths. Relative paths
    are interpreted as relative to your build directory.
 
+.. describe:: INSTALLCOPY
+
+   Similar to :option:`RUNDIR`, except the directories do not need
+   to be run directories.
+
 .. describe:: CMAKE_BUILD_TYPE
 
-   The build type. Valid values are :literal:`Release`,
-   :literal:`Debug`, and :literal:`RelWithDebInfo`.     Set this to
-   :literal:`Debug` if you want to build in debug mode.
+   Specifies the type of build.  Accepted values are:
+
+   .. option:: Release
+
+      Tells CMake to configure GCHP in **Release** mode.  This
+      means that all optimizations will be applied and all debugging
+      options will be disabled. **(Default option)**.
+
+   .. option:: RelWithDebInfo
+
+      Tells CMake to configure GCHP in **Release** mode, but to generate
+      debugging output during the build sequence.
+
+   .. option:: Debug
+
+      Tells CMake to configure GCHP in **Debug** mode.  This turns on
+      several runtime error checks.  Debug mode makes it easier to
+      find errors but will adversely impact performance. Only use this
+      option if you are actively debugging GCHP.
 
 .. describe:: CMAKE_PREFIX_PATH
 
@@ -401,27 +420,138 @@ list of build settings for GCHP.
    :literal:`GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>`,
    but for HEMCO.
 
-.. describe:: RRTMG
+.. describe:: MECH
 
-   Switch to enable the RRTMG component. Set value to :literal:`y` to turn on.
+   Specifies the chemical mechanism that you wish to use with GCHP:
 
-.. describe:: FASTJX
+   .. option:: fullchem
 
-   Switch to enable the legacy FAST-JX v7.0 photolysis mechanism. Set
-   value :literal:`y` to turn on FAST-JX and turn off Cloud-J. If
-   FASTJX is not set then Cloud-J will be used to compute photolysis
-   rates.
+      Activates the **fullchem** mechanism.  The source code
+      files that define this mechanism are stored in
+      :file:`KPP/fullchem`. **(Default option)**
+
+   .. option:: carbon
+
+      Activates the **carbon** mechanism (CH4-CO-CO2-OCS).  The source
+      code files that define this mechanism are stored in
+      :file:`KPP/carbon`.
+
+   .. option:: custom
+
+      Activates a **custom** mechanism defined by the user.  The
+      source code files that define this mechanism are stored in
+      :file:`KPP/custom`.
 
 .. describe:: OMP
 
-   Switch to enable/disable OpenMP multithreading. As is standard in
-   CMake (see `if documentation
-   <https://cmake.org/cmake/help/latest/command/if.html>`__) valid
-   values are :literal:`ON`, :literal:`YES`, :literal:`Y`,
-   :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
-   false values are their opposites.
+   Configures GCHP to use `OpenMP parallelization
+   <http://wiki.geos-chem.org/Parallelizing_GEOS-Chem>`_.
 
-.. describe:: INSTALLCOPY
+   .. describe:: n
 
-   Similar to :literal:`RUNDIR`, except the directories do not need
-   to be run directories.
+      Deactivates OpenMP parallelization.  GCHP will use MPI (Message
+      Passing Interface) for all core-to-core
+      communication. **(Default option)**
+
+   .. describe:: y
+
+      Activates OpenMP parallelization.  GCHP will use OpenMP to
+      parallelize DO loops marked with :code:`!$OMP PARALLEL` within a
+      single node, and will use MPI for cross-node communication.
+
+      .. attention::
+
+         GCHP has not yet been validated with OpenMP parallelization.
+         Selecting this option may cause build or runtime errors.
+
+.. describe:: RRTMG
+
+   Configures GCHP to use the `RRTMG radiative transfer model
+   <https://wiki.geos-chem.org/Coupling_RRTMG_to_GEOS-Chem>`_.
+   Accepted values are:
+
+   .. describe:: n
+
+      Deactivates the RRTMG radiative transfer model. **(Default option)**
+
+   .. describe:: y
+
+      Activates the RRTMG radiative transfer model.
+
+.. describe:: TOMAS
+
+   Configures GCHP to use the `TOMAS aerosol
+   microphysics package
+   <http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_.  Accepted
+   values are:
+
+   .. describe:: n
+
+      Deactivate TOMAS microphysics. **(Default option)**
+
+   .. describe:: y
+
+      Activate TOMAS microphysics.
+
+.. describe:: TOMAS_BINS
+
+   Specifies the number of size-resolved bins for TOMAS.  Accepted
+   values are:
+
+   .. describe:: 15
+
+      Use 15 size-resolved bins with TOMAS simulations.
+
+   .. describe:: 40
+
+      Use 40 size-resolved bins with TOMAS simulations.
+
+.. describe:: KPPSA
+
+   Compiles the :ref:`KPP-Standalone Box Model <kppsa-guide>` executable.
+
+   .. describe:: n
+
+      Will not install the KPP-Standalone Box model in the run directory.
+      **(Default option)**
+
+   .. describe:: y
+
+      Will install the KPP-Standalone Box mode in the run directory.
+
+.. describe:: LUO_WETDEP
+
+   Configures GEOS-Chem to use the :cite:t:`Luo_and_Yu_2023`
+   wet deposition scheme.
+
+   .. note::
+
+      The :cite:t:`Luo_and_Yu_2023` wet deposition scheme will
+      eventually become the default wet deposition scheme in GEOS-Chem.
+      We have made it an option for the time being while further
+      evaluation is being done.
+
+   Accepted values are:
+
+   .. option:: n
+
+      Deactivates the Luo et al., 2020 wet deposition scheme. **(Default
+      option)**
+
+   .. option:: y
+
+      Activates the Luo et al., 2020 wet deposition scheme.
+
+
+.. describe:: SANITIZE
+
+   Activates the AddressSanitizer/LeakSanitizer functionality in GNU
+   Fortran to identify memory leaks.  Accepted values are:
+
+   .. option:: n
+
+      Deactivates AddressSanitizer/LeakSanitizer **(Default option)**.
+
+   .. option:: y
+
+      Activates AddressSanitizer/LeakSanitizer.

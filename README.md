@@ -3,7 +3,7 @@
 <p>
   <a href="https://github.com/geoschem/GCHP/releases/"><img src="https://img.shields.io/github/v/release/geoschem/GCHP?label=Latest%20Stable%20Release" alt="Latest release"></a>
   <a href="https://github.com/geoschem/GCHP/"><img src="https://img.shields.io/github/release-date/geoschem/GCHP" alt="Release date"></a><br/>
-  <a href="https://doi.org/10.5281/zenodo.4428926"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4428926.svg" alt="DOI"></a>
+  <a href="https://doi.org/10.5281/zenodo.4428926"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.4428926-blue" alt="DOI"></a>
   <a href="https://github.com/geoschem/GCHP/blob/main/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
   <a href="https://gchp.readthedocs.io"><img src="https://img.shields.io/readthedocs/gchp?label=ReadTheDocs"></a>
 </p>
