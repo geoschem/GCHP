@@ -519,26 +519,40 @@ list of build settings for GCHP.
 
       Will install the KPP-Standalone Box mode in the run directory.
 
+.. describe:: MPI_LOAD_BALANCE
+
+   Applies MPI load balancing in chemistry.  This is automatically
+   turned off if :literal:`KPPSA` is set to :literal:`y`.  Accepted
+   values are:
+
+   .. describe:: y
+
+      Activates MPI load balancing in chemistry. **(Default option)**
+
+   .. describe:: n
+
+      Deactivates MPI load balancing in chemistry.
+
 .. describe:: LUO_WETDEP
 
-   Configures GEOS-Chem to use the :cite:t:`Luo_and_Yu_2023`
+   Configures GEOS-Chem to use the :cite:t:`Luo_et_al._2020`
    wet deposition scheme.
 
    .. note::
 
-      The :cite:t:`Luo_and_Yu_2023` wet deposition scheme will
+      The :cite:t:`Luo_et_al._2020` wet deposition scheme will
       eventually become the default wet deposition scheme in GEOS-Chem.
       We have made it an option for the time being while further
       evaluation is being done.
 
    Accepted values are:
 
-   .. option:: n
+   .. describe:: n
 
       Deactivates the Luo et al., 2020 wet deposition scheme. **(Default
       option)**
 
-   .. option:: y
+   .. describe:: y
 
       Activates the Luo et al., 2020 wet deposition scheme.
 
@@ -548,10 +562,10 @@ list of build settings for GCHP.
    Activates the AddressSanitizer/LeakSanitizer functionality in GNU
    Fortran to identify memory leaks.  Accepted values are:
 
-   .. option:: n
+   .. describe:: n
 
       Deactivates AddressSanitizer/LeakSanitizer **(Default option)**.
 
-   .. option:: y
+   .. describe:: y
 
       Activates AddressSanitizer/LeakSanitizer.

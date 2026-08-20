@@ -67,9 +67,8 @@ Enter the integer number that is next to the simulation type you want to use.
      -----------------------------------------------------------
        1. Full chemistry
        2. TransportTracers
-       3. CO2 w/ CMS-Flux emissions
+       3. Carbon
        4. Tagged O3
-       5. Carbon
      >>>
 
 If creating a full chemistry run directory you will be given

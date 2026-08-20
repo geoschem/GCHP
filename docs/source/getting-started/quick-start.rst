@@ -10,8 +10,8 @@ requirements described in :ref:`System Requirements
 environment so that software like :program:`cmake` and a
 fortran compiler are available before continuing. If you do not have
 some of GCHP's software dependencies, you can find instructions for
-installing GCHP's external dependencies in our `Spack instructions
-<../supplement/spack.html>`__.  More detailed instructions on
+installing GCHP's external dependencies in our supplemental guide
+entitled :ref:`spackguide`.  More detailed instructions on
 downloading, compiling, and running GCHP can be found in the User
 Guide.
 

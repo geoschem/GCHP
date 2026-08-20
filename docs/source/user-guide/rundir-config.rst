@@ -302,7 +302,7 @@ Change input meteorology
 
 Input meteorology source and grid resolution are set in config file
 :file:`ExtData.rc` during run directory creation. You will be prompted
-to choose between MERRA2 and GEOS-FP, and grid resolution is
+to choose between MERRA-2, GEOS-FP, and GEOS-IT, and grid resolution is
 automatically set to the native grid lat-lon resolution. If you
 would like to change the meteorology inputs, for example using a
 different grid resolution, then you would need to change the
