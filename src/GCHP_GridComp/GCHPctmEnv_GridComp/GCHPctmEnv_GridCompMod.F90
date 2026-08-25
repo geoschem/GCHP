@@ -17,11 +17,14 @@ module GCHPctmEnv_GridCompMod
   integer,  parameter :: r4 = REAL4
   integer,  parameter :: r8 = REAL8
 
-  integer :: run_dt
-  integer :: nlev
+  ! Currently number of levels is hard-coded to 72 for GCHP
+  integer, parameter  :: nlev = 72
+
+  ! Settings from gchpctmenv.yaml
   logical :: meteorology_vertical_index_is_top_down
   logical :: use_total_air_pressure_in_advection
   logical :: correct_mass_flux_for_humidity
+  real(REAL8) :: run_dt
 
   ! GMAO 72 level grid: Ap [hPa] for 72 levels (73 edges)
   real(REAL8), parameter :: AP_72(73) = &
@@ -81,9 +84,6 @@ contains
     class(logger_t), pointer :: logger
     integer :: status
 
-#include "GCHPctmEnv_Import___.h"
-#include "GCHPctmEnv_Export___.h"
-
     call MAPL_GridCompGet(gc, hconfig=hconfig, logger=logger, _RC)
     call logger%debug("GCHctmEnvP_GridCompMod.F90::SetServices starting...")
 
@@ -92,7 +92,10 @@ contains
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
 
-    ! Look up in yaml file whether to import mass fluxes from ExtData or derive from winds
+    ! Include auto-generated code for declaring non-vector imports
+#include "GCHPctmEnv_Import___.h"
+
+    ! Look up in yaml file whether to also import mass fluxes from ExtData or derive from winds
     call MAPL_GridCompGetResource(gc,      &
          'IMPORT_MASS_FLUX_FROM_EXTDATA',  &
          import_mass_flux_from_extdata,    &
@@ -100,9 +103,42 @@ contains
          _RC)
     if (import_mass_flux_from_extdata) then
        call logger%info("GCHPctmEnv config: will use offline mass fluxes and courant numbers")
+       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
+            short_name= 'MFXY' ,                                              &
+            units='Pa m+2 s-1',                                               &
+            typekind=ESMF_TYPEKIND_R4,                                        &
+            dims='xyz',                                                       &
+            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
+            itemtype=MAPL_STATEITEM_VECTOR,                                   &
+            standard_name='pressure_weighted_(eastward,northward)_mass_flux', &
+            state_intent=ESMF_STATEINTENT_IMPORT,                             &
+            _RC)
+       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
+            short_name= 'CXY' ,                                               &
+            units='1',                                                        &
+            typekind=ESMF_TYPEKIND_R4,                                        &
+            dims='xyz',                                                       &
+            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
+            standard_name='(eastward,northward)_accumulated_courant_number',  &
+            itemtype=MAPL_STATEITEM_VECTOR,                                   &
+            state_intent=ESMF_STATEINTENT_IMPORT,                             &
+            _RC)
     else
        call logger%info("GCHPctmEnv config: will derive mass fluxes and courant numbers from offline winds")
+       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
+            short_name= 'UV' ,                                                &
+            units='m s-1',                                                    &
+            typekind=ESMF_TYPEKIND_R4,                                        &
+            dims='xyz',                                                       &
+            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
+            itemtype=MAPL_STATEITEM_VECTOR,                                   &
+            standard_name='(eastward,northward)_wind',                        &
+            state_intent=ESMF_STATEINTENT_IMPORT,                             &
+            _RC)
     end if
+
+    ! Include auto-generated code for declaring exports
+#include "GCHPctmEnv_Export___.h"
 
     call logger%debug("GCHPctmEnv_GridCompMod.F90::SetServices done")
 
@@ -122,21 +158,15 @@ contains
 
     type(ESMF_HConfig) :: hconfig
     class(logger_t), pointer :: logger
-    integer :: status
-
-#include "GCHPctmEnv_DeclarePointer___.h"
+    integer :: status, dt_int
 
     call MAPL_GridCompGet(gc, hconfig=hconfig, logger=logger, _RC)
     call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize starting...")
 
-#include "GCHPctmEnv_GetPointer___.h"
+    ! Get run timestep [sec] and store as real8 for use in FV subroutines
+    call MAPL_GridCompGetResource(gc, 'RUN_DT', dt_int, default=0, _RC)
+    run_dt = dt_int
 
-    ! Get number of levels
-    nlev = size(PLE0_out,3) - 1
-
-    ! Get run timestep [sec]
-    call MAPL_GridCompGetResource(gc, 'RUN_DT', run_dt, default=0, _RC)
-    
     ! Look up in yaml file whether met vertical index is top down
     call MAPL_GridCompGetResource(gc,               &
          'METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN',  &
@@ -184,6 +214,7 @@ contains
 
   subroutine Run(gc, import, export, clock, rc)
 
+    use FV_StateMod,           only : fv_computeMassFluxes, fv_getVerticalMassFlux
     use GEOS_FV3_UtilitiesMod, only : A2D2C
 
     type(ESMF_GridComp)  :: gc     ! composite gridded component
@@ -192,39 +223,44 @@ contains
     type(ESMF_Clock)     :: clock  ! the clock
     integer, intent(out) :: rc     ! Error code, 0 all is well
 
-    integer            :: is, ie, js, je
-    integer            :: status
+    integer      :: is, ie, js, je
+    integer      :: status
 
     class(logger_t), pointer :: logger
 
-    ! For winds
+    ! Include auto-generated code to declare non-vector import/export pointers
+#include "GCHPctmEnv_DeclarePointer___.h"
+
+    ! Special handling for vector imports
     type(ESMF_FieldBundle) :: bundle
     type(ESMF_Field), allocatable :: field_list(:)
 
-    real(REAL4), allocatable :: uc_r4(:,:,:)
-    real(REAL4), allocatable :: vc_r4(:,:,:)
+    real(REAL4), pointer :: CX_in(:,:,:)  => NULL()
+    real(REAL4), pointer :: CY_in(:,:,:)  => NULL()
+    real(REAL4), pointer :: MFX_in(:,:,:) => NULL()
+    real(REAL4), pointer :: MFY_in(:,:,:) => NULL()
+    real(REAL4), pointer :: UA_in(:,:,:)  => NULL()
+    real(REAL4), pointer :: VA_in(:,:,:)  => NULL()
+
     real(REAL8), allocatable :: uc_r8(:,:,:)
     real(REAL8), allocatable :: vc_r8(:,:,:)
-
-    real(REAL4), pointer :: ua_r4(:,:,:)  => null()
-    real(REAL4), pointer :: va_r4(:,:,:)  => null()
 
 #ifdef ADJOINT
     logical, save :: firstRun = .true.
 #endif
 
-#include "GCHPctmEnv_DeclarePointer___.h"
-
     call MAPL_GridCompGet(gc, logger=logger, _RC)
     call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize starting...")
 
+    ! Include auto-generated code to get non-vector import/export pointers
+    ! Pointers to vectors will be done conditionally later on
 #include "GCHPctmEnv_GetPointer___.h"
 
-       ! Get domain dimensions
-       is = lbound(PLE0_out, 1)
-       ie = ubound(PLE0_out, 1)
-       js = lbound(PLE0_out, 2)
-       je = ubound(PLE0_out, 2)
+    ! Get domain dimensions
+    is = lbound(PLE0_out, 1)
+    ie = ubound(PLE0_out, 1)
+    js = lbound(PLE0_out, 2)
+    je = ubound(PLE0_out, 2)
 
     ! Compute the exports
 
@@ -288,55 +324,61 @@ contains
 
     if ( import_mass_flux_from_extdata ) then
 
+       ! Get mass flux components from import vector MFXY
+       call ESMF_StateGet(import, "MFXY_in", bundle, _RC)
+       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
+       _RETURN_UNLESS(size(field_list) == 2)
+       call ESMF_FieldGet(field_list(1), farrayPtr=MFX_in, _RC)
+       call ESMF_FieldGet(field_list(2), farrayPtr=MFY_in, _RC)
+
+       ! Get Courant number components from import vector CXY
+       call ESMF_StateGet(import, "CXY_in", bundle, _RC)
+       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
+       _RETURN_UNLESS(size(field_list) == 2)
+       call ESMF_FieldGet(field_list(1), farrayPtr=CX_in, _RC)
+       call ESMF_FieldGet(field_list(2), farrayPtr=CY_in, _RC)
+
        if (meteorology_vertical_index_is_top_down) then
-          MFX_out =  dble(MFXC_in(:,:,:))
-          MFY_out =  dble(MFYC_in(:,:,:))
-          CX_out  =  dble(CXC_in(:,:,:))
-          CY_out  =  dble(CYC_in(:,:,:))
+          MFX_out =  dble(MFX_in(:,:,:))
+          MFY_out =  dble(MFY_in(:,:,:))
+          CX_out  =  dble(CX_in(:,:,:))
+          CY_out  =  dble(CY_in(:,:,:))
        else
-          MFX_out =  dble(MFXC_in(:,:,nlev:1:-1))
-          MFY_out =  dble(MFYC_in(:,:,nlev:1:-1))
-          CX_out  =  dble(CXC_in(:,:,nlev:1:-1))
-          CY_out  =  dble(CYC_in(:,:,nlev:1:-1))
+          MFX_out =  dble(MFX_in(:,:,nlev:1:-1))
+          MFY_out =  dble(MFY_in(:,:,nlev:1:-1))
+          CX_out  =  dble(CX_in(:,:,nlev:1:-1))
+          CY_out  =  dble(CY_in(:,:,nlev:1:-1))
        endif
 
        if ( correct_mass_flux_for_humidity > 0 ) then
-          ! ewl: Do we want to use the average humidity instead?
+          ! ewl: better to use the average humidity instead?
           MFX_out = MFX_out / ( 1.d0 - SPHU1_in )
           MFY_out = MFY_out / ( 1.d0 - SPHU1_in )
        endif
 
     else
 
-       ! Allocate local arrays C-grid winds
-       ALLOCATE( uc_r4 (is:ie, js:je, nlev), STAT=STATUS);
-       _VERIFY(STATUS)
-       ALLOCATE( vc_r4 (is:ie, js:je, nlev), STAT=STATUS);
-       _VERIFY(STATUS)
+       ! Get A-grid wind components from import vector UV
+       call ESMF_StateGet(import, "UV_in", bundle, _RC)
+       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
+       _RETURN_UNLESS(size(field_list) == 2)
+       call ESMF_FieldGet(field_list(1), farrayPtr=UA_in, _RC)
+       call ESMF_FieldGet(field_list(2), farrayPtr=VA_in, _RC)
+
+       ! Allocate local arrays for C-grid winds
        ALLOCATE( uc_r8 (is:ie, js:je, nlev), STAT=STATUS);
        _VERIFY(STATUS)
        ALLOCATE( vc_r8 (is:ie, js:je, nlev), STAT=STATUS);
        _VERIFY(STATUS)
 
-       ! Get A-grid wind components from import vector UV
-       call ESMF_StateGet(import, "UV_in", bundle, _RC)
-       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
-       _RETURN_UNLESS(size(field_list) == 2)
-       call ESMF_FieldGet(field_list(1), farrayPtr=ua_r4, _RC)
-       call ESMF_FieldGet(field_list(2), farrayPtr=va_r4, _RC)
-
-       ! Copy A-grid winds to C-grid, flipping as needed so level 1 is TOA
+       ! Get r8 C-grid winds from r4 A-grid, flipping as needed so level 1 is TOA
        if (meteorology_vertical_index_is_top_down) then
-          uc_r4(:,:,:) = ua_r4(:,:,:)
-          vc_r4(:,:,:) = va_r4(:,:,:)
+          uc_r8 = dble(UA_in)
+          vc_r8 = dble(VA_in)
        else
-          uc_r4(:,:,:) = ua_r4(:,:,nlev:1:-1)
-          vc_r4(:,:,:) = va_r4(:,:,nlev:1:-1)
+          uc_r8(:,:,:) = dble(UA_in(:,:,nlev:1:-1))
+          vc_r8(:,:,:) = dble(VA_in(:,:,nlev:1:-1))
        end if
-
-       ! Get real8 C-grid winds from A-grid values converted to real8
-       uc_r8 = dble(uc_r4)
-       vc_r8 = dble(vc_r4)
        call A2D2C(U=uc_r8, V=vc_r8, npz=nlev, getC=.true.)
 
 #ifdef ADJOINT
@@ -357,7 +399,7 @@ contains
 #endif
 
        ! Deallocate local arrays
-       DEALLOCATE(uc_r4, vc_r4, uc_r8, vc_r8)
+       DEALLOCATE(uc_r8, vc_r8)
 
     endif
 
@@ -430,7 +472,6 @@ contains
        enddo
     else
        ! Dry pressure
-       nlev = size  (SPHU,3)
        if ( topDownMet ) then
           do J=js,je
              do I=is,ie

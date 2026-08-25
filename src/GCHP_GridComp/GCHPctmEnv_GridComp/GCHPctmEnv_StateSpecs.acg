@@ -7,15 +7,10 @@ category: IMPORT
 #-------------------------------------------------------------------------------------
  SHORT_NAME | ALIAS      | UNITS      | TYPEKIND | DIMS | VLOC | ITEMTYPE | LONG_NAME
 #-----------|--------------------------------------------------------------------------
- CXC        | CXC_in     | 1          | R4       | xyz  | C    |          | eastward_accumulated_courant_number
- CYC        | CYC_in     | 1          | R4       | xyz  | C    |          | northward_accumulated_courant_number
- MFXC       | MFXC_in    | Pa m+2 s-1 | R4       | xyz  | C    |          | pressure_weighted_eastward_mass_flux
- MFYC       | MFYC_in    | Pa m+2 s-1 | R4       | xyz  | C    |          | pressure_weighted_northward_mass_flux
  PS1        | PS1_in     | hPa        | R4       | xy   |      |          | pressure_at_surface_before_advection
  PS2        | PS2_in     | hPa        | R4       | xy   |      |          | pressure_at_surface_after_advection
  SPHU1      | SPHU1_in   | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_after_advection
  SPHU2      | SPHU2_in   | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_before_advection
- UV         | UV_in      | m s-1      | R4       | xyz  | C    | V        | (eastward,northward)_wind
 
 category: EXPORT
 #--------------------------------------------------------------------------------------
