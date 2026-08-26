@@ -95,9 +95,10 @@ contains
     type(ESMF_HConfig) :: hconfig
     real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
 
-    _HERE, 'ewl debug: Run::GCHP:: starting...'
+    logical :: advcore_present
+
     call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
-!    call logger%info("Run::GCHP_GridCompMod: starting...")
+    call logger%info("Run::GCHP_GridCompMod: starting...")
 
     call ESMF_GridValidate(esmfgrid, _RC)
     !call MAPL_GridGet(esmfgrid, longitudes=lons, latitudes=lats, _RC)
@@ -105,10 +106,41 @@ contains
     !if( associated(temp2D) ) temp2d = lons
     !call MAPL_StateGetPointer(export, temp2d, "LATS", _RC)
     !if( associated(temp2D) ) temp2d = lats
-    _HERE, 'ewl debug: Run::GCHP:: complete'
-!    call logger%info("Run::GCHP_GridCompMod: complete")
+
+    ! For testing, only actually run GCHPctmEnv if AdvCore is present
+    advcore_present = has_child(gc, 'AdvCore', _RC)
+    if (advcore_present) then
+       call MAPL_GridCompRunChild(gc, 'GCHPctmEnv', phase_name='Run', _RC)
+       call MAPL_GridCompRunChild(gc, 'AdvCore', phase_name='Run', _RC)
+    end if
+
+    call logger%info("Run::GCHP_GridCompMod: complete")
 
     _RETURN(_SUCCESS)
+
+  contains
+
+    logical function has_child(gc, child_name, rc)
+      type(ESMF_GridComp), intent(inout) :: gc
+      character(*), intent(in) :: child_name
+      integer, optional, intent(out) :: rc
+
+      integer :: status, n, i
+      character(:), allocatable :: name
+
+      call MAPL_GridCompGet(gc, num_children=n, _RC)
+      has_child = .false.
+      do i = 1, n
+         name = MAPL_GridCompGetChildName(gc, i, _RC)
+         if (name == child_name) then
+            has_child = .true.
+            exit
+         end if
+      end do
+
+      _RETURN(_SUCCESS)
+
+    end function has_child
 
   end subroutine Run
 
