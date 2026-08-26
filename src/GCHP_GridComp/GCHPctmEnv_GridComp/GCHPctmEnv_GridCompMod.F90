@@ -250,7 +250,7 @@ contains
 #endif
 
     call MAPL_GridCompGet(gc, logger=logger, _RC)
-    call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize starting...")
+    call logger%debug("GCHPctmEnv_GridCompMod.F90:: Run starting...")
 
     ! Include auto-generated code to get non-vector import/export pointers
     ! Pointers to vectors will be done conditionally later on
