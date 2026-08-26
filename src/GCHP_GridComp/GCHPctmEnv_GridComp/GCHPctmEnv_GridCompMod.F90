@@ -278,16 +278,16 @@ contains
     ! Compute edge pressures for time before advection
     call Calculate_PLE(PS1_in, is, ie, js, je, PLE0_out)
 
-    ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
+    ! Convert units and vertically flip
     PLE0_out = 100.0d0 * PLE0_out
-    PLE0_out = PLE0_out(:,:,nlev:0:-1)
+    PLE0_out = PLE0_out(:,:,nlev+1:1:-1)
 
     ! Compute edge pressures for time after advection
     call Calculate_PLE(PS2_in, is, ie, js, je, PLE1_out)
 
-    ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
+    ! Convert units and vertically flip
     PLE1_out = 100.0d0 * PLE1_out
-    PLE1_out = PLE1_out(:,:,nlev:0:-1)
+    PLE1_out = PLE1_out(:,:,nlev+1:1:-1)
 
     ! Also compute dry pressures if using dry pressure in advection
     if ( .not. use_total_air_pressure_in_advection ) then
@@ -296,17 +296,17 @@ contains
        call Calculate_PLE( PS1_in, is, ie, js, je, DryPLE0_out, &
             SPHU=SPHU1_in, topDownMet=meteorology_vertical_index_is_top_down )
 
-       ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
+       ! Convert units and vertically flip
        DryPLE0_out = 100.0d0 * DryPLE0_out
-       DryPLE0_out = DryPLE0_out(:,:,nlev:0:-1)
+       DryPLE0_out = DryPLE0_out(:,:,nlev+1:1:-1)
 
        ! Compute dry edge pressures for time after advection
        call Calculate_PLE( PS2_in, is, ie, js, je, DryPLE1_out, &
             SPHU=SPHU2_in, topDownMet=meteorology_vertical_index_is_top_down )
 
-       ! Convert units and vertically flip (MAPL vertical dimension is 0-based)
+       ! Convert units and vertically flip
        DryPLE1_out = 100.0d0 * DryPLE1_out
-       DryPLE1_out = DryPLE1_out(:,:,nlev:0:-1)
+       DryPLE1_out = DryPLE1_out(:,:,nlev+1:1:-1)
 
     endif
 
@@ -411,7 +411,7 @@ contains
 
        ! Flip vertical so that GCHP diagnostic level is following GEOS-Chem convention
        ! Add negative sign to make positive = "up"
-       UpwardsMassFlux_out(:,:,:) = -UpwardsMassFlux_out(:,:,nlev:0:-1)/run_dt
+       UpwardsMassFlux_out(:,:,:) = -UpwardsMassFlux_out(:,:,nlev+1:1:-1)/run_dt
 
     endif
 
