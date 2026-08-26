@@ -325,14 +325,14 @@ contains
     if ( import_mass_flux_from_extdata ) then
 
        ! Get mass flux components from import vector MFXY
-       call ESMF_StateGet(import, "MFXY_in", bundle, _RC)
+       call ESMF_StateGet(import, "MFXY", bundle, _RC)
        call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
        _RETURN_UNLESS(size(field_list) == 2)
        call ESMF_FieldGet(field_list(1), farrayPtr=MFX_in, _RC)
        call ESMF_FieldGet(field_list(2), farrayPtr=MFY_in, _RC)
 
        ! Get Courant number components from import vector CXY
-       call ESMF_StateGet(import, "CXY_in", bundle, _RC)
+       call ESMF_StateGet(import, "CXY", bundle, _RC)
        call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
        _RETURN_UNLESS(size(field_list) == 2)
        call ESMF_FieldGet(field_list(1), farrayPtr=CX_in, _RC)
@@ -359,7 +359,7 @@ contains
     else
 
        ! Get A-grid wind components from import vector UV
-       call ESMF_StateGet(import, "UV_in", bundle, _RC)
+       call ESMF_StateGet(import, "UV", bundle, _RC)
        call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
        _RETURN_UNLESS(size(field_list) == 2)
        call ESMF_FieldGet(field_list(1), farrayPtr=UA_in, _RC)
