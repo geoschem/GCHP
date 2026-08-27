@@ -165,6 +165,7 @@ contains
 
     ! Get run timestep [sec] and store as real8 for use in FV subroutines
     call MAPL_GridCompGetResource(gc, 'RUN_DT', dt_int, default=0, _RC)
+    _ASSERT(dt_int>0, 'RUN_DT must be present in gchpctmenv.yaml')
     run_dt = dt_int
 
     ! Look up in yaml file whether met vertical index is top down
@@ -409,9 +410,11 @@ contains
        ! Get vertical mass flux
        call fv_getVerticalMassFlux(MFX_out, MFY_out, UpwardsMassFlux_out, run_dt)
 
+       ! ewl: comment this out since currently gives floating invalid error during run
        ! Flip vertical so that GCHP diagnostic level is following GEOS-Chem convention
        ! Add negative sign to make positive = "up"
-       UpwardsMassFlux_out(:,:,:) = -UpwardsMassFlux_out(:,:,nlev+1:1:-1)/run_dt
+!ewl       print *, "run_dt", run_dt
+!ewl       UpwardsMassFlux_out(:,:,:) = -UpwardsMassFlux_out(:,:,nlev+1:1:-1)/run_dt
 
     endif
 
