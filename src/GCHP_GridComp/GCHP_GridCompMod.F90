@@ -39,7 +39,7 @@ contains
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
     _HERE, 'ewl debug: SetServices::GCHP:: 2'
     !    call logger%info("SetServices::GCHP_GridCompMod: 1")
-    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="run", _RC)
     !call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, _RC)
     _HERE, 'ewl debug: SetServices::GCHP:: 3'
     !    call logger%info("SetServices::GCHP_GridCompMod: 2")
@@ -110,8 +110,8 @@ contains
     ! For testing, only actually run GCHPctmEnv if AdvCore is present
     advcore_present = has_child(gc, 'AdvCore', _RC)
     if (advcore_present) then
-       call MAPL_GridCompRunChild(gc, 'GCHPctmEnv', phase_name='Run', _RC)
-       call MAPL_GridCompRunChild(gc, 'AdvCore', phase_name='Run', _RC)
+       call MAPL_GridCompRunChild(gc, 'GCHPctmEnv', phase_name='run', _RC)
+       call MAPL_GridCompRunChild(gc, 'AdvCore', phase_name='run', _RC)
     end if
 
     call logger%info("Run::GCHP_GridCompMod: complete")

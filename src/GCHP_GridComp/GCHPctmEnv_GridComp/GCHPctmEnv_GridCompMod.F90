@@ -89,7 +89,7 @@ contains
 
     ! Register methods
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
-    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="run", _RC)
     call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
 
     ! Include auto-generated code for declaring non-vector imports
