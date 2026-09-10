@@ -145,3 +145,11 @@ use Spack to install GCHP's dependencies if needed.
    reference/git-submodules
    reference/glossary
    reference/uploading_to_spack
+
+.. toctree::
+   :hidden:
+
+   geos-chem-shared-docs/simulations/aerosol-only
+   geos-chem-shared-docs/simulations/hg
+   geos-chem-shared-docs/simulations/metals
+   geos-chem-shared-docs/doc/gcid-special-portals

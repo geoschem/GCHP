@@ -21,6 +21,8 @@ change in the run directory based on what you would like to do.
    see added please create an issue on the `GCHP issues page
    <https://github.com/geoschem/GCHP/issues>`__ with your request.
 
+.. _rundir-config-compute:
+
 =================
 Compute resources
 =================
@@ -134,6 +136,8 @@ and cores.
 ==================
 Basic run settings
 ==================
+
+.. _rundir-config-grid-res:
 
 Set cubed-sphere grid resolution
 --------------------------------
@@ -407,6 +411,18 @@ than start over from the beginning.  Update settings for checkpoint
 restart outputs in :file:`setCommonRunSettings.sh` section "MID-RUN
 CHECKPOINT FILES".  Instructions for configuring restart frequency are
 included in the file.
+
+.. tip::
+
+   Frequent checkpoints can consume a lot of storage over a long
+   simulation.  The AWS ParallelCluster examples in
+   :file:`runScriptSamples/operational_examples/aws_pcluster` include a
+   utility script :file:`gchp.remove_old_checkpoints.sh` that
+   recursively walks the :file:`Restarts` subdirectories beneath a path
+   you specify, keeps the earliest and latest restart file in each, and
+   deletes the rest.  Edit :envvar:`base_path` in the script before
+   using it, and pass :literal:`--dryrun` first to see what it would
+   keep and delete without removing anything.
 
 
 Turn on/off diagnostics

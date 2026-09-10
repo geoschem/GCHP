@@ -262,8 +262,17 @@ Bare Minimum Requirements
 Running GCHP on one node with as few as six cores is possible but we
 recommend this only for testing short low resolution runs such as
 running GCHP for the first time and for debugging. These bare minimum
-requirements are sufficient for running GCHP at C24. Please note that
-we recommend running at C90 or greater for scientific applications.
+requirements are sufficient for running GCHP at C24.
+
+.. note::
+
+   When you create a GCHP run directory, the resolution will be set to
+   C90 by default, which is our recommended resolution for most
+   scientific applications.  To run GCHP with the bare-minimum
+   requirements, change :envvar:`CS_RES` from 90 to 24 in
+   :file:`setCommonRunSettings.sh` and reduce the amount of cores and
+   memory requested in your run script.  For more information, please
+   see :ref:`rundir-config-compute` and :ref:`rundir-config-grid-res`.
 
 Recommended Minimum Requirements
 --------------------------------

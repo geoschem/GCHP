@@ -255,6 +255,42 @@ If you still cannot figure out where the problem is then please create
 a GCHP GitHub issue and include all config and log files for your
 run.
 
+.. _running_gchp_performance:
+
+=========================
+Summarize run performance
+=========================
+
+Every GCHP run directory includes utility shell script
+:file:`extractPerformance.sh`, which scrapes the timers that MAPL
+writes to :file:`allPEs.log` and prints a compact summary of them.
+This saves you from reading the raw timing tables in the log by hand.
+
+Run it from within the run directory:
+
+.. code-block:: console
+
+   $ ./extractPerformance.sh
+
+or pass it the directory containing the :file:`allPEs.log` that you
+want summarized:
+
+.. code-block:: console
+
+   $ ./extractPerformance.sh /path/to/run/directory
+
+The script prints the total run time and the model throughput in
+simulated days per day, followed by a table of inclusive times broken
+down by lifecycle phase (:literal:`SetService`, :literal:`Initialize`,
+:literal:`Run`, and :literal:`Finalize`).  Within the
+:literal:`Run` phase, times are listed for each gridded component in
+execution order: :program:`ExtData`, :program:`GCHP` and its children
+(:program:`GCHPctmEnv`, :program:`DYNAMICS`, :program:`GCHPchem`), and
+:program:`HISTORY`.
+
+For a description of the raw MAPL timing output that this script
+summarizes, see :ref:`gchp-output-timing`.
+
 =====================
 Reuse a run directory
 =====================

@@ -44,9 +44,10 @@ which will edit the other configuration files accordingly.
    config-files/CAP_rc.rst
    config-files/cap_restart.rst
    config-files/ExtData_rc.rst
-   ../../geos-chem-shared-docs/doc/geoschem-config.rst
-   ../../geos-chem-shared-docs/doc/hemco-config.rst
-   ../../geos-chem-shared-docs/doc/hemco-diagn.rst
+   config-files/extdata_yaml.rst
+   ../geos-chem-shared-docs/doc/geoschem-config.rst
+   ../geos-chem-shared-docs/doc/hemco-config.rst
+   ../geos-chem-shared-docs/doc/hemco-diagn.rst
    config-files/HISTORY_rc.rst
    config-files/logging_yml.rst
 
@@ -60,8 +61,8 @@ adding new species or modifying chemistry reactions, etc.
    :maxdepth: 1
 
    config-files/input_nml.rst
-   ../../geos-chem-shared-docs/doc/spec-db.rst
-   ../../geos-chem-shared-docs/doc/phot-chem.rst
+   ../geos-chem-shared-docs/doc/spec-db.rst
+   ../geos-chem-shared-docs/doc/phot-chem.rst
 
 ==================
 High-level summary
@@ -95,6 +96,14 @@ This high-level summary of GCHP configuration files gives a short description of
    ExtData debug prints and using most recent year if current year of
    data is unavailable.  Default values may be used by specifying file
    path :file:`/dev/null`.
+
+:ref:`extdata2g`
+   Config file for the next-generation MAPL :program:`ExtData`
+   component (ExtData2G), which will replace :ref:`extdata-rc` in GCHP
+   v15.0.  This beta feature is off by default and is only provided
+   for the TransportTracers and TagO3 simulations.  Enable it by
+   setting :envvar:`Use_ExtData2G` to :literal:`true` in
+   :ref:`set-common-run-settings-sh`.
 
 :ref:`gchp-rc`
    Controls high-level aspects of the simulation, including grid type

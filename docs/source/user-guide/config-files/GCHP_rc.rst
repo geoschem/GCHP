@@ -125,21 +125,31 @@ support them (:program:`GCHPctmEnv`).
 
 .. describe:: GEOSChem_CTM
 
-   If set to :literal:`1`, tells FVdycore that it is operating as a
-   transport  model rather than a prognostic model.
+   Leave this set at :literal:`1`', which tells FVDycore that it is
+   operating as a transport model rather than a prognostic model.
+
 
 .. describe:: MET_WIND_IS_TOP_DOWN
 .. describe:: MET_HUMIDITY_IS_TOP_DOWN
 .. describe:: MET_NONADVECTION_IS_TOP_DOWN
 
-   If set to :literal:`.true.` then GCHP assumes the corresponding
-   category of input met-fields (winds, humidity, and all other
-   non-advection met-fields, respectively) has level 1 corresponding
-   to top-of-atmosphere.  These fields are set automatically when
-   creating a run directory based on whether you choose to use
-   processed or raw met-fields. Raw met-fields are top-down, while
-   processed met-fields are not (level 1 = surface).
+   These fields are set automatically when creating a run directory
+   based on whether you choose to use processed or raw met-fields. Raw
+   met-fields are top-down, while processed met-fields are not (level
+   1 = surface).
+	      
+   .. describe:: .true.
 
+      GCHP assumes the corresponding category of input met-fields
+      (winds, humidity, and all other non-advection met-fields,
+      respectively) has level 1 corresponding to top-of-atmosphere.  
+   
+   .. describe:: .false.
+
+      GCHP assumes the corresponding category of input met-fields
+      (winds, humidity, and all other non-advection met-fields,
+      respectively) has level 1 corresponding to the surface.
+   
 .. describe:: MET_MASS_FLUX_IS_TOP_DOWN
 
    Same as :literal:`MET_WIND_IS_TOP_DOWN`, but for mass flux fields.
@@ -148,35 +158,112 @@ support them (:program:`GCHPctmEnv`).
 
 .. describe:: IMPORT_MASS_FLUX_FROM_EXTDATA
 
-   If set to :literal:`.true.` then input mass fluxes will be used in
-   advection. If .false. mass flux will be derived online from input
-   winds. This setting is automatically set during run directory
-   creation.
+   This setting is automatically set during run directory creation.
+	      
+   .. describe:: .true.
+
+      Advection will use mass fluxes read from disk.
+
+   .. describe:: .false.
+
+      Advection will use mass fluxes derived online from input winds.
 
 .. describe:: USE_TOTAL_AIR_PRESSURE_IN_ADVECTION
 
-   If set to :literal:`0` then dry pressure will be used in advection
-   (default). Using total air pressure in advection is currently
+   .. describe:: 0
+
+      Advection will use dry air pressure. **(Default setting)**
+
+   .. describe:: 1
+		 
+      Advection will use moist air pressure.  This is currently experimental.
    experimental.
 
 .. describe:: CORRECT_MASS_FLUX_FOR_HUMIDITY
 
-   If set to :literal:`1` then mass fluxes will be converted to dry
-   air for use in advection. This switch is not used if using GMAO
-   winds for advection.
+   This switch is not used if using GMAO winds for advection.
+	      
+   .. describe:: 1
+
+      Mass fluxes will be converted to dry air for use in advection.
+      **(Default setting)**
+  
+   .. describe:: 0
+
+      Mass fluxes will be kept as-is.  
+
+.. describe:: PRINT_MASS_IN_ADVECTION
+
+   .. describe:: 0
+
+      No extra printout. **(Default option)**
+
+   .. describe:: 1
+
+      Prints a time series of total mass during advection, which can
+      be useful for checking mass conservation.
+
+.. describe:: USE_EXTDATA2G
+
+   This field is automatically updated by
+   :ref:`set-common-run-settings-sh` from the :envvar:`Use_ExtData2G`
+   setting in that file.
+
+   .. describe:: .false.
+
+      Will use the original MAPL ExtData component to read and regrid
+      data. **(Default option)**
+
+   .. describe:: .true.
+
+      Will use the next-generation MAPL ExtData component
+      (:ref:`extdata2g`) to read and regrid input data.
+
+.. describe:: IMPORT_DYN_HEATING
+
+   Used when running a perturbation scenario with RRTMG's
+   :literal:`FDH` or :literal:`SEFDH` options.
+
+   .. note::
+
+      This setting is only read when GCHP has been built with
+      :literal:`-DRRTMG=y`.  In all other builds the dynamical heating
+      rates are always calculated, whatever this field says.
+
+   .. describe:: 0
+
+      Calculate dynamical heating rates. **(Default option)**
+
+   .. describe:: 1
+
+      Read dynamical heating rates that were archived from the
+      reference scenario.
 
 .. describe:: AdvCore_Advection
 
-   Toggles offline advection. :literal:`0` is off, and :literal:`1` is
-   on. This field is automatically updated by
+   Toggles offline advection. This field is automatically updated by
    :ref:`set-common-run-settings-sh` based on whether you turn
    advection on or off in that file.
 
+   .. describe:: 1
+
+      Enables offline advection. **(Default option in setCommonRunSettings.sh)**
+
+  .. describe:: 0
+
+      Disables offline advection.
+
 .. describe:: DYCORE
 
-   Should either be set to :literal:`OFF` (default) or
-   :literal:`ON`. This value does nothing, but MAPL will crash if it
-   is not declared.
+   This value does nothing, but MAPL will crash if it is not declared.
+
+   .. describe:: OFF
+
+      Placeholder value. **(Default setting)**
+
+   .. describe:: ON
+
+      Placeholder value.
 
 .. describe:: HEARTBEAT_DT
 
@@ -246,9 +333,15 @@ support them (:program:`GCHPctmEnv`).
 
 .. describe:: PRINTRC
 
-   Specifies which resource values to print. Options include
-   :literal:`0`: non-default values, and :literal:`1`: all
-   values. Default setting is :literal:`0`.
+   Specifies which resource values to print.
+
+   .. describe:: 0
+
+      Print non-default resource values **(Default setting)**
+
+   .. describe:: 1
+
+      Print all values.
 
 .. describe:: PARALLEL_READFORCING
 
@@ -398,12 +491,40 @@ support them (:program:`GCHPctmEnv`).
 
 .. describe:: MEMORY_DEBUG_LEVEL
 
-   Toggle for memory debugging. Default is :literal:`0`
-   (off). Changing to :literal:`1` will print memory usage between
-   each GCHP gridcomp run (:program:`advection`,
-   :program:`GCHPctmEnv`, and :program:`GEOS-Chem`) as well as between
-   major GEOS-Chem components. Using the default will result
-   in memory usage print once per timestep only.
+   Toggle for memory debugging.
+
+   .. describe:: 0
+
+      Turn off memory debugging. **(Default value)**  This will print
+      memory usage only once per timestep.
+
+   .. describe:: 1
+
+      Will print memory usage between each GCHP gridcomp run
+      (:program:`advection`, :program:`GCHPctmEnv`, and
+      :program:`GEOS-Chem`) as well as between major GEOS-Chem
+      components.
+
+.. describe:: EXCLUDE_ADVECTION_TRACERS
+
+   Controls whether the species listed in the companion
+   :literal:`EXCLUDE_ADVECTION_TRACERS_LIST:` field are held back from
+   advection.  Accepted values are:
+
+   .. describe:: NO
+
+      Advect all species.  This is the value shipped in the run
+      directory template.
+
+   .. describe:: ALWAYS
+
+      Exclude the listed species on every advection step.  This is the
+      value assumed if the field is absent from :file:`GCHP.rc`
+      altogether.
+
+   .. describe:: PREDICTOR
+
+      Exclude the listed species only on predictor steps.
 
 .. describe:: WRITE_RESTART_BY_OSERVER
 
@@ -418,7 +539,14 @@ support them (:program:`GCHPctmEnv`).
 
 .. describe:: MODEL_PHASE
 
-   Use :literal:`FORWARD` for the forward model. :literal:`ADJOINT` is
-   used for adjoint runs (experimental). Other entries in this section
-   that are commented out are reserved for adjoint development and
-   testing.
+   .. describe:: FORWARD
+
+      Denotes that GCHP is running in forward-model mode. **(Default
+      setting)**
+
+   .. describe:: ADJOINT
+
+      Denotes that GCHP is running in adjoint mode (experimental).
+
+   Other entries in this section that are commented out are reserved
+   for adjoint development and testing.

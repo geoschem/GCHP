@@ -85,6 +85,8 @@ To inspect the memory usage of GCHP you can grep the output log file for string 
 
 These memory statistics are useful for assessing how much memory GCHP is using and whether the memory usage grows over time. If the memory usage goes up throughout a run then it is an indication of a memory leak in the model. The memory debugging option is useful for isolating the memory leak by determining if it is in GEOS-Chem or advection.
 
+.. _gchp-output-timing:
+
 Timing
 ------
 

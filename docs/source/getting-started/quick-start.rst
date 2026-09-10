@@ -249,8 +249,8 @@ directory:
 
 .. code-block:: console
 
-   $ ./setEnvironment.sh /path/to/env/file # sets symbolic link gchp.env
-   $ source gchp.env                       # applies the environment settings
+   $ ./setEnvironmentLink.sh /path/to/env/file  # sets symbolic link gchp.env
+   $ source gchp.env                            # applies the environment settings
 
 ===========
 6. Run GCHP

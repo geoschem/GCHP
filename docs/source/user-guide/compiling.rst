@@ -57,9 +57,9 @@ files related to the build.  These files are generated and used by
 CMake, Make, and compilers. You can think of a build directory like the
 blueprints for a construction project.
 
-Create a new directory and initialize it as a build directory by running CMake.
-When you initialize a build directory, the path to the source code is
-a required argument:
+Create a new directory and initialize it as a build directory by
+running CMake. When you initialize a build directory, the path to the
+source code is a required argument:
 
 .. code-block:: console
 
@@ -68,9 +68,9 @@ a required argument:
    $ cd build           # Navigate to the new directory
    $ cmake ~/Code.GCHP  # Initialize the current dir as a build dir
 
-   -- The Fortran compiler identification is GNU 9.2.1
-   -- The CXX compiler identification is GNU 9.2.1
-   -- The C compiler identification is GNU 9.2.1
+   -- The Fortran compiler identification is GNU 12.2.0
+   -- The CXX compiler identification is GNU 12.2.0
+   -- The C compiler identification is GNU 12.2.0
    -- Check for working Fortran compiler: /usr/bin/f95
    -- Check for working Fortran compiler: /usr/bin/f95  -- works
    ...
@@ -123,7 +123,7 @@ preventing a successful configuration (e.g., a dependency that wasn't
 found, or a compiler that is broken). To begin troubleshooting you
 should:
 
-* Check that the compilers are what you expect (e.g., GNU 9.2, Intel
+* Check that the compilers are what you expect (e.g., GNU 12.2, Intel
   19.1, etc.)
 * Check that dependencies like MPI, HDF5, NetCDF, and ESMF were found
 * Check for obvious errors/incompatibilities in the paths to "Found"
@@ -191,7 +191,7 @@ useful information for troubleshooting.
 
       $ cmake . -DCMAKE_PREFIX_PATH=/software/ESMF
       ...
-      -- Found ESMF: /software/ESMF/include (found version "8.1.0")
+      -- Found ESMF: /software/ESMF/include (found version "8.6.1")
       ...
       -- Configuring done
       -- Generating done
@@ -442,10 +442,42 @@ list of build settings for GCHP.
       source code files that define this mechanism are stored in
       :file:`KPP/custom`.
 
+.. describe:: JACOBIAN
+
+   Builds the carbon simulation with CH\ :sub:`4` Jacobian tracers, for
+   use with the `Integrated Methane Inversion
+   <https://imi.readthedocs.io>`__.
+
+   .. note::
+
+      :literal:`JACOBIAN` may only be used with the carbon mechanism.
+      The number of Jacobian tracers is set when the mechanism is
+      built.  Use the :file:`KPP/carbon/util/expand_carbon_eqn.py`
+      script to expand :file:`carbon.eqn` to the number of CH\ :sub:`4`
+      Jacobian tracers that you need.
+
+   Accepted values are:
+
+   .. describe:: n
+
+      Builds the carbon simulation without Jacobian tracers.
+      **(Default option)**
+
+   .. describe:: y
+
+      Builds the carbon simulation with Jacobian tracers.
+
 .. describe:: OMP
 
    Configures GCHP to use `OpenMP parallelization
    <http://wiki.geos-chem.org/Parallelizing_GEOS-Chem>`_.
+
+   .. attention::
+
+      GCHP has not yet been validated with OpenMP parallelization.
+      Selecting this option may cause build or runtime errors.
+
+   Accepted values are:
 
    .. describe:: n
 
@@ -459,10 +491,6 @@ list of build settings for GCHP.
       parallelize DO loops marked with :code:`!$OMP PARALLEL` within a
       single node, and will use MPI for cross-node communication.
 
-      .. attention::
-
-         GCHP has not yet been validated with OpenMP parallelization.
-         Selecting this option may cause build or runtime errors.
 
 .. describe:: RRTMG
 
@@ -505,6 +533,26 @@ list of build settings for GCHP.
    .. describe:: 40
 
       Use 40 size-resolved bins with TOMAS simulations.
+
+.. describe:: FASTJX
+
+   Configures GEOS-Chem to use the legacy FAST-JX photolysis mechanism
+   instead of :ref:`Cloud-J <cfg-phot-chem>`.
+
+   .. attention::
+
+      This option is deprecated, as FAST-JX is no longer used for the
+      :ref:`fullchem-sim`.
+
+   Accepted values are:
+
+   .. describe:: n
+
+      Uses Cloud-J for photolysis. **(Default option)**
+
+   .. describe:: y
+
+      Uses legacy FAST-JX for photolysis.
 
 .. describe:: KPPSA
 
@@ -556,7 +604,6 @@ list of build settings for GCHP.
 
       Activates the Luo et al., 2020 wet deposition scheme.
 
-
 .. describe:: SANITIZE
 
    Activates the AddressSanitizer/LeakSanitizer functionality in GNU
@@ -569,3 +616,24 @@ list of build settings for GCHP.
    .. describe:: y
 
       Activates AddressSanitizer/LeakSanitizer.
+
+.. describe:: USE_REAL8
+
+   Sets GEOS-Chem's flexible precision (:literal:`fp`) to 8-byte
+   floating point.
+
+   .. attention::
+
+      GCHP is only validated with :literal:`USE_REAL8=y`, which is why
+      it is the default.  Change this setting only for development or
+      testing purposes.
+
+   Accepted values are:
+
+   .. describe:: y
+
+      Flexible precision is 8-byte floating point. **(Default option)**
+
+   .. describe:: n
+
+      Flexible precision is 4-byte floating point.

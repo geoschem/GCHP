@@ -28,6 +28,15 @@ need to do the following:
    parameters in :file:`setCommonRunSettings.sh` and use your
    stretched grid restart file.
 
+.. attention::
+
+   Stretched-grid simulations require winds instead of mass fluxes for
+   advection.  If you try to run GCHP in a run directory that was set
+   up for mass fluxes, then the :program:`setCommonRunSettings.sh`
+   script will exit with an error.  If this happens, you will need to
+   :ref:`create a new run directory <creating_a_run_directory>` that
+   is set up to have GCHP read winds.
+
 
 Choose stretching parameters
 ----------------------------
@@ -117,7 +126,7 @@ restart file.
    #   GRID RESOLUTION
    #------------------------------------------------
    # Integer representing number of grid cells per cubed-sphere face side
-   CS_RES=24
+   CS_RES=90
 
    #------------------------------------------------
    #   STRETCHED GRID
@@ -125,9 +134,14 @@ restart file.
    # Turn stretched grid ON/OFF. Follow these rules if ON:
    #    (1) Minimum STRETCH_FACTOR value is 1.0001
    #    (2) TARGET_LAT and TARGET_LON are floats containing decimal
-   #    (3) STRETCH_FACTOR, TARGET_LAT, and TARGET_LON are global
-   #        attributes in your restart file with exactly the same
-   #        values as floating point
+   #    (3) TARGET_LON in range [0,360) or [-180,180)
+   #    (4) STRETCH_FACTOR, TARGET_LAT, and TARGET_LON exactly match
+   #        the global attribute values of these parameters in the
+   #        initial restart file
+   #
+   # NOTE: Running with stretched grid requires using winds in advection.
+   #       Create a new run directory to use winds if this one uses mass fluxes.
+
    STRETCH_GRID=OFF
    STRETCH_FACTOR=3.0
    TARGET_LAT=40.0
