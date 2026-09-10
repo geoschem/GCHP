@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "GCHP: GEOS-Chem High Performance"
+type: software
+authors:
+  - name: "The International GEOS-Chem User Community"
+version: 14.7.1
+date-released: 2026-04-14
+doi: 10.5281/zenodo.4428926
+url: "https://gchp.readthedocs.io"
+repository-code: "https://github.com/geoschem/GCHP"
+license: MIT
+keywords:
+  - atmospheric-chemistry
+  - atmospheric-composition
+  - atmospheric-modeling
+  - aws
+  - climate-modeling
+  - cloud-computing
+  - geos-chem
+  - atmospheric-computing
+  - scientific-computing

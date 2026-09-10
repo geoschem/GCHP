@@ -9,6 +9,17 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
+- Added MAPL3 code blocks for developing MAPL3 compatibility
+- Added  `.gitattributes`, `GOVERNANCE.md`, `SECURITY.md`, and `CITATION.cff` files for GitHub
+- Added `CLAUDE.md`, which gives guidance to Claude Code AI
+- Added "AI disclosure" section to `.github/PULL_REQUEST_TEMPLATE.md`
+
+### Changed
+- Updated `.release/changeVersionNumbers.sh` to only update the version number and date in `CITATION.cff` and to only update changelog files in the GCHP repo
+
 ## [14.7.1] - 2026-04-14
 ### Added
 - Added build option `MPI_LOAD_BALANCE` to enable MPI load balancing in GEOS-Chem chemistry

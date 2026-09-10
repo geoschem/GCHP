@@ -1,0 +1,18 @@
+# Normalize line endings to LF for text files by default.
+# This repo is built and run on Linux HPC clusters (see docs/source/getting-started),
+# so CRLF endings in scripts/source break shebangs and compilation.
+* text=auto eol=lf
+
+# Windows batch script (docs/make.bat) needs CRLF to run correctly on Windows.
+*.bat text eol=crlf
+
+# Explicit LF for extensionless shell scripts.
+.release/changeVersionNumbers.sh text eol=lf
+
+# Binary assets — never diff/merge as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary

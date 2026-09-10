@@ -1,4 +1,8 @@
+#ifdef MAPL3
+#include "MAPL.h"
+#else
 #include "MAPL_Generic.h"
+#endif
 !-------------------------------------------------------------------------
 !         GEOS-Chem High Performance Global Chemical Transport Model
 !-------------------------------------------------------------------------
@@ -13,6 +17,70 @@
 ! !INTERFACE:
 !
 module GCHPctmEnv_GridComp
+
+#ifdef MAPL3
+
+  use ESMF
+  use mapl3
+  use fv_arrays_mod, only: REAL4, REAL8
+  use pflogger, only: logger_t => logger
+
+  ! Copied from DynCore_GridCompMod.F90 - don't need all. Cull later.
+  use mapl_ErrorHandlingMod, only: MAPL_Verify, MAPL_Assert, MAPL_Return
+  use MAPL_Constants, only: MAPL_RADIUS, MAPL_CP, MAPL_PI, MAPL_PI_R8, MAPL_OMEGA, MAPL_KAPPA
+  use MAPL_Constants, only: MAPL_P00, MAPL_GRAV, MAPL_RGAS, MAPL_RVAP, MAPL_CPVAP, MAPL_O3MW, MAPL_AIRMW
+  use MAPL_Constants, only: MAPL_VectorField ! pchakrab: TODO - need MAPL3 equivalent
+  use MAPL_Constants, only: MAPL_UNDEFINED_REAL
+  use ESMFL_Mod, only: ESMFL_BundleGetPointerToData, MAPL_AreaMean
+  use MAPL_AbstractRegridderMod, only: AbstractRegridder
+  use MAPL_GridManagerMod, only: grid_manager
+  use MAPL_RegridderManagerMod, only: regridder_manager
+  use MAPL_RegridMethods, only: REGRID_METHOD_BILINEAR
+  use MAPL_CFIOMod, only: MAPL_CFIORead
+  use MAPL_FieldPointerUtilities, only: MAPL_FieldDestroy
+  use MAPL_MaxMinMod, only: MAPL_MaxMin
+  use MAPL_CommsMod, only: MAPL_AM_I_ROOT, MAPL_ArrayGather => ArrayGather
+  use FileIOSharedMod, only: WRITE_PARALLEL
+  use mapl3g_generic, only: MAPL_GridCompSetGeometry
+  use mapl3g_generic, only: MAPL_GridCompGet, MAPL_GridCompGetResource
+  use mapl3g_generic, only: MAPL_GridCompSetEntryPoint, MAPL_GridCompGetInternalState
+!  use mapl3g_generic, only: MAPL_GridCompAddSpec, MAPL_STATEITEM_FIELDBUNDLE
+  use mapl3g_generic, only: MAPL_UserCompSetInternalState, MAPL_UserCompGetInternalState
+!  use mapl3g_generic, only: MAPL_GridCompTimerStart, MAPL_GridCompTimerStop
+!  use mapl3g_VerticalStaggerLoc, only: VERTICAL_STAGGER_NONE, VERTICAL_STAGGER_CENTER, VERTICAL_STAGGER_EDGE
+!  use mapl3g_Geom_API, only: MAPL_GridGetCoordinates
+  use mapl3g_State_API, only: MAPL_StateGetPointer
+!  use mapl3g_Field_API, only: MAPL_FieldCreate
+!  use mapl3g_FieldBundle_API, only: MAPL_FieldBundleAdd
+!  use mapl3g_RestartModes, only: MAPL_RESTART_SKIP, MAPL_RESTART_REQUIRED
+
+!   use FV_StateMod, only : fv_computeMassFluxes, fv_getVerticalMassFlux
+!   use GEOS_FV3_UtilitiesMod, only : A2D2C
+!   use m_set_eta,  only : set_eta
+
+  implicit none
+  private
+
+  public SetServices
+  public Initialize
+  public Run
+  public Finalize
+
+!  private prepare_ple_exports
+!  private prepare_sphu_export
+!  private prepare_massflux_exports
+!  private calculate_ple
+
+  logical, public :: import_mass_flux_from_extdata = .false.
+
+  integer,  parameter :: r4 = REAL4
+  integer,  parameter :: r8 = REAL8
+
+  logical :: meteorology_vertical_index_is_top_down
+  integer :: use_total_air_pressure_in_advection
+  integer :: correct_mass_flux_for_humidity
+
+#else ! MAPL2
 !
 ! !USES:
 !
@@ -73,19 +141,190 @@ module GCHPctmEnv_GridComp
 !EOP
 !------------------------------------------------------------------------------
 !BOC
-   contains
-!EOC
+#endif ! MAPL2
 
-!-------------------------------------------------------------------------
-!         GEOS-Chem High Performance Global Chemical Transport Model
-!-------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: SetServices -- Sets ESMF services for this component
-!
-! !INTERFACE:
-!
+ contains
+
+   !=============================================================================
+   ! SetServices -- Sets ESMF services for this component
+
    subroutine SetServices(GC, RC)
+
+#ifdef MAPL3
+
+     type(ESMF_GridComp)  :: gc     ! composite gridded component
+     integer, intent(out) :: rc     ! Error code, 0 all is well
+
+     integer :: status
+     class(logger_t), pointer :: logger
+
+     _HERE, 'testing!'
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%debug("GCHctmEnvP_GridCompMod.F90::SetServices starting...")
+
+!!#include "GCHPctmEnv_Import___.h"
+! Comment this section out. For now just use gchpctmenv.yaml
+!    ! Add Imports
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='PS1', &
+!         standard_name='Surface pressure', &
+!         units='hPa', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_NONE, &
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='PS2', &
+!         standard_name='Surface pressure', &
+!         units='hPa', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_NONE, &
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='SPHU1', &
+!         standard_name='Specific humidity', &
+!         units='kg/kg', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_NONE, & ! Should actually be center
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='SPHU2', &
+!         standard_name='Specific humidity', &
+!         units='kg/kg', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_NONE, & ! Should actually be center
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+!
+!    ! Different imports depending on where mass fluxes will come from
+!    if ( import_mass_flux_from_extdata ) then
+!       call MAPL_GridCompAddSpec(gridcomp=gc, &
+!            short_name='MFXC', &
+!            standard_name='pressure_weighted_xward_mass_flux',&
+!            units='Pa m+2 s-1', &
+!            dims='xyz', &
+!            vstagger=VERTICAL_STAGGER_CENTER, &
+!            state_intent=ESMF_STATEINTENT_IMPORT, &
+!            _RC)
+!       call MAPL_GridCompAddSpec(gridcomp=gc, &
+!            short_name='MFYC', &
+!            standard_name='pressure_weighted_yward_mass_flux',&
+!            units='Pa m+2 s-1', &
+!            dims='xyz', &
+!            vstagger=VERTICAL_STAGGER_CENTER, &
+!            state_intent=ESMF_STATEINTENT_IMPORT, &
+!            _RC)
+!       call MAPL_GridCompAddSpec(gridcomp=gc, &
+!            short_name='CXC', &
+!            standard_name='xward_accumulated_courant_number', &
+!            units='', &
+!            dims='xyz', &
+!            vstagger=VERTICAL_STAGGER_CENTER, &
+!            state_intent=ESMF_STATEINTENT_IMPORT, &
+!            _RC)
+!       call MAPL_GridCompAddSpec(gridcomp=gc, &
+!            short_name='CYC', &
+!            standard_name='yward_accumulated_courant_number', &
+!            units='', &
+!            dims='xyz', &
+!            vstagger=VERTICAL_STAGGER_CENTER, &
+!            state_intent=ESMF_STATEINTENT_IMPORT, &
+!            _RC)
+!    else
+!       print *, "ewl: temporarily commenting out wind imports in GCHPctmEnv_GridCom"
+!       !call MAPL_GridCompAddSpec(gridcomp=gc, &
+!       !     short_name='UA', &
+!       !     standard_name='eastard_wind_on_A-Grid', &
+!       !     units='m s-1', &
+!       !     dims='xyz', &
+!       !     vstagger=VERTICAL_STAGGER_NONE, & ! should be center
+!       !     state_intent=ESMF_STATEINTENT_IMPORT, &
+!       !     _RC)
+!!      !      staggering=MAPL_AGrid, & ! from mapl2
+!!      !      rotation=MAPL_RotateLL, & ! from mapl2
+!       !call MAPL_GridCompAddSpec(gridcomp=gc, &
+!       !     short_name='VA', &
+!       !     standard_name='northward_wind_on_A-Grid', &
+!       !     units='m s-1', &
+!       !     dims='xyz', &
+!       !     vstagger=VERTICAL_STAGGER_NONE, & ! should be center
+!       !     state_intent=ESMF_STATEINTENT_IMPORT, &
+!       !     _RC)
+!!      !      staggering=MAPL_AGrid, & ! from mapl2
+!!      !      rotation=MAPL_RotateLL, & ! from mapl2
+!    endif
+
+!!!#include "GCHPctmEnv_Export___.h"
+!    ! Add Exports
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='PLE0', &
+!         standard_name='placeholder', &
+!         units='1', &
+!         dims='xyz', &
+!         vstagger=VERTICAL_STAGGER_EDGE, &
+!         state_intent=ESMF_STATEINTENT_EXPORT, &
+!         typekind=ESMF_TYPEKIND_R8, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='PLE1', &
+!         standard_name='placeholder', &
+!         units='1', &
+!         dims='xyz', &
+!         vstagger=VERTICAL_STAGGER_EDGE, &
+!         state_intent=ESMF_STATEINTENT_EXPORT, &
+!         typekind=ESMF_TYPEKIND_R8, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='DryPLE0', &
+!         standard_name='placeholder', &
+!         units='1', &
+!         dims='xyz', &
+!         vstagger=VERTICAL_STAGGER_EDGE, &
+!         state_intent=ESMF_STATEINTENT_EXPORT, &
+!         typekind=ESMF_TYPEKIND_R8, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='DryPLE1', &
+!         standard_name='placeholder', &
+!         units='1', &
+!         dims='xyz', &
+!         vstagger=VERTICAL_STAGGER_EDGE, &
+!         state_intent=ESMF_STATEINTENT_EXPORT, &
+!         typekind=ESMF_TYPEKIND_R8, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='SPHU0', &
+!         standard_name='placeholder', &
+!         units='1', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_CENTER, &
+!         state_intent=ESMF_STATEINTENT_EXPORT, &
+!         typekind=ESMF_TYPEKIND_R8, &
+!         _RC)
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='UpwardsMassFlux', &
+!         standard_name='placeholder', &
+!         units='1', &
+!         dims='xyz', &
+!         vstagger=VERTICAL_STAGGER_CENTER, &
+!         state_intent=ESMF_STATEINTENT_EXPORT, &
+!         typekind=ESMF_TYPEKIND_R8, &
+!         _RC)
+
+    ! Register services for this component
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
+
+    call logger%debug("GCHPctmEnv_GridCompMod.F90::SetServices done")
+
+    _RETURN(_SUCCESS)
+
+#else ! MAPL2
+
 !
 ! !INPUT/OUTPUT PARAMETERS
 !
@@ -434,19 +673,43 @@ module GCHPctmEnv_GridComp
       _VERIFY(STATUS)
       
       _RETURN(ESMF_SUCCESS)
+#endif
       
    end subroutine SetServices
-!EOC
-!-------------------------------------------------------------------------
-!         GEOS-Chem High Performance Global Chemical Transport Model
-!-------------------------------------------------------------------------
-!BOP
-!
-! !IROUTINE: Initialize -- Initialized method for composite the CTMder
-!
-! !INTERFACE:
-!
+
+   !=============================================================================
+   ! Initialize -- The Initialize method of the Gridded Component.
+
    subroutine Initialize(GC, IMPORT, EXPORT, CLOCK, RC)
+
+#ifdef MAPL3
+     type(ESMF_GridComp)  :: gc     ! composite gridded component
+     type(ESMF_State)     :: import ! import state
+     type(ESMF_State)     :: export ! export state
+     type(ESMF_Clock)     :: clock  ! the clock
+     integer, intent(out) :: rc     ! Error code, 0 all is well
+
+     integer :: status
+     class(logger_t), pointer :: logger
+
+!     integer                    :: comm
+!     character(len=ESMF_MAXSTR) :: msg
+!     type(ESMF_Config)          :: CF
+!     type(ESMF_Grid)            :: esmfGrid
+!     type(ESMF_VM)              :: VM
+!
+!     type(MAPL_MetaComp), pointer  :: ggState ! MAPL Generic State
+!     REAL, POINTER, DIMENSION(:,:) :: cellArea
+
+     call MAPL_GridCompGet(gc, logger=logger, _RC)
+     call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize starting...")
+
+     call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize done")
+
+     _RETURN(_SUCCESS)
+
+#else ! MAPL2
+
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -600,17 +863,104 @@ module GCHPctmEnv_GridComp
       call MAPL_TimerOff(ggSTATE,"TOTAL")
       
       _RETURN(ESMF_SUCCESS)
+
+#endif ! MAPL2
       
    end subroutine Initialize
-!EOC
-!-------------------------------------------------------------------------
-!         GEOS-Chem High Performance Global Chemical Transport Model
-!-------------------------------------------------------------------------
-!BOP
-!
-! !INTERFACE:
-!
+
+   !=============================================================================
+   ! Run -- The Run method of the Gridded Component.
+
    subroutine Run(GC, IMPORT, EXPORT, CLOCK, RC)
+
+#ifdef MAPL3
+     type(ESMF_GridComp)  :: gc     ! composite gridded component
+     type(ESMF_State)     :: import ! import state
+     type(ESMF_State)     :: export ! export state
+     type(ESMF_Clock)     :: clock  ! the clock
+     integer, intent(out) :: rc     ! Error code, 0 all is well
+
+     integer            :: status
+     type(ESMF_Grid)    :: esmfGrid
+     type(ESMF_HConfig) :: hconfig
+
+     class(logger_t), pointer :: logger
+
+!     integer                      :: ndt
+!     type(MAPL_MetaComp), pointer :: ggState
+
+!     real(r8)                     :: dt
+!     real(r8), pointer            :: PLE(:,:,:) ! Edge pressures
+
+     ! Saved variables
+     logical, save :: firstRun = .true.
+
+#ifdef ADJOINT
+     integer :: reverseTime
+#endif
+
+!#include "GCHPctmEnv_DeclarePointer___.h"
+     ! Declare pointers to imports and exports
+     ! Imports from Extdata are real4
+     real(r4), pointer :: PS1(:,:)
+     real(r4), pointer :: PS2(:,:)
+     real(r4), pointer :: SPHU1(:,:) ! test, should be 3d
+     real(r4), pointer :: SPHU2(:,:,:)
+
+     ! Exports are real8
+     real(r8), pointer :: PLE0(:,:,:)
+     real(r8), pointer :: PLE1(:,:,:)
+     real(r8), pointer :: DryPLE0(:,:,:)
+     real(r8), pointer :: DryPLE1(:,:,:)
+     real(r8), pointer :: SPHU0(:,:)
+     real(r8), pointer :: UpwardsMassFlux(:,:,:)
+
+     ! Get logger and grid
+     call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
+     call logger%debug("GCHPctmEnv_GridCompMod.F90::Run starting...")
+
+!#include "GCHPctmEnv_GetPointer___.h"
+!     ! Get pointers to imports
+!     call MAPL_StateGetPointer(import, PS1, 'PS1', _RC)
+!     call MAPL_StateGetPointer(import, PS2, 'PS2', _RC)
+!!     call MAPL_StateGetPointer(import, SPHU1, 'SPHU1', _RC)
+!!     call MAPL_StateGetPointer(import, SPHU2, 'SPHU2', _RC)
+!!
+!     ! Get pointers to exports
+!     call MAPL_StateGetPointer(export, PLE0, 'PLE0', _RC)
+!     call MAPL_StateGetPointer(export, PLE1, 'PLE1', _RC)
+!!     call MAPL_StateGetPointer(export, DryPLE0, 'DryPLE0', _RC)
+!!     call MAPL_StateGetPointer(export, DryPLE1, 'DryPLE1', _RC)
+!!     call MAPL_StateGetPointer(export, SPHU0, 'SPHU0', _RC)
+!!     call MAPL_StateGetPointer(export, UpwardsMassFlux, 'UpwardsMassFlux', _RC)
+
+     ! ewl testing
+
+     if ( associated(PS1) .and. associated(PLE0) ) then
+        PLE0 = 0.0d0
+        PLE0(:,:,1) = dble(PS1)
+     endif
+
+     if ( associated(PS2) .and. associated(PLE1) ) then
+        PLE1 = 0.0d0
+        PLE1(:,:,2) = dble(PS2)
+     endif
+
+     if ( associated(SPHU1) ) then
+        print *, "ewl: Successfully got pointer to SPHU1. Min/max values are ", MINVAL(SPHU1), MAXVAL(SPHU1)
+        print *, "ewl: Successfully got pointer to SPHU1. Size is ", SIZE(SPHU1,1), SIZE(SPHU1,2)
+     else
+        print *, "ewl: SPHU1 is not associated"
+     endif
+
+     call ESMF_GridValidate(esmfgrid, _RC)
+
+     call logger%debug("GCHPctmEnv_GridCompMod.F90::Run done")
+
+     _RETURN(_SUCCESS)
+
+#else ! MAPL2
+
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -703,8 +1053,35 @@ module GCHPctmEnv_GridComp
       
       _RETURN(ESMF_SUCCESS)
 
+#endif ! MAPL2
+
    end subroutine Run
-!EOC
+
+#ifdef MAPL3 ! No finalize in MAPL3
+   !=============================================================================
+   ! Finalize -- The Finalize method of the Gridded Component.
+
+   subroutine Finalize( GC, IMPORT, EXPORT, CLOCK, RC )
+
+     type(ESMF_GridComp)  :: gc     ! composite gridded component
+     type(ESMF_State)     :: import ! import state
+     type(ESMF_State)     :: export ! export state
+     type(ESMF_Clock)     :: clock  ! the clock
+     integer, intent(out) :: rc     ! Error code, 0 all is well
+
+     integer :: status
+     class(logger_t), pointer :: logger
+
+     call MAPL_GridCompGet(gc, logger=logger, _RC)
+     call logger%debug("GCHPctmEnv_GridCompMod.F90::Finalize starting...")
+
+     call logger%debug("GCHPctmEnv_GridCompMod.F90::Finalize done")
+
+     _RETURN(ESMF_SUCCESS)
+
+#endif
+
+#ifndef MAPL3
 !-------------------------------------------------------------------------
 !         GEOS-Chem High Performance Global Chemical Transport Model
 !-------------------------------------------------------------------------
@@ -1310,6 +1687,16 @@ module GCHPctmEnv_GridComp
 
 
    end subroutine calculate_ple
-!EOC
+#endif ! MAPL2
    
 end module GCHPctmEnv_GridComp
+
+#ifdef MAPL3
+subroutine SetServices(gc, rc)
+   use ESMF
+   use GCHPctmEnv_GridCompMod, only : mySetservices=>SetServices
+   type(ESMF_GridComp) :: gc
+   integer, intent(out) :: rc
+   call mySetServices(gc, rc=rc)
+end subroutine SetServices
+#endif
