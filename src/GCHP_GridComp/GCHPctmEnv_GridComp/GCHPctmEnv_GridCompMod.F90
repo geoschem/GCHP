@@ -1142,14 +1142,12 @@ module GCHPctmEnv_GridComp
       PLE0_EXPORT(:,:,:)  = 0.0d0
       PLE1_EXPORT(:,:,:)  = 0.0d0
 
-      if ( use_total_air_pressure_in_advection < 1 ) then
-         call MAPL_GetPointer(EXPORT, DryPLE0_EXPORT,  'DryPLE0',  RC=STATUS)
-         _VERIFY(STATUS)
-         call MAPL_GetPointer(EXPORT, DryPLE1_EXPORT,  'DryPLE1',  RC=STATUS)
-         _VERIFY(STATUS)
-         DryPLE0_EXPORT(:,:,:)  = 0.0d0
-         DryPLE1_EXPORT(:,:,:)  = 0.0d0
-      endif
+      call MAPL_GetPointer(EXPORT, DryPLE0_EXPORT,  'DryPLE0',  RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_GetPointer(EXPORT, DryPLE1_EXPORT,  'DryPLE1',  RC=STATUS)
+      _VERIFY(STATUS)
+      DryPLE0_EXPORT(:,:,:)  = 0.0d0
+      DryPLE1_EXPORT(:,:,:)  = 0.0d0
 
       ! Set number of levels
       LM = size(PLE0_EXPORT,3) - 1
@@ -1172,32 +1170,28 @@ module GCHPctmEnv_GridComp
 
       ! Set R4 diagnostics
       
-      ! Also compute dry pressures if using dry pressure in advection
-      if ( use_total_air_pressure_in_advection < 1 ) then
+      ! Also compute dry pressures
+      call calculate_ple(          &
+           PS=PS1_IMPORT,          &
+           PLE=DryPLE0_EXPORT,     &
+           SPHU=SPHU1_IMPORT )
 
-         call calculate_ple(          &
-              PS=PS1_IMPORT,          &
-              PLE=DryPLE0_EXPORT,     &
-              SPHU=SPHU1_IMPORT )
+      DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
+      DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
 
-         DryPLE0_EXPORT = 100.0d0 * DryPLE0_EXPORT
-         DryPLE0_EXPORT = DryPLE0_EXPORT(:,:,LM:0:-1)
+      call calculate_ple(          &
+           PS=PS2_IMPORT,          &
+           PLE=DryPLE1_EXPORT,     &
+           SPHU=SPHU2_IMPORT )
 
-         call calculate_ple(          &
-              PS=PS2_IMPORT,          &
-              PLE=DryPLE1_EXPORT,     &
-              SPHU=SPHU2_IMPORT )
+      DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
+      DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
 
-         DryPLE1_EXPORT = 100.0d0 * DryPLE1_EXPORT
-         DryPLE1_EXPORT = DryPLE1_EXPORT(:,:,LM:0:-1)
-
-         ! Set DryPLE R4 exports for diagnostics
-         call MAPL_GetPointer(EXPORT, DryPLE0_R4_EXPORT, 'DryPLE0_R4', NotFoundOK=.TRUE., _RC)
-         IF ( ASSOCIATED(DryPLE0_R4_EXPORT) ) DryPLE0_R4_EXPORT = DryPLE0_EXPORT
-         call MAPL_GetPointer(EXPORT, DryPLE1_R4_EXPORT, 'DryPLE1_R4', NotFoundOK=.TRUE., _RC)
-         IF ( ASSOCIATED(DryPLE1_R4_EXPORT) ) DryPLE1_R4_EXPORT = DryPLE1_EXPORT
-
-      endif
+      ! Set DryPLE R4 exports for diagnostics
+      call MAPL_GetPointer(EXPORT, DryPLE0_R4_EXPORT, 'DryPLE0_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(DryPLE0_R4_EXPORT) ) DryPLE0_R4_EXPORT = DryPLE0_EXPORT
+      call MAPL_GetPointer(EXPORT, DryPLE1_R4_EXPORT, 'DryPLE1_R4', NotFoundOK=.TRUE., _RC)
+      IF ( ASSOCIATED(DryPLE1_R4_EXPORT) ) DryPLE1_R4_EXPORT = DryPLE1_EXPORT
 
       ! Set PLE R4 exports for diagnostics
       call MAPL_GetPointer(EXPORT, PLE0_R4_EXPORT, 'PLE0_R4', NotFoundOK=.TRUE., _RC)
@@ -1205,7 +1199,8 @@ module GCHPctmEnv_GridComp
       call MAPL_GetPointer(EXPORT, PLE1_R4_EXPORT, 'PLE1_R4', NotFoundOK=.TRUE., _RC)
       IF ( ASSOCIATED(PLE1_R4_EXPORT) ) PLE1_R4_EXPORT = PLE1_EXPORT
       
-      ! Set PLE output which will be used to compute mass fluxes in FV3
+      ! Set PLE output which will be used to compute mass fluxes in FV3. This is
+      ! dependent on config file setting for using dry or total pressure in advection.
       if ( use_total_air_pressure_in_advection > 0 ) then
          PLE => PLE0_EXPORT
       else
