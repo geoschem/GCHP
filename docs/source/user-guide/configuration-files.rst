@@ -1,3 +1,5 @@
+.. _gchp-cfg-files:
+
 ###################
 Configuration files
 ###################
@@ -19,6 +21,8 @@ wish to learn more.
    by reading through the configuration section of the file.
    Be conscientious about not updating the same setting elsewhere.
 
+.. _gchp-cfg-files-list:
+
 ================================
 List of GCHP configuration files
 ================================
@@ -27,6 +31,8 @@ Detailed information about most of GCHP's configuration files can be
 found in the following pages.  You can also reach these pages by
 continuing with the "next" button in this user guide. See further down
 on this page for a high-level summary of all configuration files.
+
+.. _gchp-cfg-files-list-common:
 
 Commonly-updated configuration files
 ------------------------------------
@@ -39,17 +45,19 @@ which will edit the other configuration files accordingly.
 .. toctree::
    :maxdepth: 1
 
-   config-files/setCommonRunSettings_sh.rst
-   config-files/GCHP_rc.rst
-   config-files/CAP_rc.rst
-   config-files/cap_restart.rst
-   config-files/ExtData_rc.rst
-   config-files/extdata_yaml.rst
-   ../geos-chem-shared-docs/doc/geoschem-config.rst
-   ../geos-chem-shared-docs/doc/hemco-config.rst
-   ../geos-chem-shared-docs/doc/hemco-diagn.rst
-   config-files/HISTORY_rc.rst
-   config-files/logging_yml.rst
+   config-files/setCommonRunSettings_sh
+   config-files/GCHP_rc
+   config-files/CAP_rc
+   config-files/cap_restart
+   config-files/ExtData_rc
+   config-files/extdata_yaml
+   ../geos-chem-shared-docs/doc/geoschem-config
+   ../geos-chem-shared-docs/doc/hemco-config
+   ../geos-chem-shared-docs/doc/hemco-diagn
+   config-files/HISTORY_rc
+   config-files/logging_yml
+
+.. _gchp-cfg-files-list-uncommon:
 
 Less-commonly-updated configuration files
 -----------------------------------------
@@ -60,15 +68,18 @@ adding new species or modifying chemistry reactions, etc.
 .. toctree::
    :maxdepth: 1
 
-   config-files/input_nml.rst
-   ../geos-chem-shared-docs/doc/spec-db.rst
-   ../geos-chem-shared-docs/doc/phot-chem.rst
+   config-files/input_nml
+   ../geos-chem-shared-docs/doc/spec-db
+   ../geos-chem-shared-docs/doc/phot-chem
+
+.. _gchp-cfg-files-summary:
 
 ==================
 High-level summary
 ==================
 
-This high-level summary of GCHP configuration files gives a short description of each file.
+This high-level summary of GCHP configuration files gives a short
+description of each file.
 
 :ref:`cap-rc`
    Controls parameters used by the highest level gridded component
@@ -89,16 +100,16 @@ This high-level summary of GCHP configuration files gives a short description of
    set at run-time.
 
 :ref:`extdata-rc`
-   Config file for the MAPL :program:`ExtData` component. Specifies input
-   variable information, including name, regridding method, read
-   frequency, offset, scaling, and file path. All GCHP imports must be
-   specified in this file.  Toggles at the top of the file enable MAPL
-   ExtData debug prints and using most recent year if current year of
-   data is unavailable.  Default values may be used by specifying file
-   path :file:`/dev/null`.
+   Configuration file for the MAPL :program:`ExtData`
+   component. Specifies input variable information, including name,
+   regridding method, read frequency, offset, scaling, and file
+   path. All GCHP imports must be specified in this file.  Toggles at
+   the top of the file enable MAPL ExtData debug prints and using most
+   recent year if current year of data is unavailable.  Default values
+   may be used by specifying file path :file:`/dev/null`.
 
 :ref:`extdata2g`
-   Config file for the next-generation MAPL :program:`ExtData`
+   Configuration file for the next-generation MAPL :program:`ExtData`
    component (ExtData2G), which will replace :ref:`extdata-rc` in GCHP
    v15.0.  This beta feature is off by default and is only provided
    for the TransportTracers and TagO3 simulations.  Enable it by
@@ -112,9 +123,9 @@ This high-level summary of GCHP configuration files gives a short description of
    settings in :ref:`set-common-run-settings-sh`.
 
 :ref:`cfg-gc-yml`
-   Primary config file for GEOS-Chem. Same file format as in GEOS-Chem
-   Classic but containing only options relevant to GCHP.  Some fields
-   are automatically updated from settings in
+   Primary configuration file for GEOS-Chem. Same file format as in
+   GEOS-Chem Classic but containing only options relevant to GCHP.
+   Some fields are automatically updated from settings in
    :ref:`set-common-run-settings-sh`.
 
 :ref:`cfg-hco-cfg`
@@ -132,13 +143,14 @@ This high-level summary of GCHP configuration files gives a short description of
    Contains information mapping :ref:`history-rc` diagnostic names to
    HEMCO containers.  Same function as in GEOS-Chem Classic except
    that not all items in :ref:`cfg-hco-cfg` will be output;
-   only emissions listed in :ref:`history-rc` will be included in
-   diagnostics.  All GCHP diagnostics listed in :ref:`history-rc` that
-   start with :literal:`Emis`, :literal:`Hco`, or :literal:`Inv` must
-   have a corresponding entry in :ref:`cfg-hco-diagn`.
+   only emissions listed in the :ref:`history-rc` :literal:`Emissions`
+   collection will be included in diagnostics.  All GCHP diagnostics
+   listed in :ref:`history-rc` that  start with :literal:`Emis`,
+   :literal:`Hco`, or :literal:`Inv` must have a corresponding entry
+   in :ref:`cfg-hco-diagn`.
 
 :ref:`history-rc`
-   Config file for the MAPL :program:`HISTORY` component. It
+   Configuration file for the MAPL :program:`HISTORY` component. It
    configures diagnostic output from GCHP. There is an option in
    :ref:`set-common-run-settings-sh` to auto-update this file based on
    settings configured there, including duration, frequency, and
@@ -152,11 +164,12 @@ This high-level summary of GCHP configuration files gives a short description of
    parameters. Users should not need to update this.
 
 :ref:`logging-yml`
-   Config file for the NASA MAPL logger package included in GCHP for
-   logging.  This package uses a hierarchy of loggers, such as info,
-   warnings, error, and debug, to extract non-GEOS-Chem information
-   about GCHP runs and print it to log file :file:`allPEs.log`. Use
-   this file to debug problems with data inputs.
+   Configuration file for the NASA MAPL logger package included in
+   GCHP for logging.  This package uses a hierarchy of loggers, such
+   as info, warnings, error, and debug, to extract non-GEOS-Chem
+   information about GCHP runs and print it to log file
+   :file:`allPEs.log`. Use this file to debug problems with data
+   inputs.
 
 :ref:`set-common-run-settings-sh`
    This file is a bash script where you can set commonly changed run

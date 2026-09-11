@@ -2,6 +2,8 @@
 
    <br />
 
+.. _rundir-config:
+
 ###############
 Configure a run
 ###############
@@ -26,6 +28,8 @@ change in the run directory based on what you would like to do.
 =================
 Compute resources
 =================
+
+.. _rundir-config-compute-nodes:
 
 Set number of nodes and cores
 -----------------------------
@@ -89,6 +93,7 @@ implications for total number of cores you can run with when using
 mass flux inputs since a given total number of cores can evenly divide
 every possible grid resolution.
 
+.. _rundir-config-compute-stack:
 
 Change domain stack size
 ------------------------
@@ -98,6 +103,8 @@ run into a domains stack size error.  This is caused by exceeding the
 domains stack size memory limit set at run-time.  The error will be
 apparent from the message in your log file.  If this occurs you can
 increase the domains stack size in file :file:`input.nml`.
+
+.. _rundir-config-compute-high-core-counts:
 
 Considerations for very high core counts
 ----------------------------------------
@@ -132,6 +139,8 @@ scales with more cores. FV3 advection has a point of diminishing
 returns due to excessive communication if core count gets too high for
 a given run resolution. See earlier section on setting number of nodes
 and cores.
+
+.. _rundir-config-basic:
 
 ==================
 Basic run settings
@@ -198,7 +207,6 @@ frequency for PS2, SPHU2, and TMPU2 are automatically updated in
 settings edit the "TIMESTEPS" section of
 :file:`setCommonRunSettings.sh`.
 
-
 Set simulation start date and duration
 --------------------------------------
 
@@ -230,6 +238,8 @@ as it is the same as or later than your start date plus run
 duration. For safety we set it to year 2200. The only time you would
 need to adjust these settings is for simulations way in the past or
 way into the future.
+
+.. _rundir-config-inputs:
 
 ======
 Inputs
@@ -378,6 +388,8 @@ A few common errors encountered when adding new input emissions files to GCHP ar
    compare them against the entry for your new file.  Directly
    comparing the file metadata may also lead to insights into the
    problem.
+
+.. _rundir-config-outputs:
 
 =======
 Outputs

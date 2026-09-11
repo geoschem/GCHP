@@ -18,6 +18,9 @@ v15.0, when MAPL version 3 is integrated into GCHP.
    :file:`extdata.yaml` is only provided for the simulations listed
    below.
 
+.. _extdata2g-availability:
+
+============
 Availability
 ============
 
@@ -32,6 +35,9 @@ C180, you will need to edit :file:`extdata.yaml` yourself so that it
 matches the corresponding changes you would have made in
 :ref:`extdata-rc`.
 
+.. _extdata2g-enabling:
+
+==================
 Enabling ExtData2G
 ==================
 
@@ -61,13 +67,9 @@ which is what causes MAPL to read :file:`extdata.yaml` instead of
 :literal:`false` causes :program:`setCommonRunSettings.sh` to exit
 with an error.
 
-.. note::
+.. _extdata2g-further:
 
-   Enabling ExtData2G also changes where top-down meteorology gets
-   flipped.  MAPL itself flips all "top-down" meteorological data to
-   "bottom-up" when ExtData2G is in use, so :program:`GCHPctmEnv`
-   skips the vertical flip it would otherwise apply.
-
+===============
 Further reading
 ===============
 

@@ -90,6 +90,9 @@ simulation option you want to run.
      8. RRTMG
    >>>
 
+Depending on which option you select, you may be prompted to answer
+further options. For the sake of brevity, we will not show these here.
+
 Choose meteorology source
 -------------------------
 
