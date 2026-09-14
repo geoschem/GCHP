@@ -470,12 +470,35 @@ list of build settings for GCHP.
 .. describe:: OMP
 
    Configures GCHP to use `OpenMP parallelization
-   <http://wiki.geos-chem.org/Parallelizing_GEOS-Chem>`_.
+   <http://wiki.geos-chem.org/Parallelizing_GEOS-Chem>`_ within each
+   MPI process (hybrid MPI+OpenMP).
 
    .. attention::
 
-      GCHP has not yet been validated with OpenMP parallelization.
-      Selecting this option may cause build or runtime errors.
+      Hybrid MPI+OpenMP has not been validated by the GCST and is not
+      recommended for production runs.  GCHP is normally run as pure
+      MPI, one thread per process.  Results for 1 versus N threads
+      are bit-identical, but results from an :literal:`OMP=y` build
+      differ from an :literal:`OMP=n` build at round-off level.  See
+      `GCHP issue #571 <https://github.com/geoschem/GCHP/issues/571>`_
+      for test results.
+
+   If you do enable OpenMP:
+
+   #. Set :envvar:`OMP_STACKSIZE` (e.g. :literal:`500m`) and
+      :envvar:`OMP_NUM_THREADS`, and pass both to every MPI process
+      (e.g. :literal:`mpirun -x OMP_NUM_THREADS -x OMP_STACKSIZE`).
+      Without :envvar:`OMP_STACKSIZE` the run will segfault in
+      Cloud-J, because OpenMP worker threads default to a 2 MB stack.
+   #. Build with :literal:`MPI_LOAD_BALANCE=n`.  The load-balanced
+      chemistry loop is not threaded, so with load balancing on, the
+      extra threads stay idle during KPP integration. Running with 
+      :literal:`OMP=y`, :literal:`MPI_LOAD_BALANCE=y` and more than one
+      thread per MPI process will produce incorrect outputs.
+   #. Expect no speedup over pure MPI at equal core count.  Our
+      tests shows that threaded KPP integration time is reduced by about 25%, but
+      transport, convection and emissions slowed with fewer MPI
+      processes, and pure MPI with load balancing on (default) was fastest.
 
    Accepted values are:
 
@@ -488,8 +511,8 @@ list of build settings for GCHP.
    .. describe:: y
 
       Activates OpenMP parallelization.  GCHP will use OpenMP to
-      parallelize DO loops marked with :code:`!$OMP PARALLEL` within a
-      single node, and will use MPI for cross-node communication.
+      parallelize DO loops marked with :code:`!$OMP PARALLEL` within
+      each MPI process, and MPI between processes.
 
 
 .. describe:: RRTMG
@@ -570,6 +593,12 @@ list of build settings for GCHP.
 .. describe:: MPI_LOAD_BALANCE
 
    Applies MPI load balancing in chemistry.  This is automatically
+   turned off if :literal:`KPPSA` is set to :literal:`y`.  Accepted
+   values are:
+   Applies dynamic load balancing of chemistry columns across the MPI
+   processes on each node, using MPI shared memory (see `geos-chem PR
+   #3015 <https://github.com/geoschem/geos-chem/pull/3015>`_). Keep this on unless you are running
+   hybrid MPI+OpenMP (see :literal:`OMP`).  This is automatically
    turned off if :literal:`KPPSA` is set to :literal:`y`.  Accepted
    values are:
 
