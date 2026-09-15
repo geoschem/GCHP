@@ -11,8 +11,8 @@ link:  https://geos-chem.s3.amazonaws.com/index.html
 The bashdatacatalog is the recommended method for downloading and
 managing your GEOS-Chem input data. Refer to the bashdatacatalog's
 `Instructions for GEOS-Chem Users
-<https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_. Below
-is a brief summary of using the bashdatacatalog for aquiring GCHP
+<https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`__. Below
+is a brief summary of using the bashdatacatalog for acquiring GCHP
 input data.
 
 ===========================
@@ -93,10 +93,10 @@ whenever you add or modify a catalog, as well as periodically so you
 get updates to your collections (e.g., new meteorological data that is
 processed and added to the meteorological collections).
 Now that you have fetched, you can run :command:`bashdatacatalog-list`
-commands. You can tailor this command the generate various types of
+commands. You can tailor this command to generate various types of
 file lists using its command-line arguments.
 See :command:`bashdatacatalog-list -h` for details. A common use case
-is generating a list of required input files that missing in your
+is generating a list of required input files that are missing in your
 local file system.
 
 .. code-block:: console
@@ -125,6 +125,6 @@ formatted for piping into xargs curl.
 See Also
 --------
 
-- `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`_
-- `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`_
-- `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs>`_
+- `bashdatacatalog - Instructions for GEOS-Chem Users <https://github.com/geoschem/bashdatacatalog/wiki/Instructions-for-GEOS-Chem-Users>`__
+- `bashdatacatalog - List of useful commands <https://github.com/geoschem/bashdatacatalog/wiki/3.-Useful-Commands>`__
+- `GEOS-Chem Input Data Catalogs <http://geoschemdata.wustl.edu/ExtData/DataCatalogs>`__

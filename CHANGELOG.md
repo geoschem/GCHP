@@ -13,9 +13,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
 - Added MAPL3 code blocks for developing MAPL3 compatibility
+- Added "Customize emissions with HEMCO" ReadTheDocs page
 
 ### Changed
 - Require 96 vcpus for AWS instance used for benchmarking
+- Updated Python packages needed for ReadTheDocs
+- Updated default GCHP resolution in createRunDir.sh from c24 for MERAA2/GEOS-FP and c30 for GEOS-IT to c90 in all cases. 
+- Updated GEOS-Chem submodule to version 14.8.0
+- Updated HEMCO submodule to version 3.13.0
+- Updated FVdycoreCubed_GridComp submodule to commit 9d86304 (`Merge PR #13 ...`)
+- Updated MAPL submodule to version 2.69.0
+- Updated HETP submodule to commit df2f942 (`Merge PR #4 ...`)
+- Updated geos-chem-shared-docs submodule to commit f882128 (`Added several last minute doc updates for 14.8.0`)
 
 ## [14.7.1] - 2026-04-14
 ### Added

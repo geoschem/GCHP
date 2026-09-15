@@ -31,7 +31,7 @@ severe:
 
 These levels are hierarchical, meaning each level triggers writing
 messages for all events with greater or equal severity. For example,
-if you specify :file:`CRITICAL` you will get only messages triggered
+if you specify :literal:`CRITICAL` you will get only messages triggered
 with that criteria since it is the most severe level. If you instead
 specify :literal:`WARNING` then you will trigger all events
 categorized as :literal:`WARNING`, :literal:`ERROR`, and
@@ -46,12 +46,12 @@ component called :literal:`CAP.EXTDATA` in :file:`logging.yml` which
 corresponds to the MAPL component that handles reading and regridding
 input files. When you experience a problem reading input files we
 recommend that you set the logger level for this component to
-:file:`DEBUG`.
+:literal:`DEBUG`.
 
 In addition to setting severity level per component you can also
 specify severity level based on processor. There are two options: root
 thread only and all threads. The root thread only option is
-:file:`root_level` in the configuration file and will only trigger
+:literal:`root_level` in the configuration file and will only trigger
 messages if the event is executed by the root processor. Using
 this option keeps the log file size down and can make reading
 the file easier. We recommend setting this option to
@@ -68,4 +68,4 @@ error message traceback.
 For more information on the GCHP logger, including more advanced
 features, see documentation at
 `https://github.com/Goddard-Fortran-Ecosystem/pFlogger/
-<https://github.com/Goddard-Fortran-Ecosystem/pFlogger/>`_.
+<https://github.com/Goddard-Fortran-Ecosystem/pFlogger/>`__.

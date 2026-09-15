@@ -21,5 +21,5 @@ and changing version requirements for dependencies.
       need to run these manually.
    8. Prefix your commit messages with the package name, e.g. ``gchp: added version 13.1.0``.
    9. Push your commits to your fork.
-   10. Create a PR targetted to the ``develop`` branch of the original Spack repository, prefixing the PR title with the package name,
+   10. Create a PR targeted to the ``develop`` branch of the original Spack repository, prefixing the PR title with the package name,
        e.g. ``gchp: added version 13.1.0``.
