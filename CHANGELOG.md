@@ -9,7 +9,7 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - TBD
+## [14.8.0] - 2026-09-15
 ### Added
 - Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
 - Added MAPL3 code blocks for developing MAPL3 compatibility
@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated GEOS-Chem submodule to version 14.8.0
 - Updated HEMCO submodule to version 3.13.0
 - Updated FVdycoreCubed_GridComp submodule to commit 9d86304 (`Merge PR #13 ...`)
-- Updated MAPL submodule to version 2.69.0
+- Updated MAPL submodule to commit e87909dbc (`Merge PR #45 ...`)
 - Updated HETP submodule to commit df2f942 (`Merge PR #4 ...`)
 - Updated geos-chem-shared-docs submodule to commit f882128 (`Added several last minute doc updates for 14.8.0`)
 
