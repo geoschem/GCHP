@@ -102,6 +102,10 @@ set_target_properties(
   PROPERTIES EXCLUDE_FROM_ALL TRUE
 )
 
+# For MAPL3 (in development)
+# Add to above list: mapl3g MAPL.cap3g MAPL.generic3g
+# Remove from the above list: MAPL.cap MAPL.history MAPL.ExtData
+
 
 #target_compile_definitions(Baselibs INTERFACE 
 #    $<$<BOOL:${ADJOINT}>:ADJOINT>
