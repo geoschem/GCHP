@@ -40,7 +40,7 @@ To configure 1D output, you can add the following attributes to any collection i
 
 :track_file:
    Path to a track file. The associated collection will be sampled from the model along this track.
-   A track file is a 1-dimensional timeseries of latitudes and longitudes that the model is be
+   A track file is a 1-dimensional timeseries of latitudes and longitudes that the model is
    sampled at (nearest neighbor).
 
 :recycle_track:
@@ -62,7 +62,7 @@ GCPy includes a command line tool, :program:`gcpy.raveller_1D`, for generating t
 for polar orbiting satellites. These track files will sample model grid-boxes at the times that correspond
 to the satellite's overpass time. You can also use this tool to "unravel" the resulting 1D output back
 to a cubed-sphere grid. Below is an example of using :program:`gcpy.raveller_1D` to create a track
-file for a C180 simulation for TROPOMI, which is in ascending sun-synchronous orbit with 14 orbits
+file for a C24 simulation for TROPOMI, which is in ascending sun-synchronous orbit with 14 orbits
 per day and an overpass time of 13:30. Please see the GCPy documentation for this program's exact
 usage, and for installation instructions.
 
@@ -101,7 +101,7 @@ The resulting track file, :file:`tropomi_overpass_c24.nc`, looks like so
 
 .. note::
    Track files do not require the :literal:`nf`, :literal:`Ydim`, :literal:`Xdim` variables.
-   The are used for post-process "ravelling" with :program:`gcpy.raveller_1D` (changing the 1D output's
+   These are used for post-processing "ravelling" with :program:`gcpy.raveller_1D` (changing the 1D output's
    coordinates to a cubed-sphere grid).
 
 .. note::
@@ -112,7 +112,7 @@ Updating HISTORY
 ----------------
 
 Open :file:`HISTORY.rc` and add the :literal:`track_file` and :literal:`recycle_track` attributes to
-your desired colleciton. For example, the following is a custom collection that samples NO2 along
+your desired collection. For example, the following is a custom collection that samples NO2 along
 the :file:`tropomi_overpass_c24.nc`.
 
 .. code-block:: none
@@ -139,5 +139,5 @@ for this program's exact usage, and for installation instructions.
 
    $ python -m gcpy.raveller_1D unravel --track tropomi_overpass_c24.nc -i OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.nc4 -o OutputDir/GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4
 
-The resulting dataset, :file:`GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4`, are simulated concentration on the model grid, sampled
+The resulting dataset, :file:`GCHP.TROPOMI_NO2.20180101_1330z.OVERPASS.nc4`, is simulated concentration on the model grid, sampled
 at the times that correspond to TROPOMI's overpass.

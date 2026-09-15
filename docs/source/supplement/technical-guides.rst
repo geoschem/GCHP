@@ -22,6 +22,7 @@ of GCHP.
 - :ref:`ncguide`
 - :ref:`coards-guide`
 - :ref:`customguide`
+- :ref:`custom-emis-guide`
 - :ref:`errguide`
 - :ref:`debug-guide`
 - :ref:`spcguide`

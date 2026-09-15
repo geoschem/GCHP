@@ -48,9 +48,9 @@ Compile errors
 
 Usually build-time errors are self-explanatory, with an error message
 indicating the file, line number, and reason for the error. However,
-you may need to do some digging to find the error message .
+you may need to do some digging to find the error message.
 
-If the build error is occuring with an unaltered GCHP version then the
+If the build error is occurring with an unaltered GCHP version then the
 issue is likely related to libraries. Check that your libraries meet
 the requirements of GCHP as specified on ReadTheDocs. Also check your
 ESMF version and make sure you built ESMF using the same libraries
@@ -62,7 +62,7 @@ output and errors to a log. You can do this with
 
 .. code-block:: console
 
-   $ make -j VERBOSE=1 2>&1 | build.log
+   $ make -j VERBOSE=1 > build.log 2>&1
 
 Search the log for string :literal:`error`, first with a space in
 front of and after the word, and then only in front. This usually
@@ -119,11 +119,11 @@ For all strategies we recommend doing a short run at low resolution
 and with few cores to make your debug runs fast and lightweight. You
 should also always do a web search of the issue to see if there is an
 existing GitHub issue about it. The `GCHP GitHub Issues page
-<https://github.com/geoschem/GCHP/issues>`_ includes a search
+<https://github.com/geoschem/GCHP/issues>`__ includes a search
 bar. Depending on the issue, you might also find the problem already
 discussed on the `GEOS-Chem
-<https://github.com/geoschem/geos-chem/issues>`_ or `HEMCO
-<https://github.com/geoschem/hemco/issues>`_ GitHub issues pages.
+<https://github.com/geoschem/geos-chem/issues>`__ or `HEMCO
+<https://github.com/geoschem/hemco/issues>`__ GitHub issues pages.
 
 Segmentation faults
 -------------------
@@ -235,10 +235,10 @@ If the problem is due to adding new input files then you may have an
 issue in either the configuration files or with the file itself. It is
 common to run into these sorts of errors when adding new input files because of strict rules for import files within MAPL and the need to follow a specific format
 for input data in configuration files. Make sure that you read the ReadTheDocs
-pages on `HEMCO_Config.rc <config-files/HEMCO_Config_rc.html>`__ and
+pages on `HEMCO_Config.rc <../geos-chem-shared-docs/doc/hemco-config.html>`__ and
 `ExtData.rc <config-files/ExtData_rc.html>`__.
 Also see NASA wiki page on `supported ExtData input files
-<https://github.com/GEOS-ESM/MAPL/wiki/Guide-to-Supported-ExtData-Input-Files>`_.
+<https://github.com/GEOS-ESM/MAPL/wiki/Guide-to-Supported-ExtData-Input-Files>`__.
 
 Diagnostic errors
 -----------------

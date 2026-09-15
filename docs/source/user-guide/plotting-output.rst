@@ -14,11 +14,11 @@ It is an intuitive program and it is easy to set up.
 .. image:: /_static/panoply_example.png
    :width: 100%
 
-You can read more about Panoply, including how to install it, `here <https://www.giss.nasa.gov/tools/panoply/>`_.
+You can read more about Panoply, including how to install it, `here <https://www.giss.nasa.gov/tools/panoply/>`__.
 
 Some suggestions
   * If you can mount your cluster's filesystem as a Network File System (NFS) on your local machine, you can install Panoply on your local machine and view your GCHP data through the NFS. 
-  * If your cluster supports a graphical interface, you could install Panoply (administrative priviledges not necessary, provided Java is installed) yourself. 
+  * If your cluster supports a graphical interface, you could install Panoply (administrative privileges not necessary, provided Java is installed) yourself.
   * Alternatively, you could install Panoply on your local machine and use :program:`scp` or similar to transfer files back and forth when you want to view them.
 
 
@@ -31,11 +31,11 @@ Python
 
 To make a basic plot of GCHP data using Python you will need the following libraries:
 
-* cartopy >= 0.19 (0.18 won't work -- see `cartopy#1622 <https://github.com/SciTools/cartopy/pull/1622>`_)
+* cartopy >= 0.19 (0.18 won't work -- see `cartopy#1622 <https://github.com/SciTools/cartopy/pull/1622>`__)
 * xarray 
 * netcdf4
 
-If you use `conda <https://docs.conda.io/en/latest/>`_ you can install these packages like so 
+If you use `conda <https://docs.conda.io/en/latest/>`__ you can install these packages like so 
 
 .. code-block:: console
 
@@ -77,4 +77,4 @@ Here is a basic example of plotting cubed-sphere data:
    The grid-box corners should be used with :code:`pcolormesh()` because the grid-boxes are not regular (it's a curvilinear grid).
    This is why we use :code:`corner_lats` and :code:`corner_lons` in the example above.
 
-You may also use the GCPy python toolkit to work with GCHP files. The GCPy package is used primarily for GEOS-Chem benchmarking but can be adapted for other uses. For more information see `https://github.com/geoschem/gcpy/ <https://github.com/geoschem/gcpy/>`_.
+You may also use the GCPy python toolkit to work with GCHP files. The GCPy package is used primarily for GEOS-Chem benchmarking but can be adapted for other uses. For more information see `https://github.com/geoschem/gcpy/ <https://github.com/geoschem/gcpy/>`__.

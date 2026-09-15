@@ -8,7 +8,7 @@ Stretched-Grid Simulation
 .. note::
 
    Stretched-grid simulations are described in
-   :cite:`Bindle_et_al._2021`. This paper also discusses related tpics
+   :cite:`Bindle_et_al._2021`. This paper also discusses related topics
    of consideration and offers guidance for choosing appropriate
    stretching parameters.
 
@@ -28,6 +28,15 @@ need to do the following:
    parameters in :file:`setCommonRunSettings.sh` and use your
    stretched grid restart file.
 
+.. attention::
+
+   Stretched-grid simulations require winds instead of mass fluxes for
+   advection.  If you try to run GCHP in a run directory that was set
+   up for mass fluxes, then the :program:`setCommonRunSettings.sh`
+   script will exit with an error.  If this happens, you will need to
+   :ref:`create a new run directory <creating_a_run_directory>` that
+   is set up to have GCHP read winds.
+
 
 Choose stretching parameters
 ----------------------------
@@ -41,7 +50,7 @@ approximately the stretch-factor. For example, a C60 stretched-grid
 with a stretch-factor of 3.0 has approximately C180 (~50 km)
 resolution in the target face. The enhancement-factor is approximate
 because (1) the stretching gradually changes with distance from the
-target point, and (2) gnominic cubed-sphere grids are quasi-uniform
+target point, and (2) gnomonic cubed-sphere grids are quasi-uniform
 with grid-boxes at face edges being ~1.5x shorter than at face
 centers.
 
@@ -49,7 +58,7 @@ You can choose a stretch-factor and target point using the interactive
 figure below. You can reposition the target face by changing the
 target longitude and target latitude. The domain of refinement can be
 increased or decreased by changing the stretch-factor. Choose
-parameters so that the target face roughly covers the refion that you
+parameters so that the target face roughly covers the region that you
 want to refine.
 
 .. raw:: html
@@ -61,7 +70,7 @@ want to refine.
    The interactive figure above can be a bit fiddly. Refresh the page
    if the view gets messed up.  If the figure above is not showing up
    properly, please `open an issue
-   <https://gchp.readthedocs.io/en/stable/reference/SUPPORT.html>`_.
+   <https://gchp.readthedocs.io/en/stable/reference/SUPPORT.html>`__.
 
 Next you need to choose a cubed-sphere size. The cubed-sphere size
 must be an even integer (e.g., C90, C92, C94, etc.). Remember that the
@@ -86,7 +95,7 @@ should be named :literal:`TARGET_LAT`, :literal:`TARGET_LON`, and
 
 You can regrid an existing restart file to a stretched-grid using the
 GEOS-Chem python package GCPy. See the `Regridding
-<https://gcpy.readthedocs.io/en/stable/Regridding.html>`_ section of
+<https://gcpy.readthedocs.io/en/stable/Regridding.html>`__ section of
 the GCPy documentation for instructions.  Inspect your restart file
 to make sure the global attributes for stretch parameters are as you
 expect them to be.
@@ -96,7 +105,7 @@ expect them to be.
     A stretched grid restart file is available for download if you
     would like to quickly get set up to run a stretched grid
     simulation. See the `GEOSCHEM_RESTARTS/GC_14.0.0
-    <http://geoschemdata.wustl.edu/ExtData/GEOSCHEM_RESTARTS/GC_14.0.0/>`_
+    <http://geoschemdata.wustl.edu/ExtData/GEOSCHEM_RESTARTS/GC_14.0.0/>`__
     directory in the GEOS-Chem data repository.
 
 Configure run directory
@@ -108,7 +117,7 @@ Modify the section of :file:`setCommonRunSettings.sh` that controls
 the simulation grid. Turn :envvar:`STRETCH_GRID` to :literal:`ON` and
 update :envvar:`CS_RES`, :envvar:`STRETCH_FACTOR`,
 :envvar:`TARGET_LAT`, and :envvar:`TARGET_LON` for your specific
-grid. The values must exactly match those of the global attrbiutes in your
+grid. The values must exactly match those of the global attributes in your
 restart file.
 
 .. code-block:: bash
@@ -117,7 +126,7 @@ restart file.
    #   GRID RESOLUTION
    #------------------------------------------------
    # Integer representing number of grid cells per cubed-sphere face side
-   CS_RES=24
+   CS_RES=90
 
    #------------------------------------------------
    #   STRETCHED GRID
@@ -125,9 +134,14 @@ restart file.
    # Turn stretched grid ON/OFF. Follow these rules if ON:
    #    (1) Minimum STRETCH_FACTOR value is 1.0001
    #    (2) TARGET_LAT and TARGET_LON are floats containing decimal
-   #    (3) STRETCH_FACTOR, TARGET_LAT, and TARGET_LON are global
-   #        attributes in your restart file with exactly the same
-   #        values as floating point
+   #    (3) TARGET_LON in range [0,360) or [-180,180)
+   #    (4) STRETCH_FACTOR, TARGET_LAT, and TARGET_LON exactly match
+   #        the global attribute values of these parameters in the
+   #        initial restart file
+   #
+   # NOTE: Running with stretched grid requires using winds in advection.
+   #       Create a new run directory to use winds if this one uses mass fluxes.
+
    STRETCH_GRID=OFF
    STRETCH_FACTOR=3.0
    TARGET_LAT=40.0
@@ -247,11 +261,11 @@ match the run grid will result in a run-time error.  To create a
 restart file for a stretched-grid simulation you can regrid a restart
 file with a uniform grid using GCPy. Follow instructions on how to
 create a GCHP stretched grid restart file in the `GCPy documentation
-<https://gcpy.readthedocs.io/en/stable/Regridding.html>`_. For this
+<https://gcpy.readthedocs.io/en/stable/Regridding.html>`__. For this
 tutorial regrid the c48 fullchem restart file for July 1, 2019 that
 comes with a GCHP fullchem run directory
 (:file:`GEOSChem.Restart.20190701_0000z.c48.nc4`). Grid resolution is
-60, stretch factor is 3.6, target longitude is -95, and target
+60, stretch factor is 3.6, target longitude is -85, and target
 latitude is 37. Name the output file
 :file:`initial_GEOSChem_rst.EasternUS_SG_fullchem.c60.s3.6_37N_275E.nc`.
 
@@ -270,12 +284,12 @@ Make the following modifications to :file:`setCommonRunSettings.sh`:
 * Change :literal:`STRETCH_GRID` to :literal:`ON`
 * Change :literal:`STRETCH_FACTOR` to :literal:`3.6`
 * Change :literal:`TARGET_LAT` to :literal:`37.0`
-* Change :literal:`TARGET_LON` to :literal:`-95.0`
+* Change :literal:`TARGET_LON` to :literal:`-85.0`
 
 .. note::
     In our tests this simulation took approximately 7 hours to run
     using 30 cores on 1 node. For comparison, it took 2 hours to run
-    using 180 cores across 6 notes. You may choose your compute
+    using 180 cores across 6 nodes. You may choose your compute
     resources based on how long you are willing to wait for your run
     to end.
 
@@ -338,7 +352,7 @@ a python environment compatible with GCPy.
     import xarray as xr
 
     # Load 24-hr average concentrations for 2019-07-01
-    ds = xr.open_dataset('GCHP.DefautlCollection.20190701_0000z.nc4')
+    ds = xr.open_dataset('GCHP.DefaultCollection.20190701_0000z.nc4')
 
     # Get Ozone at level 22
     ozone_data = ds['SpeciesConcVV_O3'].isel(time=0, lev=22).squeeze()
