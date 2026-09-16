@@ -116,4 +116,5 @@ html_logo = "geos-chem-shared-docs/_static/GEOS-Chem_Logo_Light_Background.png"
 html_theme_options = {
     'logo_only': False,                        # Show logo & top text
     'style_nav_header_background': '#FCFCFC',  # 99% white for top left bkgrnd
+    'includehidden': False,                    # Don't show hidden toctree items
 }
