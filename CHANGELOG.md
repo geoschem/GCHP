@@ -2,7 +2,7 @@
 
 This file documents all notable changes to the GCHP wrapper repository starting in version 14.0.0. See also CHANGELOG files for individual submodules, such as:
 - `src/GCHP_GridComp/GEOSChem_GridComp/geos-chem/CHANGELOG.md`
-- `src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/CHANGELOG.md`
+- `src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO/CHANGELOG.md`
 - `src/GCHP_GridComp/GEOSChem_GridComp/Cloud-J/CHANGELOG.md`
 - `src/GCHP_GridComp/GEOSChem_GridComp/HETP/CHANGELOG.md`
 - `src/MAPL/CHANGELOG.md`
@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Updated `.release/changeVersionNumbers.sh` to only update the version number and date in `CITATION.cff` and to only update changelog files in the GCHP repo
+
+### Fixed
+- Fixed stale version number and release date in `CITATION.cff` (now 14.8.0)
+- Fixed the HEMCO submodule changelog path listed at the top of `CHANGELOG.md` (the submodule is at `src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO`)
 
 ## [14.8.0] - 2026-09-15
 ### Added
