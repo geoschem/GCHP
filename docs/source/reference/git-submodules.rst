@@ -7,8 +7,8 @@ Git Submodules
 Forking submodules
 ------------------
 
-This sections describes updating git submodules to use your own forks. You can
-update submodule so that they use your forks at any time. It is recommended you
+This section describes updating git submodules to use your own forks. You can
+update submodules so that they use your forks at any time. It is recommended you
 only update the submodules that you need to, and that you leave submodules that
 you don't need to modify pointing to the GEOS-Chem repositories.
 

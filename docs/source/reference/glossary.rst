@@ -63,7 +63,7 @@ Terminology
       A cubed-sphere grid that is "stretched" to enhance the grid resolution in a region.
 
    gridded component
-      A formal model component. MAPL organizes model components with a `tree structure <https://en.wikipedia.org/wiki/Tree_structure>`_,
+      A formal model component. MAPL organizes model components with a `tree structure <https://en.wikipedia.org/wiki/Tree_structure>`__,
       and facilitates component interconnections.
 
    HISTORY

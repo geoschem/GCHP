@@ -19,10 +19,8 @@ Compile
    instructions have a linear flow. The Quickstart Guide, on the other
    hand, shows how to make a run directory prior to compiling.
 
-.. note::
-
    Another resource for GCHP build instructions is our `YouTube
-   tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`_. It is for
+   tutorial <https://www.youtube.com/watch?v=G_DMCv-mJ2k>`__. It is for
    version 13 but the build information is still applicable.
 
 
@@ -43,10 +41,10 @@ specify them.
 .. important::
 
    These instructions assume you have loaded a computing environment
-   that satisfies    :ref:`GCHP's software requirements
-   <software_requirements>` You can find instructions for building
-   GCHP's    dependencies yourself in the `Spack instructions
-   <../supplement/spack.html>`__.
+   that satisfies :ref:`GCHP's software requirements
+   <software_requirements>`. You can find instructions for building
+   GCHP's dependencies yourself in the `Spack instructions
+   <../geos-chem-shared-docs/supplemental-guides/spack-guide.html>`__.
 
 ========================
 Create a build directory
@@ -55,13 +53,13 @@ Create a build directory
 A build directory is the working directory for a
 "build". Conceptually, a "build" is a case/instance of you compiling
 GCHP. A build directory stores configuration files and intermediate
-files related to the build.  These files and generated and used by
-CMake, Make, and compilers. You can think a  build directory like the
+files related to the build.  These files are generated and used by
+CMake, Make, and compilers. You can think of a build directory like the
 blueprints for a construction project.
 
-Create a new directory and initialize it as a build directory by running CMake.
-When you initialize a build directory, the path to the source code is
-a required argument:
+Create a new directory and initialize it as a build directory by
+running CMake. When you initialize a build directory, the path to the
+source code is a required argument:
 
 .. code-block:: console
 
@@ -70,9 +68,9 @@ a required argument:
    $ cd build           # Navigate to the new directory
    $ cmake ~/Code.GCHP  # Initialize the current dir as a build dir
 
-   -- The Fortran compiler identification is GNU 9.2.1
-   -- The CXX compiler identification is GNU 9.2.1
-   -- The C compiler identification is GNU 9.2.1
+   -- The Fortran compiler identification is GNU 12.2.0
+   -- The CXX compiler identification is GNU 12.2.0
+   -- The C compiler identification is GNU 12.2.0
    -- Check for working Fortran compiler: /usr/bin/f95
    -- Check for working Fortran compiler: /usr/bin/f95  -- works
    ...
@@ -125,7 +123,7 @@ preventing a successful configuration (e.g., a dependency that wasn't
 found, or a compiler that is broken). To begin troubleshooting you
 should:
 
-* Check that the compilers are what you expect (e.g., GNU 9.2, Intel
+* Check that the compilers are what you expect (e.g., GNU 12.2, Intel
   19.1, etc.)
 * Check that dependencies like MPI, HDF5, NetCDF, and ESMF were found
 * Check for obvious errors/incompatibilities in the paths to "Found"
@@ -159,7 +157,7 @@ Most errors are caused by one or more of the following issues:
      $ cmake . -DCMAKE_PREFIX_PATH=/path/to/missing/files
 
   * If ESMF is missing, point CMake to your ESMF install with
-    :option:`-DCMAKE_PREFIX_PATH`
+    :literal:`-DCMAKE_PREFIX_PATH`
 
 * Software modules that are not compatible. Fix this by loading
   compatible modules/dependencies/compilers. Some hints:
@@ -193,7 +191,7 @@ useful information for troubleshooting.
 
       $ cmake . -DCMAKE_PREFIX_PATH=/software/ESMF
       ...
-      -- Found ESMF: /software/ESMF/include (found version "8.1.0")
+      -- Found ESMF: /software/ESMF/include (found version "8.6.1")
       ...
       -- Configuring done
       -- Generating done
@@ -219,7 +217,7 @@ useful information for troubleshooting.
       $ cd build           # ... and navigate to it
       $ export CC=icc      # select "icc" as C compiler
       $ export CXX=icpc    # select "icpc" as C++ compiler
-      $ export FC=icc      # select "ifort" as Fortran compiler
+      $ export FC=ifort    # select "ifort" as Fortran compiler
       $ cmake ~/Code.GCHP  # initialize new build dir
       -- The Fortran compiler identification is Intel 19.1.0.20191121
       -- The CXX compiler identification is Intel 19.1.0.20191121
@@ -256,13 +254,13 @@ or more run directories to install GCHP to. Here, "install" refers to
 copying the compiled executable, and some supplemental files with
 build settings, to your run directory/directories.
 
-.. note::
+.. tip::
 
    You can update build settings after you compile GCHP. Simply rerun
    :program:`make` and (optionally) :program:`make install`, and the
    build system will automatically figure out what needs to be recompiled.
 
-Since there are no required build settings, so here, we will stick
+Since there are no required build settings, we will stick
 with the default settings.
 
 You should notice that when you run :program:`cmake` it ends with:
@@ -290,14 +288,14 @@ You compile GCHP with:
    $ cd ~/Code.GCHP/build  # Skip if you are already in the build/ folder
    $ make -j               # -j enables compiling in parallel
 
-.. note::
+.. tip::
 
    You can add :literal:`VERBOSE=1` to see all the compiler commands.
 
-.. note::
+.. tip::
 
    If you run out of memory while compiling, restrict the number of
-   processes that can run concurrently (e.g., use :option:`-j20` to
+   processes that can run concurrently (e.g., use :literal:`-j20` to
    restrict to 20 processes).
 
 Compiling GCHP creates :file:`./bin/gchp` (the GCHP executable). You
@@ -332,12 +330,12 @@ To recompile GCHP, simply do
 
 and then optionally, :command:`make install`.
 
-.. note::
-    GNU compilers recompile GCHP faster than Intel compilers. This is because of how :program:`gfortran`
-    formats Fortran modules files (:file:`*.mod` files). Therefore, if you want to be able to recompile quickly, consider
-    using GNU compilers.
+.. tip::
 
-------------
+   GNU compilers recompile GCHP faster than Intel compilers. This is
+   because of how :program:`gfortran` formats Fortran modules files
+   (:file:`*.mod` files). Therefore, if you want to be able to
+   recompile quickly, consider using GNU compilers.
 
 .. _gchp_build_options:
 
@@ -359,69 +357,312 @@ list of build settings for GCHP.
 
 .. option:: RUNDIR
 
-   Paths to run directories where :command:`make install` installs
-   GCHP. Multiple run directories can be specified by a semicolon
-   separated list. A warning is issues if one of these directories
-   does not look like a run directory.
+   Specfies paths to run directories where :command:`make install`
+   installs GCHP. Multiple run directories can be specified by a
+   semicolon separated list. A warning is issued if one of these
+   directories does not look like a run directory.
 
    These paths can be relative paths or absolute paths. Relative paths
    are interpreted as relative to your build directory.
 
-.. option:: CMAKE_BUILD_TYPE
+.. describe:: INSTALLCOPY
 
-   The build type. Valid values are :literal:`Release`,
-   :literal:`Debug`, and :literal:`RelWithDebInfo`.     Set this to
-   :literal:`Debug` if you want to build in debug mode.
+   Similar to :option:`RUNDIR`, except the directories do not need
+   to be run directories.
 
-.. option:: CMAKE_PREFIX_PATH
+.. describe:: CMAKE_BUILD_TYPE
+
+   Specifies the type of build.  Accepted values are:
+
+   .. option:: Release
+
+      Tells CMake to configure GCHP in **Release** mode.  This
+      means that all optimizations will be applied and all debugging
+      options will be disabled. **(Default option)**.
+
+   .. option:: RelWithDebInfo
+
+      Tells CMake to configure GCHP in **Release** mode, but to generate
+      debugging output during the build sequence.
+
+   .. option:: Debug
+
+      Tells CMake to configure GCHP in **Debug** mode.  This turns on
+      several runtime error checks.  Debug mode makes it easier to
+      find errors but will adversely impact performance. Only use this
+      option if you are actively debugging GCHP.
+
+.. describe:: CMAKE_PREFIX_PATH
 
    Extra directories that CMake will search when it's looking for
    dependencies. Directories in :literal:`CMAKE_PREFIX_PATH` have
    the highest precedence when CMake is searching for dependencies.
    Multiple directories can be specified with a semicolon-separated list.
 
-.. option:: GEOSChem_Fortran_FLAGS_<COMPILER_ID>
+.. describe:: GEOSChem_Fortran_FLAGS_<COMPILER_ID>
 
    Compiler options for GEOS-Chem for all build types. Valid values
    for :literal:`<COMPILER_ID>` are :literal:`GNU` and
    :literal:`Intel`.
 
-.. option:: GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
+.. describe:: GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
 
    Additional compiler options for GEOS-Chem for build type
    :literal:`<BUILD_TYPE>`.
 
-.. option:: HEMCO_Fortran_FLAGS_<COMPILER_ID>
+.. describe:: HEMCO_Fortran_FLAGS_<COMPILER_ID>
 
    Same as :literal:`GEOSChem_Fortran_FLAGS_<COMPILER_ID>`, but for HEMCO.
 
-.. option:: HEMCO_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
+.. describe:: HEMCO_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>
 
    Same as
    :literal:`GEOSChem_Fortran_FLAGS_<BUILD_TYPE>_<COMPILER_ID>`,
    but for HEMCO.
 
-.. option:: RRTMG
+.. describe:: MECH
 
-   Switch to enable the RRTMG component. Set value to :literal:`y` to turn on.
+   Specifies the chemical mechanism that you wish to use with GCHP:
 
-.. option:: FASTJX
+   .. option:: fullchem
 
-   Switch to enable the legacy FAST-JX v7.0 photolysis mechanism. Set
-   value :literal:`y` to turn on FAST-JX and turn off Cloud-J. If
-   FASTJX is not set then Cloud-J will be to compute photolysis
-   rates.
+      Activates the **fullchem** mechanism.  The source code
+      files that define this mechanism are stored in
+      :file:`KPP/fullchem`. **(Default option)**
 
-.. option:: OMP
+   .. option:: carbon
 
-   Switch to enable/disable OpenMP multithreading. As is standard in
-   CMake (see `if documentation
-   <https://cmake.org/cmake/help/latest/command/if.html>`_) valid
-   values are :literal:`ON`, :literal:`YES`, :literal:`Y`,
-   :literal:`TRUE`, or :literal:`1` (case-insensitive) and valid
-   false values are their opposites.
+      Activates the **carbon** mechanism (CH4-CO-CO2-OCS).  The source
+      code files that define this mechanism are stored in
+      :file:`KPP/carbon`.
 
-.. option:: INSTALLCOPY
+   .. option:: custom
 
-   Similar to :literal:`RUNDIR`, except the directories do not need
-   to be run directories.
+      Activates a **custom** mechanism defined by the user.  The
+      source code files that define this mechanism are stored in
+      :file:`KPP/custom`.
+
+.. describe:: JACOBIAN
+
+   Builds the carbon simulation with CH\ :sub:`4` Jacobian tracers, for
+   use with the `Integrated Methane Inversion
+   <https://imi.readthedocs.io>`__.
+
+   .. note::
+
+      :literal:`JACOBIAN` may only be used with the carbon mechanism.
+      The number of Jacobian tracers is set when the mechanism is
+      built.  Use the :file:`KPP/carbon/util/expand_carbon_eqn.py`
+      script to expand :file:`carbon.eqn` to the number of CH\ :sub:`4`
+      Jacobian tracers that you need.
+
+   Accepted values are:
+
+   .. describe:: n
+
+      Builds the carbon simulation without Jacobian tracers.
+      **(Default option)**
+
+   .. describe:: y
+
+      Builds the carbon simulation with Jacobian tracers.
+
+.. describe:: OMP
+
+   Configures GCHP to use `OpenMP parallelization
+   <http://wiki.geos-chem.org/Parallelizing_GEOS-Chem>`_ within each
+   MPI process (hybrid MPI+OpenMP).
+
+   .. attention::
+
+      Hybrid MPI+OpenMP has not been validated by the GCST and is not
+      recommended for production runs.  GCHP is normally run as pure
+      MPI, one thread per process.  Results for 1 versus N threads
+      are bit-identical, but results from an :literal:`OMP=y` build
+      differ from an :literal:`OMP=n` build at round-off level.  See
+      `GCHP issue #571 <https://github.com/geoschem/GCHP/issues/571>`_
+      for test results.
+
+   If you do enable OpenMP:
+
+   #. Set :envvar:`OMP_STACKSIZE` (e.g. :literal:`500m`) and
+      :envvar:`OMP_NUM_THREADS`, and pass both to every MPI process
+      (e.g. :literal:`mpirun -x OMP_NUM_THREADS -x OMP_STACKSIZE`).
+      Without :envvar:`OMP_STACKSIZE` the run will segfault in
+      Cloud-J, because OpenMP worker threads default to a 2 MB stack.
+   #. Build with :literal:`MPI_LOAD_BALANCE=n`.  The load-balanced
+      chemistry loop is not threaded, so with load balancing on, the
+      extra threads stay idle during KPP integration. Running with 
+      :literal:`OMP=y`, :literal:`MPI_LOAD_BALANCE=y` and more than one
+      thread per MPI process will produce incorrect outputs.
+   #. Expect no speedup over pure MPI at equal core count.  Our
+      tests shows that threaded KPP integration time is reduced by about 25%, but
+      transport, convection and emissions slowed with fewer MPI
+      processes, and pure MPI with load balancing on (default) was fastest.
+
+   Accepted values are:
+
+   .. describe:: n
+
+      Deactivates OpenMP parallelization.  GCHP will use MPI (Message
+      Passing Interface) for all core-to-core
+      communication. **(Default option)**
+
+   .. describe:: y
+
+      Activates OpenMP parallelization.  GCHP will use OpenMP to
+      parallelize DO loops marked with :code:`!$OMP PARALLEL` within
+      each MPI process, and MPI between processes.
+
+
+.. describe:: RRTMG
+
+   Configures GCHP to use the `RRTMG radiative transfer model
+   <https://wiki.geos-chem.org/Coupling_RRTMG_to_GEOS-Chem>`_.
+   Accepted values are:
+
+   .. describe:: n
+
+      Deactivates the RRTMG radiative transfer model. **(Default option)**
+
+   .. describe:: y
+
+      Activates the RRTMG radiative transfer model.
+
+.. describe:: TOMAS
+
+   Configures GCHP to use the `TOMAS aerosol
+   microphysics package
+   <http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_.  Accepted
+   values are:
+
+   .. describe:: n
+
+      Deactivate TOMAS microphysics. **(Default option)**
+
+   .. describe:: y
+
+      Activate TOMAS microphysics.
+
+.. describe:: TOMAS_BINS
+
+   Specifies the number of size-resolved bins for TOMAS.  Accepted
+   values are:
+
+   .. describe:: 15
+
+      Use 15 size-resolved bins with TOMAS simulations.
+
+   .. describe:: 40
+
+      Use 40 size-resolved bins with TOMAS simulations.
+
+.. describe:: FASTJX
+
+   Configures GEOS-Chem to use the legacy FAST-JX photolysis mechanism
+   instead of :ref:`Cloud-J <cfg-phot-chem>`.
+
+   .. attention::
+
+      This option is deprecated, as FAST-JX is no longer used for the
+      :ref:`fullchem-sim`.
+
+   Accepted values are:
+
+   .. describe:: n
+
+      Uses Cloud-J for photolysis. **(Default option)**
+
+   .. describe:: y
+
+      Uses legacy FAST-JX for photolysis.
+
+.. describe:: KPPSA
+
+   Compiles the :ref:`KPP-Standalone Box Model <kppsa-guide>` executable.
+
+   .. describe:: n
+
+      Will not install the KPP-Standalone Box model in the run directory.
+      **(Default option)**
+
+   .. describe:: y
+
+      Will install the KPP-Standalone Box mode in the run directory.
+
+.. describe:: MPI_LOAD_BALANCE
+
+   Applies MPI load balancing in chemistry.  This is automatically
+   turned off if :literal:`KPPSA` is set to :literal:`y`.  Accepted
+   values are:
+   Applies dynamic load balancing of chemistry columns across the MPI
+   processes on each node, using MPI shared memory (see `geos-chem PR
+   #3015 <https://github.com/geoschem/geos-chem/pull/3015>`_). Keep this on unless you are running
+   hybrid MPI+OpenMP (see :literal:`OMP`).  This is automatically
+   turned off if :literal:`KPPSA` is set to :literal:`y`.  Accepted
+   values are:
+
+   .. describe:: y
+
+      Activates MPI load balancing in chemistry. **(Default option)**
+
+   .. describe:: n
+
+      Deactivates MPI load balancing in chemistry.
+
+.. describe:: LUO_WETDEP
+
+   Configures GEOS-Chem to use the :cite:t:`Luo_et_al._2020`
+   wet deposition scheme.
+
+   .. note::
+
+      The :cite:t:`Luo_et_al._2020` wet deposition scheme will
+      eventually become the default wet deposition scheme in GEOS-Chem.
+      We have made it an option for the time being while further
+      evaluation is being done.
+
+   Accepted values are:
+
+   .. describe:: n
+
+      Deactivates the Luo et al., 2020 wet deposition scheme. **(Default
+      option)**
+
+   .. describe:: y
+
+      Activates the Luo et al., 2020 wet deposition scheme.
+
+.. describe:: SANITIZE
+
+   Activates the AddressSanitizer/LeakSanitizer functionality in GNU
+   Fortran to identify memory leaks.  Accepted values are:
+
+   .. describe:: n
+
+      Deactivates AddressSanitizer/LeakSanitizer **(Default option)**.
+
+   .. describe:: y
+
+      Activates AddressSanitizer/LeakSanitizer.
+
+.. describe:: USE_REAL8
+
+   Sets GEOS-Chem's flexible precision (:literal:`fp`) to 8-byte
+   floating point.
+
+   .. attention::
+
+      GCHP is only validated with :literal:`USE_REAL8=y`, which is why
+      it is the default.  Change this setting only for development or
+      testing purposes.
+
+   Accepted values are:
+
+   .. describe:: y
+
+      Flexible precision is 8-byte floating point. **(Default option)**
+
+   .. describe:: n
+
+      Flexible precision is 4-byte floating point.
