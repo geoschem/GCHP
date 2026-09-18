@@ -9,6 +9,10 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Changed
+- Changed default setting of `LUO_WETDEP` to `ON` in `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt` and updated ReadTheDocs documentation accordingly
+
 ## [14.8.0] - 2026-09-15
 ### Added
 - Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
