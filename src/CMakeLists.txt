@@ -61,7 +61,7 @@ set (EXE_FILE_NAME gchp CACHE STRING
 mark_as_advanced(EXE_FILE_NAME)
 
 add_executable (${EXE_FILE_NAME}
-  GCHPctm.F90
+  GCHP.F90
 )
 target_link_libraries (${EXE_FILE_NAME}
   PUBLIC
