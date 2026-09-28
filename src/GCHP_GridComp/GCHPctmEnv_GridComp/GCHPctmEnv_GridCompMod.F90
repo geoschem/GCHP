@@ -320,9 +320,7 @@ contains
        SPHU0_out = dble(SPHU1_in(:,:,nlev:1:-1))
     end if
 
-    !     call prepare_massflux_exports(import, export, PLE, run_dt, _RC)
     call logger%debug('Preparing FV3 input MFX, MFY, CX, and CY')
-
     if ( import_mass_flux_from_extdata ) then
 
        ! Get mass flux components from import vector MFXY
@@ -366,6 +364,14 @@ contains
        call ESMF_FieldGet(field_list(1), farrayPtr=UA_in, _RC)
        call ESMF_FieldGet(field_list(2), farrayPtr=VA_in, _RC)
 
+       ! extra prints for debugging
+       UA_out = real(UA_in, kind=r4)
+       VA_out = real(VA_in, kind=r4)
+       if ( mapl_am_i_root() ) print *, "ewl: UA_in min, max, sum: ", &
+            minval(ua_in), maxval(ua_in), sum(ua_in(:,:,:))
+       if ( mapl_am_i_root() ) print *, "ewl: VA_in min, max, sum: ", &
+            minval(va_in), maxval(va_in), sum(va_in(:,:,:))
+
        ! Allocate local arrays for C-grid winds
        ALLOCATE( uc_r8 (is:ie, js:je, nlev), STAT=STATUS);
        _VERIFY(STATUS)
@@ -380,7 +386,27 @@ contains
           uc_r8(:,:,:) = dble(UA_in(:,:,nlev:1:-1))
           vc_r8(:,:,:) = dble(VA_in(:,:,nlev:1:-1))
        end if
+
+       ! extra prints for debugging
+       if ( mapl_am_i_root() ) print *, "ewl: pre-a2d2c, uc_r8 min, max, sum: ", &
+            minval(uc_r8), maxval(uc_r8), sum(uc_r8(:,:,:))
+       if ( mapl_am_i_root() ) print *, "ewl: pre-a2d2c, vc_r8 min, max, sum: ", &
+            minval(vc_r8), maxval(vc_r8), sum(vc_r8(:,:,:))
+
        call A2D2C(U=uc_r8, V=vc_r8, npz=nlev, getC=.true.)
+
+       ! extra prints for debugging
+       UC_out = real(uc_r8, kind=r4)
+       VC_out = real(vc_r8, kind=r4)
+       if ( mapl_am_i_root() ) then
+          print *, "ewl: run_dt: ", run_dt
+          print *, "ewl: post-a2d2c, uc_r8 min, max, sum: ", &
+               minval(uc_r8), maxval(uc_r8), sum(uc_r8(:,:,:))
+          print *, "ewl: post-a2d2c, vc_r8 min, max, sum: ", &
+               minval(vc_r8), maxval(vc_r8), sum(vc_r8(:,:,:))
+          print *, "ewl: DryPLE0_out min, max, sum: ", &
+               minval(DryPLE0_out), maxval(DryPLE0_out), sum(DryPLE0_out(:,:,:))
+       endif
 
 #ifdef ADJOINT
        if (.not. firstRun) then
@@ -390,8 +416,10 @@ contains
           call fv_computeMassFluxes(uc_r8, vc_r8, PLE0_out, &
                MFX_out, MFY_out, CX_out, CY_out, run_dt)
        else
+          if ( mapl_am_i_root() ) print *, "ewl: calling fv_computeMassFluxes for dry air"
           call fv_computeMassFluxes(uc_r8, vc_r8, DryPLE0_out, &
                MFX_out, MFY_out, CX_out, CY_out, run_dt)
+          print *, "is CX_out associated?: ", associated(CX_out)
        endif
 #ifdef ADJOINT
        else
@@ -399,10 +427,25 @@ contains
        endif
 #endif
 
+       ! extra prints for debugging
+       if ( mapl_am_i_root() ) then
+          print *, "ewl: got here 4"
+          print *, "ewl: mfx_out min, max, sum: ", &
+               minval(mfx_out), maxval(mfx_out), sum(mfx_out(:,:,:))
+       endif
+       if ( mapl_am_i_root() ) print *, "ewl: mfy_out min, max, sum: ", &
+            minval(mfy_out), maxval(mfy_out), sum(mfy_out(:,:,:))
+       if ( mapl_am_i_root() ) print *, "ewl: cx_out min, max, sum: ", &
+            minval(cx_out), maxval(cx_out), sum(cx_out(:,:,:))
+       if ( mapl_am_i_root() ) print *, "ewl: cy_out min, max, sum: ", &
+            minval(cy_out), maxval(cy_out), sum(cy_out(:,:,:))
+
        ! Deallocate local arrays
        DEALLOCATE(uc_r8, vc_r8)
 
     endif
+
+    if ( mapl_am_i_root() ) print *, "got here 5"
 
     if (associated(UpwardsMassFlux_out)) then
        call logger%debug('Calculating diagnostic export UpwardsMassFlux')
