@@ -63,10 +63,27 @@ mark_as_advanced(EXE_FILE_NAME)
 add_executable (${EXE_FILE_NAME}
   GCHP.F90
 )
+
+# Updates for latest mapl3, to use dso for all gridcomps rather than bake them into .x
+# Comment this out, and replace with the one after it
+#target_link_libraries (${EXE_FILE_NAME}
+#  PUBLIC
+#  GCHP_GridComp
+#  ${CMAKE_DL_LIBS}
+#)
 target_link_libraries (${EXE_FILE_NAME}
   PUBLIC
-  GCHP_GridComp
+  MAPL
   ${CMAKE_DL_LIBS}
+)
+
+add_dependencies(${EXE_FILE_NAME}
+  GCHP_GridComp
+  GCHPctmEnv_GridComp
+  FVdycoreCubed_GridComp
+  MAPL.cap
+  MAPL.extdata
+  MAPL.history
 )
 set_target_properties (${EXE_FILE_NAME}
   PROPERTIES
