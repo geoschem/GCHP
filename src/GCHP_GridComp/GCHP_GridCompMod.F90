@@ -79,10 +79,6 @@ contains
 
   subroutine Run( GC, IMPORT, EXPORT, CLOCK, RC )
 
-#ifndef MAPL3
-    use MAPL_MemUtilsMod                         ! Optional memory prints
-#endif
-
     type(ESMF_GridComp):: gc   ! composite gridded component
     type(ESMF_State) :: import ! import state
     type(ESMF_State) :: export ! export state
