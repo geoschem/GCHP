@@ -324,18 +324,12 @@ contains
     if ( import_mass_flux_from_extdata ) then
 
        ! Get mass flux components from import vector MFXY
-       call ESMF_StateGet(import, "MFXY", bundle, _RC)
-       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
-       _RETURN_UNLESS(size(field_list) == 2)
-       call ESMF_FieldGet(field_list(1), farrayPtr=MFX_in, _RC)
-       call ESMF_FieldGet(field_list(2), farrayPtr=MFY_in, _RC)
+       call MAPL_StateGetPointer(import, 'MFXY', &
+            farrayPtr_1=MFX_in, farrayPtr_2=MFY_in, _RC)
 
        ! Get Courant number components from import vector CXY
-       call ESMF_StateGet(import, "CXY", bundle, _RC)
-       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
-       _RETURN_UNLESS(size(field_list) == 2)
-       call ESMF_FieldGet(field_list(1), farrayPtr=CX_in, _RC)
-       call ESMF_FieldGet(field_list(2), farrayPtr=CY_in, _RC)
+       call MAPL_StateGetPointer(import, 'CXY', &
+            farrayPtr_1=CX_in, farrayPtr_2=CY_in, _RC)
 
        if (meteorology_vertical_index_is_top_down) then
           MFX_out =  dble(MFX_in(:,:,:))
@@ -358,11 +352,8 @@ contains
     else
 
        ! Get A-grid wind components from import vector UV
-       call ESMF_StateGet(import, "UV", bundle, _RC)
-       call MAPL_FieldBundleGet(bundle, fieldList=field_list, _RC)
-       _RETURN_UNLESS(size(field_list) == 2)
-       call ESMF_FieldGet(field_list(1), farrayPtr=UA_in, _RC)
-       call ESMF_FieldGet(field_list(2), farrayPtr=VA_in, _RC)
+       call MAPL_StateGetPointer(import, 'UV', &
+            farrayPtr_1=UA_in, farrayPtr_2=VA_in, _RC)
 
        ! extra prints for debugging
        UA_out = real(UA_in, kind=r4)
