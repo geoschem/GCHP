@@ -81,6 +81,7 @@ add_dependencies(${EXE_FILE_NAME}
   GCHP_GridComp
   GCHPctmEnv_GridComp
   FVdycoreCubed_GridComp
+  GEOSChem_GridComp
   MAPL.cap
   MAPL.extdata
   MAPL.history

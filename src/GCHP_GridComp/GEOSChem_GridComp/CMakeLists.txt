@@ -30,6 +30,7 @@ set (MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
 set (GCHP TRUE)
 set (MODEL_GCHP TRUE)
 set (MODEL_GCHPCTM TRUE)
+set (CMAKE_POSITION_INDEPENDENT_CODE ON) # static GeosCore etc get linked into a .so
 
 # Add directories to build
 add_subdirectory (Cloud-J EXCLUDE_FROM_ALL)
@@ -63,14 +64,15 @@ target_include_directories (GEOSChemBuildProperties INTERFACE
   ${CMAKE_Fortran_MODULE_DIRECTORY}
 )
 
-# Run automatic code generator to create header files for GEOS-Chem states
-mapl_acg (GEOSChemBuildProperties GEOSChem_StateSpecs.acg
-  IMPORT_SPECS
-  EXPORT_SPECS
-  INTERNAL_SPECS
-  GET_POINTERS
-  DECLARE_POINTERS
-)
+## Run automatic code generator to create header files for GEOS-Chem states
+# This will be done in geos-chem/Interfaces/GCHP/CMakeLists.txt instead
+#mapl_acg (GEOSChemBuildProperties GEOSChem_StateSpecs.acg
+#  IMPORT_SPECS
+#  EXPORT_SPECS
+#  INTERNAL_SPECS
+#  GET_POINTERS
+#  DECLARE_POINTERS
+#)
 
 set (GEOSChem_Fortran_FLAGS_Intel
   -cpp -w -auto -noalign "SHELL:-convert big_endian" "SHELL:-fp-model source"

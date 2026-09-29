@@ -91,7 +91,7 @@ contains
     type(ESMF_HConfig) :: hconfig
     real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
 
-    logical :: advcore_present
+    logical :: advcore_present, geoschem_present
 
     call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
     call logger%info("Run::GCHP_GridCompMod: starting...")
@@ -109,6 +109,9 @@ contains
        call MAPL_GridCompRunChild(gc, 'GCHPctmEnv', phase_name='run', _RC)
        call MAPL_GridCompRunChild(gc, 'AdvCore', phase_name='run', _RC)
     end if
+    geoschem_present = has_child(gc, 'GEOSChem', _RC)
+    if (geoschem_present) &
+       call MAPL_GridCompRunChild(gc, 'GEOSChem', phase_name='run', _RC)
 
     call logger%info("Run::GCHP_GridCompMod: complete")
 
