@@ -28,8 +28,8 @@ category: EXPORT
  SPHU0_r4        | SPHU0_r4_out| kg kg-1    | R4       | xyz  | C    | specific_humidity_before_advection_r4
  SPHU1           | SPHU1_out   | kg kg-1    | R4       | xyz  | C    | specific_humidity_after_advection
  UpwardsMassFlux | UpwardsMassFlux_out | kg m-2 s-1 | R8 | xyz | E   | upwards_mass_flux_of_air
- UA              | UA_out      | 1          | R4       | xyz  | C    | agrid_eastward_wind
- VA              | VA_out      | 1          | R4       | xyz  | C    | agrid_northward_wind
- UC              | UC_out      | 1          | R4       | xyz  | C    | cgrid_eastward_wind
- VC              | VC_out      | 1          | R4       | xyz  | C    | cgrid_northward_wind
+ UA              | UA_out      | m s-1      | R4       | xyz  | C    | agrid_eastward_wind
+ VA              | VA_out      | m s-1      | R4       | xyz  | C    | agrid_northward_wind
+ UC              | UC_out      | m s-1      | R4       | xyz  | C    | cgrid_eastward_wind
+ VC              | VC_out      | m s-1      | R4       | xyz  | C    | cgrid_northward_wind
 
