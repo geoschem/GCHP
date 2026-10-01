@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased] - TBD
 ### Changed
-- Changed default setting of `LUO_WETDEP` to `ON` in `src/GCHP_GridComp/GEOSChem_GridComp/CMakeLists.txt` and updated ReadTheDocs documentation accordingly
+- Changed `LUO_WETDEP` to `ON` by default (except for TOMAS, which dies upon compilation); Updated RTD docs accordingly
 
 ## [14.8.0] - 2026-09-15
 ### Added
