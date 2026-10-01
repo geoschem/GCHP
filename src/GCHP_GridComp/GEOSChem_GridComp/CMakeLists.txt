@@ -23,9 +23,20 @@ set(RRTMG OFF CACHE BOOL
 set(TOMAS OFF CACHE BOOL
   "Switch to build TOMAS as a component of GEOS-Chem"
 )
-set(LUO_WETDEP OFF CACHE BOOL
-  "Switch to build the Luo et al (2020) wetdep scheme into GEOS-Chem"
+#-----------------------------------------------------------------------------
+# NOTE: TOMAS is not yet compatible with the Luo and Yu (2023) wetdep
+# scheme, so turn LUO_WETDEP off when TOMAS=ON, at least for the time being.
+set(LUO_WETDEP ON CACHE BOOL
+  "Switch to build the Luo and Yu (2023) wetdep scheme into GEOS-Chem"
 )
+if(TOMAS AND LUO_WETDEP)
+  message(STATUS
+    "TOMAS is not yet compatible with the Luo and Yu (2023) wetdep "
+    "scheme; building with LUO_WETDEP=OFF."
+  )
+  set(LUO_WETDEP OFF)
+endif()
+#-----------------------------------------------------------------------------
 set(FASTJX OFF CACHE BOOL
   "Switch to use legacy FAST-JX photolysis in GEOS-Chem"
 )
