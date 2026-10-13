@@ -187,9 +187,9 @@ contains
          default=.false.,                        &
          _RC)
     if (use_total_air_pressure_in_advection) then
-       call logger%info("GCHPctmEnv config: advection will use dry air pressure")
-    else
        call logger%info("GCHPctmEnv config: advection will use total air pressure")
+    else
+       call logger%info("GCHPctmEnv config: advection will use dry air pressure")
     end if
 
     ! Look up in yaml file whether to convert moist mass flux to dry mass flux
