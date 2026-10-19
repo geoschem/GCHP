@@ -1407,8 +1407,8 @@ module GCHPctmEnv_GridComp
          endif
 
          if ( correct_mass_flux_for_humidity > 0 ) then
-            MFX_EXPORT = MFX_EXPORT / ( 1.d0 - SPHU0_EXPORT )
-            MFY_EXPORT = MFY_EXPORT / ( 1.d0 - SPHU0_EXPORT )
+            MFX_EXPORT = MFX_EXPORT * ( 1.d0 - SPHU0_EXPORT )
+            MFY_EXPORT = MFY_EXPORT * ( 1.d0 - SPHU0_EXPORT )
          endif
 
       else
