@@ -25,30 +25,30 @@ the following format.
    <DEFINE COLLECTIONS>
 
 
-.. option:: EXPID
+.. describe:: EXPID
 
    This is the file prefix for all collections. :literal:`OutputDir/GCHP`
    means that collections will be written to directory
    :file:`OutputDir/` with filename prefix :literal:`GCHP`.
 
-.. option:: EXPDSC
+.. describe:: EXPDSC
 
    Optional description of your run to be included in output metadata.
 
-.. option:: CoresPerNode
+.. describe:: CoresPerNode
 
    The number of cores per node for your GCHP simulation. If using the
    auto-update diagnostics feature in :ref:`set-common-run-settings-sh`
    then this will automatically get updated based on settings in that
    file.
 
-.. option:: VERSION
+.. describe:: VERSION
 
    Optional version number of to be included in output metadata.
 
    The format and description of :ref:`\<DEFINE GRID LABELS\>
    <defining-grid-labels>`,  :ref:`\<DEFINE ACTIVE COLLECTIONS\>
-   <defining-active-collections>`, and and :ref:`\<DEFINE
+   <defining-active-collections>`, and :ref:`\<DEFINE
    COLLECTIONS\> <defining-collections>` sections are given below.
 
 .. _defining-grid-labels:
@@ -83,8 +83,8 @@ intend to use. This is because MAPL creates all grids listed
 regardless of whether they are used which increases the memory
 requirement for the mode.
 
-A collection can define :option:`grid_label` to select a custom grid. If
-a collection does not define :option:`grid_label` the simulation's grid
+A collection can define :literal:`grid_label` to select a custom grid. If
+a collection does not define :literal:`grid_label` the simulation's grid
 is assumed.
 
 Below is the format for the :literal:`<DEFINE GRID LABELS>` section in
@@ -114,28 +114,26 @@ Below is the format for the :literal:`<DEFINE GRID LABELS>` section in
       MY_THIRD_GRID.LON_RANGE:    0 80    # regional boundaries
       MY_THIRD_GRID.LAT_RANGE:  -30 10
 
-SPEC NAMES
-
-.. option:: GRID_TYPE
+.. describe:: GRID_TYPE
 
    The type of grid. Valid options are :literal:`Cubed-Sphere` or
    :literal:`LatLon`.
 
-.. option:: IM_WORLD
+.. describe:: IM_WORLD
 
    The number of grid boxes in the i-dimension. For a :literal:`LatLon`
    grid this is the number of longitude grid-boxes. For a
    :literal:`Cubed-Sphere` grid this is the cubed-sphere size (e.g., 48
    for C48).
 
-.. option:: JM_WORLD
+.. describe:: JM_WORLD
 
    The number of grid boxes in the j-dimension. For a
    :literal:`LatLon` grid this is the number of latitude
    grid-boxes. For a :literal:`Cubed-Sphere` grid this is six
    times the cubed-sphere size (e.g., 288 for C48).
 
-.. option:: POLE
+.. describe:: POLE
 
    Required if the grid type is :literal:`LatLon`. :literal:`POLE` defines
    the latitude coordinates of the grid. For global lat-lon grids the
@@ -146,7 +144,7 @@ SPEC NAMES
    should be set to :literal:`XY` and the grid will have boxes with edges
    at the regional boundaries.
 
-.. option:: DATELINE
+.. describe:: DATELINE
 
    Required if the grid type is :literal:`LatLon`. :literal:`DATELINE`
    defines the longitude coordinates of the grid. For global lat-lon
@@ -162,14 +160,14 @@ SPEC NAMES
    and the grid will have boxes with edges at the regional
    boundaries.
 
-.. option:: LON_RANGE
+.. describe:: LON_RANGE
 
-   Required for regional :literal:`LatLon` grids. :option:`LON_RANGE`
+   Required for regional :literal:`LatLon` grids. :literal:`LON_RANGE`
    defines the longitude bounds of the regional grid.
 
-.. option:: LAT_RANGE
+.. describe:: LAT_RANGE
 
-   Required for regional :literal:`LatLon` grids. :option:`LAT_RANGE`
+   Required for regional :literal:`LatLon` grids. :literal:`LAT_RANGE`
    defines the latitude bounds of the regional grid.
 
 .. _defining-active-collections:
@@ -200,7 +198,7 @@ This example activates collections named :literal:`MyCollection1` and
 Defining Collections
 ====================
 
-A collection is
+A collection is defined in the following format:
 
 .. code-block:: none
 
@@ -223,67 +221,67 @@ A collection is
 Output file configuration
 -------------------------
 
-.. option:: template
+.. describe:: template
 
    This is the file name suffix for the collection. The path to the
-   collection's files is obtained by concatenating :option:`EXPID`
+   collection's files is obtained by concatenating :literal:`EXPID`
    with the collection name and the value of :literal:`template`.
 
-.. option:: format
+.. describe:: format
 
    Defines the file format of the collection. Valid values are
    :literal:`'CFIO'` for CF compliant NetCDF (recommended), or
    :literal:`'flat'` for GrADS style flat files.
 
-.. option:: duration
+.. describe:: duration
 
    Defines the frequency at which files are generated. The format is
    :literal:`HHMMSS`. For example, :literal:`1680000` means that a
    file is generated every 168 hours (7 days).
 
-.. option:: frequency
+.. describe:: frequency
 
    Defines the time frequency of collection's data. Said another way,
    this defines the time separation (time step) of the time coordinate
    for the collection. The format is :literal:`HHMMSS`. For example,
    :literal:`010000` means that the collection's time coordinate will
    have a 1-hour time step. If :literal:`frequency` is less
-   than :option:`duration` multiple time steps are written
+   than :literal:`duration` multiple time steps are written
    to each file.
 
-.. option:: monthly
+.. describe:: monthly
 
    **OPTIONAL**. Set to :literal:`1` for monthly output. One file per
    month is generated. If :literal:`mode` is :literal:`time-averaged`,
    the variables in the collection are 1-month time averages. Note
-   that :option:`duration` and :option:`frequency` are not required
-   if :option:`monthly` is set to :literal:`1`.
+   that :literal:`duration` and :literal:`frequency` are not required
+   if :literal:`monthly` is set to :literal:`1`.
 
-.. option:: timeStampStart
+.. describe:: timeStampStart
 
-   **OPTIONAL**. Only used if :option:`mode` is
+   **OPTIONAL**. Only used if :literal:`mode` is
    :literal:`'time-averaged'`. If :literal:`.true.` the file is
    timestamped according to the start of the accumulation interval
-   (which depends on :option:`frequency`, :option:`ref_date`, and
-   :option:`ref_time`). If :literal:`.false.` the file is timestamped
+   (which depends on :literal:`frequency`, :literal:`ref_date`, and
+   :literal:`ref_time`). If :literal:`.false.` the file is timestamped
    according to the middle of the accumulation interval. If
-   :option:`timeStampStart` is not set then the default value is false.
+   :literal:`timeStampStart` is not set then the default value is false.
 
 Sampling configuration
 --------------------------
 
-.. option:: mode
+.. describe:: mode
 
    Defines the sampling method. Valid values are
    :literal:`'time-averaged'` or :literal:`'instantaneous'`.
 
-.. option:: acc_interval
+.. describe:: acc_interval
 
    **OPTIONAL**.  Only valid if :literal:`mode` is
    :literal:`'time-averaged'`. This specifies the length of the time
    average. By default it is equal to :literal:`frequency`.
 
-.. option:: ref_date
+.. describe:: ref_date
 
    **OPTIONAL**. The reference date from which the frequency is
    based. The format is :literal:`YYYYMMDD`. For example, a frequency
@@ -291,13 +289,13 @@ Sampling configuration
    means that the time coordinate will be weeks since 2021-01-01. The
    default value is the simulation's start date.
 
-.. option:: ref_time
+.. describe:: ref_time
 
    **OPTIONAL**. The reference time from which the frequency is
    based. The format is :literal:`HHMMSS`. The default value is
    :literal:`000000`. See :literal:`ref_date`.
 
-.. option:: fields
+.. describe:: fields
 
    Defines the list of fields that this collection should use. The
    format (per-field) is :literal:`'FieldName', 'GridCompName',`. For
@@ -321,23 +319,23 @@ Sampling configuration
 Output grid configuration
 -------------------------
 
-.. option:: grid_label
+.. describe:: grid_label
 
    **OPTIONAL**. Defines the grid that this collection should be
    output on. The lable must match on of the grid labels defined in
    :ref:`\<DEFINE GRID LABELS\> <defining-grid-labels>`. If
-   :option:`grid_label` isn't set then the collection uses the
+   :literal:`grid_label` isn't set then the collection uses the
    simulation's horizontal grid.
 
-.. option:: conservative
+.. describe:: conservative
 
    **OPTIONAL**. Defines whether or not regridding to the output grid
    should use ESMF's first-order conservative method. Valid values are
    :literal:`0` or :literal:`1`. It is recommended you set this to
-   :literal:`1` if you are using :option:`grid_label`. The default
+   :literal:`1` if you are using :literal:`grid_label`. The default
    value is :literal:`0`.
 
-.. option:: levels:
+.. describe:: levels:
 
    **OPTIONAL**. Defines the model levels that this collection should
    use (i.e., a subset of the simulation levels). The format is a
@@ -345,15 +343,15 @@ Output grid configuration
    highest layer is 72. For example, :literal:`1 2 5` would select the
    first, second, and fifth level of the simulation.
 
-.. option:: track_file
+.. describe:: track_file
 
    **OPTIONAL**. Defines the path to a 1D track file along which the
    collection is sampled. See :ref:`output-along-a-track` for more
    info.
 
-.. option:: recycle_track
+.. describe:: recycle_track
 
-   **OPTIONAL**. Only valid if a :option:`track_file` is
+   **OPTIONAL**. Only valid if a :literal:`track_file` is
    defined. Specifies that the track file should be reused every
    day. If :literal:`.true.` the dates in the track file are
    automatically forced to the simulation's current date. The default
@@ -362,12 +360,12 @@ Output grid configuration
 Other configuration
 -------------------
 
-.. option:: end_date
+.. describe:: end_date
 
    **OPTIONAL**. A date at which the collection is deactivated (turned
    off). By default there is no end date.
 
-.. option:: end_time
+.. describe:: end_time
 
    **OPTIONAL**. Time at which the collection is deactivated (turned
    off) on the :literal:`end_date`.
@@ -385,7 +383,7 @@ Below is an example :file:`HISTORY.rc` that configures two output collection
 
 #. 24-hour time averages of O3, NO, and NO2 concentrations, NO
    emissions, and some meteorological parameters. The horizontal grid
-   is the simulation's grid. All vertical levels are use. Each file
+   is the simulation's grid. All vertical levels are used. Each file
    contains one week worth of data, and files are generated relative
    to 2017-01-01.
 

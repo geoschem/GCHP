@@ -9,6 +9,23 @@ This file documents all notable changes to the GCHP wrapper repository starting 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [14.8.0] - 2026-09-15
+### Added
+- Added `fetch-tags: true` to `checkout@v4` in the GitHub Actions file `.github/workflows/cloud-benchmarking-workflow.yml`
+- Added MAPL3 code blocks for developing MAPL3 compatibility
+- Added "Customize emissions with HEMCO" ReadTheDocs page
+
+### Changed
+- Require 96 vcpus for AWS instance used for benchmarking
+- Updated Python packages needed for ReadTheDocs
+- Updated default GCHP resolution in createRunDir.sh from c24 for MERAA2/GEOS-FP and c30 for GEOS-IT to c90 in all cases. 
+- Updated GEOS-Chem submodule to version 14.8.0
+- Updated HEMCO submodule to version 3.13.0
+- Updated FVdycoreCubed_GridComp submodule to commit 9d86304 (`Merge PR #13 ...`)
+- Updated MAPL submodule to commit e87909dbc (`Merge PR #45 ...`)
+- Updated HETP submodule to commit df2f942 (`Merge PR #4 ...`)
+- Updated geos-chem-shared-docs submodule to commit f882128 (`Added several last minute doc updates for 14.8.0`)
+
 ## [14.7.1] - 2026-04-14
 ### Added
 - Added build option `MPI_LOAD_BALANCE` to enable MPI load balancing in GEOS-Chem chemistry
@@ -23,6 +40,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated GEOS-Chem submodule to 14.7.1
 - Updated HEMCO submodule to 3.12.1
 - Turned off vertical flipping of top-down meteorology in GCHPctmEnv if using ExtData2G
+
+### Fixed
+- Fixed zero UpwardsMassFlux diagnostic
 
 ## [14.7.0] - 2026-02-06
 ### Added

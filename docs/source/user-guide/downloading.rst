@@ -29,7 +29,7 @@ which is always the last official release of GCHP.  Checking out the
 official release is recommended because it is a
 scientifically-validated version of the code and is easily
 citable. You can find the list of past and present GCHP releases on the
-`GEOS-Chem versions page <https://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_versions>`_.
+`GEOS-Chem versions page <https://wiki.seas.harvard.edu/geos-chem/index.php/GEOS-Chem_versions>`__.
 
 If you wish to use an older version of GCHP then you can checkout a version
 tag and then update the git submodules. Here is an example of downloading
@@ -57,7 +57,7 @@ or open a gitk window to browse the history using a graphical user interface.
 
 The output of :command:`git status` should confirm your GCHP version
 and that there are no modifications (nothing to commit, and a clean
-working tree). It also says that you are are in detached HEAD state,
+working tree). It also says that you are in detached HEAD state,
 meaning you are not in a GCHP git software branch. This is true for
 all submodules in the model as well. If you plan to make changes to the
 source code then you must checkout a new branch within whatever submodules

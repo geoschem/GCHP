@@ -1,4 +1,222 @@
+#ifdef MAPL3
+#include "MAPL.h"
+#else
 #include "MAPL_Generic.h"
+#endif
+
+#ifdef MAPL3
+module GCHP_GridCompMod
+
+  use ESMF
+  use mapl3
+  use fv_arrays_mod, only: REAL4, REAL8
+  use pflogger, only: logger_t => logger
+
+  implicit none
+  private
+
+  public SetServices
+  public Initialize
+  public Run
+  public Finalize
+
+  integer,  parameter :: r4 = REAL4
+  integer,  parameter :: r8 = REAL8
+
+contains
+
+  !=============================================================================
+  ! SetServices -- Sets ESMF services for this component
+
+  subroutine SetServices ( GC, RC )
+
+    use mapl3g_generic, only : MAPL_GridCompAddSpec, MAPL_GridCompAddConnectivity
+
+    type(ESMF_GridComp)  :: gc     ! composite gridded component
+    integer, intent(out) :: rc     ! Error code, 0 all is well
+
+    integer :: status
+    class(logger_t), pointer :: logger
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%debug("GCHP_GridCompMod.F90::SetServices starting...")
+
+!    ! Add imports (alternatively can use GCHP_StateSpec.rc in source code to auto-generate). This is just for testing. Do not need imports in this gridcomp! 
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='PS1', &
+!         standard_name='Met surface pressure at time before advection', &
+!         units='hPa', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_NONE, &
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+!
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='PS2', &
+!         standard_name='Met surface pressure at time after advection', &
+!         units='hPa', &
+!         dims='xy', &
+!         vstagger=VERTICAL_STAGGER_NONE, &
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+!
+!    call MAPL_GridCompAddSpec(gridcomp=gc, &
+!         short_name='SPHU1', &
+!         standard_name='Specific humidity', &
+!         units='kg/kg', &
+!         dims='xyz', &
+!         vstagger=VERTICAL_STAGGER_CENTER, &
+!         state_intent=ESMF_STATEINTENT_IMPORT, &
+!         _RC)
+
+    ! Add connections for children
+    call MAPL_GridCompAddConnectivity(gridcomp=gc, &
+         src_comp='GCHPctmEnv', &
+         src_names='PLE0, PLE1, DryPLE0, DryPLE1, SPHU0', &
+         dst_comp='FVdycoreCubed', &
+         dst_names='PLE0, PLE1, DryPLE0, DryPLE1, SPHU0', &
+         _RC)
+!
+!    call MAPL_GridCompAddConnectivity(gridcomp=gc, &
+!         src_comp='FVdycoreCubed', &
+!         src_names='AREA', &
+!         dst_comp='GEOSchem', &
+!         dst_names='AREA', &
+!         _RC)
+
+    ! Register services for this component
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="Run", _RC)
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
+
+    call logger%debug("GCHP_GridCompMod.F90::SetServices done")
+
+    _RETURN(_SUCCESS)
+
+  end subroutine SetServices
+
+  !=============================================================================
+  ! Initialize -- The Initialize method of the Gridded Component.
+
+  subroutine Initialize( GC, IMPORT, EXPORT, CLOCK, RC )
+
+    type(ESMF_GridComp):: gc   ! composite gridded component
+    type(ESMF_State) :: import ! import state
+    type(ESMF_State) :: export ! export state
+    type(ESMF_Clock) :: clock  ! the clock
+    integer, intent(out) :: rc ! Error code, 0 all is well
+
+    integer :: status
+    class(logger_t), pointer :: logger
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%debug("Initialize::GCHP_GridCompMod: starting...")
+
+    call logger%debug("Initialize::GCHP_GridCompMod: complete")
+
+    _RETURN(_SUCCESS)
+
+  end subroutine Initialize
+
+  !=============================================================================
+  ! Run -- The Run method of the Gridded Component.
+
+  subroutine Run( GC, IMPORT, EXPORT, CLOCK, RC )
+
+    !use MAPL_MemUtilsMod                         ! Optional memory prints
+    use mapl3g_State_API, only: MAPL_StateGetPointer
+
+    type(ESMF_GridComp):: gc   ! composite gridded component
+    type(ESMF_State) :: import ! import state
+    type(ESMF_State) :: export ! export state
+    type(ESMF_Clock) :: clock  ! the clock
+    integer, intent(out) :: rc ! Error code, 0 all is well
+
+    integer :: status, iter, num_children
+    character(len=:), allocatable :: child_name
+    class(logger_t), pointer :: logger
+    type(ESMF_GRID) :: esmfgrid
+    type(ESMF_HConfig) :: hconfig
+    real(r4), pointer :: PS1_import(:,:) ! Or auto-generate with ACG
+    real(r4), pointer :: PS2_import(:,:)
+    !real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
+
+    call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, &
+         logger=logger, num_children=num_children, _RC)
+    call logger%debug("Run::GCHP_GridCompMod: starting...")
+
+    ! Can change this to manually put in name, to ensure order
+    do iter = 1, num_children
+       child_name = MAPL_GridCompGetChildName(gc, iter, _RC)
+       if ((index(child_name, "data")) /= 0) cycle
+       call MAPL_GridCompRunChild(gc, child_name, phase_name="Run", _RC)
+    end do
+
+    call ESMF_GridValidate(esmfgrid, _RC)
+
+!    call MAPL_StateGetPointer(import, PS1_import, 'PS1', _RC)
+!    if ( associated(PS1_import) ) then
+!       print *, "ewl: Successfully got pointer to PS1. Min/max values are ", &
+!            MINVAL(PS1_import), MAXVAL(PS1_import)
+!    endif
+!
+!    call MAPL_StateGetPointer(import, PS2_import, 'PS2', _RC)
+!    if ( associated(PS2_import) ) then
+!       print *, "ewl: Successfully got pointer to PS2. Min/max values are ", &
+!            MINVAL(PS2_import), MAXVAL(PS2_import)
+!    endif
+
+   !     call MAPL_GridGet(esmfgrid, longitudes=lons, latitudes=lats, _RC)
+!    call MAPL_StateGetPointer(export, temp2d, "LONS", _RC)
+!    if( associated(temp2D) ) temp2d = lons
+!    call MAPL_StateGetPointer(export, temp2d, "LATS", _RC)
+!    if( associated(temp2D) ) temp2d = lats
+
+!    PS1_import => NULL()
+!    PS2_import => NULL()
+
+    call logger%debug("Run::GCHP_GridCompMod: complete")
+
+    _RETURN(_SUCCESS)
+
+  end subroutine Run
+
+  !=============================================================================
+  ! Finalize -- The Finalize method of the Gridded Component.
+
+  subroutine Finalize( GC, IMPORT, EXPORT, CLOCK, RC )
+
+    type(ESMF_GridComp):: gc   ! composite gridded component
+    type(ESMF_State) :: import ! import state
+    type(ESMF_State) :: export ! export state
+    type(ESMF_Clock) :: clock  ! the clock
+    integer, intent(out) :: rc ! Error code, 0 all is well
+
+    integer :: status
+    class(logger_t), pointer :: logger
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%debug("Finalize::GCHP_GridCompMod: starting...")
+
+    call logger%debug("Finalize::GCHP_GridCompMod: complete")
+
+    _RETURN(ESMF_SUCCESS)
+  end subroutine Finalize
+
+!=============================================================================
+
+end module GCHP_GridCompMod
+
+subroutine SetServices(gc, rc)
+  use ESMF
+  use GCHP_GridCompMod, only : mySetservices=>SetServices
+  type(ESMF_GridComp) :: gc
+  integer, intent(out) :: rc
+  call mySetServices(gc, rc=rc)
+end subroutine SetServices
+
+#else
+! MAPL2:
 !=============================================================================
 !BOP
 
@@ -796,3 +1014,4 @@ contains
 !=============================================================================
 
  end module GCHP_GridCompMod
+#endif

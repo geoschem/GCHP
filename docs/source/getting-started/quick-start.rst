@@ -10,8 +10,8 @@ requirements described in :ref:`System Requirements
 environment so that software like :program:`cmake` and a
 fortran compiler are available before continuing. If you do not have
 some of GCHP's software dependencies, you can find instructions for
-installing GCHP's external dependencies in our `Spack instructions
-<../supplement/spack.html>`__.  More detailed instructions on
+installing GCHP's external dependencies in our supplemental guide
+entitled :ref:`spackguide`.  More detailed instructions on
 downloading, compiling, and running GCHP can be found in the User
 Guide.
 
@@ -27,7 +27,7 @@ will automatically initialize and update all the submodules:
    $ git clone --recurse-submodules https://github.com/geoschem/GCHP.git ~/GCHP
    $ cd ~/GCHP
 
-Upon download you will have the most recently released version. You can check what this is by printing the last commit in the git log and scanning the output for tag.
+Upon download you will have the most recently released version. You can check what this is by printing the last commit in the git log and scanning the output for the tag.
 
 .. code-block:: console
 
@@ -45,7 +45,7 @@ Upon download you will have the most recently released version. You can check wh
       $ git checkout version_14.0.0               # Checks out the version_14.0.0 branch
       $ git submodule update --init --recursive   # Reverts submodules to the "14.0.0" tag
 
-   You can do this for any tag in the version history.   For a list of
+   You can do this for any tag in the version history. For a list of
    all tags, type:
 
    .. code-block:: console
@@ -83,8 +83,8 @@ the prompts:
    only if the simulation does not cross the 01 June 2020 boundary. We
    therefore recommend splitting up GEOS-FP runs in time such that a
    single simulation does not span this date. For example, configure
-   one run to end on 01 June 2020 and then use  its output restart to
-   start another run on 01 June 2020.. Alternatively consider using
+   one run to end on 01 June 2020 and then use its output restart to
+   start another run on 01 June 2020. Alternatively consider using
    MERRA2 which was entirely generated with RAS, or GEOS-IT which was
    entirely generated with Grell-Freitas. If you wish to use a GEOS-FP
    meteorology year different from your simulation year please create
@@ -218,6 +218,16 @@ You therefore need to run it to actually apply the settings:
    $ vim setCommonRunSettings.sh           # edit simulation settings here
    $ ./setCommonRunSettings.sh             # applies the updated settings
 
+.. attention::
+
+   When creating a GCHP run directory, the default grid resolution in
+   configuration file setCommonRunSettings.sh is set to C90. C90 has a
+   resolution of approximately 110km globally, similar to the average
+   resolution of a 1x1 degree lat-lon grid, and is sufficient for most
+   scientific outputs. See :ref:`gchp_hgrids` for more information
+   about different GCHP grid resolutions and notes on selecting the
+   appropriate resolution for your runs.
+
 Simulation start date is set in :file:`cap_restart`.  Run directories
 come with this file filled in based on date of the initial restart
 file in subdirectory :file:`Restarts`.  You can change the start date
@@ -239,8 +249,8 @@ directory:
 
 .. code-block:: console
 
-   $ ./setEnvironment.sh /path/to/env/file # sets symbolic link gchp.env
-   $ source gchp.env                       # applies the environment settings
+   $ ./setEnvironmentLink.sh /path/to/env/file  # sets symbolic link gchp.env
+   $ source gchp.env                            # applies the environment settings
 
 ===========
 6. Run GCHP
@@ -288,7 +298,7 @@ and grid resolution upon successful completion of the run.
    GCHP outputs a restart file to your Restarts directory called
    :file:`gcchem_internal_checkpoint`. This file is renamed by the
    run script (not GCHP) to include the date and grid resolution.
-   Since this is done by the run script it is technically is optional.
+   Since this is done by the run script it is technically optional.
    However, we recommend doing this since it avoids overwriting your
    restart file upon consecutive runs, is useful for archiving, and
    enables use of the :file:`./setRestartLink.sh` script to set the

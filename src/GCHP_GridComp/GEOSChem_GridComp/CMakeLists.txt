@@ -7,9 +7,11 @@ set(HETP_EXTERNAL_CONFIG    TRUE) # Not HETP standalone test
 set(HEMCO_EXTERNAL_CONFIG   TRUE) # Not HEMCO standalone
 set(GTMM                    FALSE)
 set(MECH "fullchem" CACHE STRING "Name of the chemistry mechanism to use")
-set(GCHP                    TRUE)
+set(EXTERNAL_GRID           TRUE)
+set(GCHP_WRAPPER            TRUE)
 set(MODEL_GCHP              TRUE)
-set(MODEL_GCHPCTM           TRUE)
+set(MAPL_ESMF               TRUE)
+set(USE_ESMF                TRUE)
 
 # Cached variables
 set(USE_REAL8 ON CACHE BOOL
@@ -57,7 +59,7 @@ add_subdirectory(geos-chem EXCLUDE_FROM_ALL)
 
 # Configure build properties for GEOS-Chem
 target_compile_definitions(GEOSChemBuildProperties INTERFACE
-  ESMF_ EXTERNAL_GRID NC_HAS_COMPRESSION MODEL_GCHPCTM MODEL_GCHP
+  USE_ESMF EXTERNAL_GRID NC_HAS_COMPRESSION MODEL_GCHP
   $<$<BOOL:${USE_REAL8}>:USE_REAL8>
   $<$<BOOL:${RRTMG}>:RRTMG>
   $<$<BOOL:${ADJOINT}>:ADJOINT>

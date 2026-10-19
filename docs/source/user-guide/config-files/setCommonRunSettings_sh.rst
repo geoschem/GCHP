@@ -35,6 +35,7 @@ that are still convenient to update from one place. These include:
 * Timesteps
 * Online dust mass tuning factor
 * Domain decomposition
+* MAPL ExtData versions (see :ref:`extdata2g`)
 
 The entire configuration section contains many comments with
 instructions on how to change the settings and what the options

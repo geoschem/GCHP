@@ -60,7 +60,7 @@ grid.
 Specifics for GMAO vertical grids
 ---------------------------------
 
-The the :math:`P_{edge}(I,J,L)` and :math:`P_{midpoint}(I,J,L)` values
+The :math:`P_{edge}(I,J,L)` and :math:`P_{midpoint}(I,J,L)` values
 in GMAO meteorological products vary with the topography up to 170
 hPa.  Skyward of 170 hPa, :math:`P_{edge}(I,J,L)` and
 :math:`P_{midpoint}(I,J,L)` remain constant for all longitudes and
@@ -79,11 +79,11 @@ Vertical grids for GMAO meteorology
 ----------------------
 
 This grid is used by the `GEOS-FP
-<https://wiki.seas.harvard.edu/geos-chem/index.php?title=GEOS-FP>`_,
+<https://wiki.seas.harvard.edu/geos-chem/index.php?title=GEOS-FP>`__,
 `GEOS-IT
-<https://wiki.seas.harvard.edu/geos-chem/index.php?title=GEOS-IT>`_,
+<https://wiki.seas.harvard.edu/geos-chem/index.php?title=GEOS-IT>`__,
 and `MERRA-2
-<https://wiki.seas.harvard.edu/geos-chem/index.php?title=MERRA-2>`_
+<https://wiki.seas.harvard.edu/geos-chem/index.php?title=MERRA-2>`__
 meteorological field products from NASA GMAO.  It has 72 vertical
 levels and 73 edges.
 
@@ -414,7 +414,7 @@ Pressures and altitudes
 The table below lists pressures and altitudes of the 72 layer grid for
 a column at atmospheric sea level.
 
-.. code-block:: text
+.. code-block:: none
 
     L        L     Eta Edge      Eta Mid     Altitude     Pressure
     down     up    (unitless)   (unitless)        (km)        (hPa)

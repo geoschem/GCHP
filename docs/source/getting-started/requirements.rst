@@ -22,7 +22,7 @@ following software:
   - Intel compilers versions 2019-2021, or
   - GNU compilers versions ≥ 10 and < 13
 
-- MPI (Message Passing Interface)
+* MPI (Message Passing Interface)
 
   - OpenMPI ≥ 4.0, or
   - IntelMPI, or
@@ -46,7 +46,7 @@ Environment File
 
 Set up an environment file that loads the needed libraries and also
 defines these environment variables needed for GCHP. Here is an
-example of what the library load and variable exports might look line
+example of what the library load and variable exports might look like
 in your environment file. This example uses GNU compilers and OpenMPI,
 but there are notes in the comments on how to use Intel instead. The commands
 to load modules on your system may be different than in this example. Contact
@@ -67,7 +67,7 @@ your system administrator if you need help finding libraries on your system.
    umask 022                                  # Make all files world-readable by default
 
    # NetCDF
-   if [[ "x{NETCDF_HOME}" == "x" ]]; then
+   if [[ "x${NETCDF_HOME}" == "x" ]]; then
        export NETCDF_HOME=${NETCDF_C_HOME}
    fi
    export NETCDF_ROOT=${NETCDF_HOME}
@@ -75,7 +75,7 @@ your system administrator if you need help finding libraries on your system.
 
    # Compilers
    export CC=gcc                         # C compiler (use icx for Intel)
-   export CXX=g++                        # C++ compiler (se icx for Intel)
+   export CXX=g++                        # C++ compiler (use icx for Intel)
    export FC=gfortran                    # Fortran compiler (use ifort for Intel)
 
    # MPI
@@ -105,7 +105,7 @@ Installing ESMF
 
 If you have all of the needed libraries except ESMF then you will need to
 download and build ESMF yourself. The ESMF git repository is available
-to clone from `github.com/esmf-org/esmf <https://github.com/esmf-org/esmf>`_. Use
+to clone from `github.com/esmf-org/esmf <https://github.com/esmf-org/esmf>`__. Use
 :code:`git tag` to browse versions available and then :code:`git
 checkout tags/tag_name` to checkout the version.
 
@@ -237,7 +237,7 @@ path and have checked out the version of ESMF you wish to build.
    $ make distclean
    $ source path/to/env/file/with/unique/ESMF_INSTALL_PREFIX
    $ make &> compile.log
-   $ install $> install.log
+   $ make install &> install.log
    $ mv compile.log $ESMF_INSTALL_PREFIX
    $ mv install.log $ESMF_INSTALL_PREFIX
    $ cp /path/to/your/env/file $ESMF_INSTALL_PREFIX
@@ -262,8 +262,17 @@ Bare Minimum Requirements
 Running GCHP on one node with as few as six cores is possible but we
 recommend this only for testing short low resolution runs such as
 running GCHP for the first time and for debugging. These bare minimum
-requirements are sufficient for running GCHP at C24. Please note that
-we recommend running at C90 or greater for scientific applications.
+requirements are sufficient for running GCHP at C24.
+
+.. note::
+
+   When you create a GCHP run directory, the resolution will be set to
+   C90 by default, which is our recommended resolution for most
+   scientific applications.  To run GCHP with the bare-minimum
+   requirements, change :envvar:`CS_RES` from 90 to 24 in
+   :file:`setCommonRunSettings.sh` and reduce the amount of cores and
+   memory requested in your run script.  For more information, please
+   see :ref:`rundir-config-compute` and :ref:`rundir-config-grid-res`.
 
 Recommended Minimum Requirements
 --------------------------------
@@ -303,7 +312,7 @@ General Hardware and Software Recommendations
   on the second node. This should be the default, but it's worth
   checking if your performance is lower than expected. With OpenMPI
   the :literal:`--report-bindings` argument will show you how
-  processes are ranked and binded.
+  processes are ranked and bound.
 
 - If using IntelMPI include the following your environment setup to
   avoid a run-time error:
@@ -317,4 +326,4 @@ General Hardware and Software Recommendations
   enabling the MAPL o-server functionality for writing restart files,
   thereby speeding up the model. This is set automatically when
   executing :file:`setCommonRunSettings.sh` if using over 1000
-  cores. You can also toggle whether to use it manually in that file..
+  cores. You can also toggle whether to use it manually in that file.
