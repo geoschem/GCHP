@@ -547,6 +547,42 @@ module GCHPctmEnv_GridComp
                               RC=STATUS)
       _VERIFY(STATUS)
       call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='UA', &
+                              LONG_NAME='xward_a-grid_wind', &
+                              UNITS='m s-1', &
+                              PRECISION=ESMF_KIND_R4, &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='VA', &
+                              LONG_NAME='yward_a-grid_wind', &
+                              UNITS='m s-1', &
+                              PRECISION=ESMF_KIND_R4, &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='UC', &
+                              LONG_NAME='xward_c-grid_wind', &
+                              UNITS='m s-1', &
+                              PRECISION=ESMF_KIND_R4, &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
+                              SHORT_NAME='VC', &
+                              LONG_NAME='yward_c-grid_wind', &
+                              UNITS='m s-1', &
+                              PRECISION=ESMF_KIND_R4, &
+                              DIMS=MAPL_DimsHorzVert, &
+                              VLOCATION=MAPL_VLocationCenter, &
+                              RC=STATUS)
+      _VERIFY(STATUS)
+      call MAPL_AddExportSpec(gc, &
                               SHORT_NAME='MFX', &
                               LONG_NAME='pressure_weighted_accumulated_xward_mass_flux', &
                               UNITS='Pa m+2 s-1', &
@@ -1343,6 +1379,10 @@ module GCHPctmEnv_GridComp
       real(r4), pointer, dimension(:,:,:) :: MFY_R4_EXPORT => null() 
       real(r4), pointer, dimension(:,:,:) :: CX_R4_EXPORT  => null()
       real(r4), pointer, dimension(:,:,:) :: CY_R4_EXPORT  => null()
+      real(r4), pointer, dimension(:,:,:) :: UA_EXPORT  => null()
+      real(r4), pointer, dimension(:,:,:) :: VA_EXPORT  => null()
+      real(r4), pointer, dimension(:,:,:) :: UC_EXPORT  => null()
+      real(r4), pointer, dimension(:,:,:) :: VC_EXPORT  => null()
 
       ! Pointers to imports
       real,     pointer, dimension(:,:,:) :: MFX_IMPORT => null()
@@ -1429,6 +1469,12 @@ module GCHPctmEnv_GridComp
          call MAPL_GetPointer(IMPORT, VA_IMPORT, 'VA', RC=STATUS)
          _VERIFY(STATUS)
          
+         ! Set exports for a-grid winds
+         call MAPL_GetPointer(EXPORT, UA_EXPORT, 'UA', _RC)
+         IF ( ASSOCIATED(UA_EXPORT) ) UA_EXPORT = UA_IMPORT
+         call MAPL_GetPointer(EXPORT, VA_EXPORT, 'VA', _RC)
+         IF ( ASSOCIATED(VA_EXPORT) ) VA_EXPORT = VA_IMPORT
+
          ! Allocate local arrays for C-grid, both real4 and real8
          ALLOCATE( UC   (is:ie, js:je, lm), STAT=STATUS);
          _VERIFY(STATUS)
@@ -1438,7 +1484,7 @@ module GCHPctmEnv_GridComp
          _VERIFY(STATUS)
          ALLOCATE( VCr8 (is:ie, js:je, lm), STAT=STATUS);
          _VERIFY(STATUS)
-         
+
          ! Copy imports to local arrays so that vertical index is top down
          if (met_wind_is_top_down) then
             UC(:,:,:) = UA_IMPORT(:,:,:)
@@ -1447,10 +1493,17 @@ module GCHPctmEnv_GridComp
             UC(:,:,:) = UA_IMPORT(:,:,LM:1:-1)
             VC(:,:,:) = VA_IMPORT(:,:,LM:1:-1)
          end if
-         
+
          ! Restagger winds (A-grid to C-grid) (requires real4)
          call A2D2C(U=UC, V=VC, npz=lm, getC=.true.)
-         
+
+         ! Set exports for c-grid winds
+         call MAPL_GetPointer(EXPORT, UC_EXPORT, 'UC', _RC)
+         IF ( ASSOCIATED(UC_EXPORT) ) UC_EXPORT = UC
+         call MAPL_GetPointer(EXPORT, VC_EXPORT, 'VC', _RC)
+         IF ( ASSOCIATED(VC_EXPORT) ) VC_EXPORT = VC
+
+
          ! Store as real8 for input to FV3 subroutine to compute mass fluxes
          UCr8  = dble(UC)
          VCr8  = dble(VC)
@@ -1469,6 +1522,10 @@ module GCHPctmEnv_GridComp
          endif
          firstRun = .false.
 #endif
+
+         IF ( ASSOCIATED(MFX_R4_EXPORT) ) UC = real(UCr8, kind=r4)
+         call MAPL_GetPointer(EXPORT, VC_EXPORT, 'VC', NotFoundOK=.TRUE., _RC)
+         IF ( ASSOCIATED(MFX_R4_EXPORT) ) VC = real(VCr8, kind=r4)
 
          ! Deallocate local arrays
          DEALLOCATE(UC, VC, UCr8, VCr8)
@@ -1505,6 +1562,10 @@ module GCHPctmEnv_GridComp
       MFY_EXPORT      => null()
       CX_EXPORT       => null()
       CY_EXPORT       => null()
+      UA_EXPORT       => null()
+      VA_EXPORT       => null()
+      UC_EXPORT       => null()
+      VC_EXPORT       => null()
       SPHU0_EXPORT    => null()
       MFX_IMPORT      => null()
       MFY_IMPORT      => null()
