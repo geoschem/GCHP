@@ -4,6 +4,7 @@ component: GCHPctmEnv
 # Automatically generated imports and exports in GCHPctmEnv gridded component
 
 category: IMPORT
+# See GCHPctmEnv_GridComp.F90 SetServices() for vector imports
 #-------------------------------------------------------------------------------------
  SHORT_NAME | ALIAS      | UNITS      | TYPEKIND | DIMS | VLOC | ITEMTYPE | LONG_NAME
 #-----------|--------------------------------------------------------------------------

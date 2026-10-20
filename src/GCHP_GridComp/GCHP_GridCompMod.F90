@@ -81,21 +81,26 @@ contains
     type(ESMF_HConfig) :: hconfig
     real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
 
-    logical :: advcore_present, geoschem_present
+    logical :: child_present
 
     call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
     call logger%info("Run::GCHP_GridCompMod: starting...")
 
     call ESMF_GridValidate(esmfgrid, _RC) ! ewl: do we need this?
 
-    ! For testing, only actually run GCHPctmEnv if AdvCore is present
-    advcore_present = has_child(gc, 'AdvCore', _RC)
-    if (advcore_present) then
+    ! Run GCHPctmEnv gridcomp
+    child_present = has_child(gc, 'GCHPctmEnv', _RC)
+    if (child_present) &
        call MAPL_GridCompRunChild(gc, 'GCHPctmEnv', phase_name='run', _RC)
+
+    ! Run AdvCore gridcomp
+    child_present = has_child(gc, 'AdvCore', _RC)
+    if (child_present) &
        call MAPL_GridCompRunChild(gc, 'AdvCore', phase_name='run', _RC)
-    end if
-    geoschem_present = has_child(gc, 'GEOSChem', _RC)
-    if (geoschem_present) &
+
+    ! Run GEOS-Chem gridcomp
+    child_present = has_child(gc, 'GEOSChem', _RC)
+    if (child_present) &
        call MAPL_GridCompRunChild(gc, 'GEOSChem', phase_name='run', _RC)
 
     call logger%info("Run::GCHP_GridCompMod: complete")

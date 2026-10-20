@@ -21,6 +21,7 @@ module GCHPctmEnv_GridCompMod
   integer, parameter  :: nlev = 72
 
   ! Settings from gchpctmenv.yaml
+  logical :: run_with_advcore
   logical :: meteorology_vertical_index_is_top_down
   logical :: use_total_air_pressure_in_advection
   logical :: correct_mass_flux_for_humidity
@@ -204,6 +205,18 @@ contains
        call logger%info("GCHPctmEnv config: will use moist mass flux in advection")
     end if
 
+    ! Look up in yaml file whether AdvCore (FV3) is running. If not, skip
+    ! computations that need FV3 to be initialized (C-grid winds, mass fluxes,
+    ! Courant numbers, vertical mass flux)
+    call MAPL_GridCompGetResource(gc, 'RUN_WITH_ADVCORE', run_with_advcore, &
+         default=.true., _RC)
+    if (.not. run_with_advcore) then
+       call logger%warning("GCHPctmEnv config: RUN_WITH_ADVCORE is false. " // &
+            "FV3 is not initialized, so exports UC, VC (C-grid winds), MFX, MFY " // &
+            "(mass fluxes) and CX, CY (Courant numbers) are set to zero and " // &
+            "UpwardsMassFlux is not computed. All these exports are set to zero.")
+    end if
+
     call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize done")
 
     _RETURN(_SUCCESS)
@@ -311,7 +324,8 @@ contains
 
     endif
 
-    ! Prepare the pre-advection specific humidity export (ewl: only if needed?)
+    ! Prepare the pre-advection specific humidity export
+    ! ewl note: come back to this since not always needed
     ! Set specific humidity export as copy of import casted to real8
     ! and vertically flip if needed
     if ( meteorology_vertical_index_is_top_down ) then
@@ -361,54 +375,61 @@ contains
        UA_out = UA_in
        VA_out = VA_in
 
-       ! Allocate local arrays for C-grid winds
-       ALLOCATE( uc_r8 (is:ie, js:je, nlev), STAT=STATUS);
-       _VERIFY(STATUS)
-       ALLOCATE( vc_r8 (is:ie, js:je, nlev), STAT=STATUS);
-       _VERIFY(STATUS)
+       if (run_with_advcore) then
 
-       ! Get r8 C-grid winds from r4 A-grid, flipping as needed so level 1 is TOA
-       if (meteorology_vertical_index_is_top_down) then
-          uc_r8 = dble(UA_in)
-          vc_r8 = dble(VA_in)
-       else
-          uc_r8(:,:,:) = dble(UA_in(:,:,nlev:1:-1))
-          vc_r8(:,:,:) = dble(VA_in(:,:,nlev:1:-1))
-       end if
+          ! Allocate local arrays for C-grid winds
+          ALLOCATE( uc_r8 (is:ie, js:je, nlev), STAT=STATUS);
+          _VERIFY(STATUS)
+          ALLOCATE( vc_r8 (is:ie, js:je, nlev), STAT=STATUS);
+          _VERIFY(STATUS)
 
-       call A2D2C(U=uc_r8, V=vc_r8, npz=nlev, getC=.true.)
+          ! Get r8 C-grid winds from r4 A-grid, flipping as needed so level 1 is TOA
+          if (meteorology_vertical_index_is_top_down) then
+             uc_r8 = dble(UA_in)
+             vc_r8 = dble(VA_in)
+          else
+             uc_r8(:,:,:) = dble(UA_in(:,:,nlev:1:-1))
+             vc_r8(:,:,:) = dble(VA_in(:,:,nlev:1:-1))
+          end if
 
-       ! Set wind exports (c-grid)
-       UC_out = real(uc_r8, kind=r4)
-       VC_out = real(vc_r8, kind=r4)
+          call A2D2C(U=uc_r8, V=vc_r8, npz=nlev, getC=.true.)
+
+          ! Set wind exports (c-grid)
+          UC_out = real(uc_r8, kind=r4)
+          VC_out = real(vc_r8, kind=r4)
 
 #ifdef ADJOINT
-       if (.not. firstRun) then
+          if (.not. firstRun) then
 #endif
-       ! Compute mass fluxes and Courant numbers from C-grid winds
-       if (use_total_air_pressure_in_advection) then
-          call fv_computeMassFluxes(uc_r8, vc_r8, PLE0_out, &
-               MFX_out, MFY_out, CX_out, CY_out, run_dt)
-       else
-          if ( mapl_am_i_root() ) print *, "ewl: calling fv_computeMassFluxes for dry air"
-          call fv_computeMassFluxes(uc_r8, vc_r8, DryPLE0_out, &
-               MFX_out, MFY_out, CX_out, CY_out, run_dt)
-          print *, "is CX_out associated?: ", associated(CX_out)
-       endif
+             ! Compute mass fluxes and Courant numbers from C-grid winds
+             if (use_total_air_pressure_in_advection) then
+                call fv_computeMassFluxes(uc_r8, vc_r8, PLE0_out, &
+                     MFX_out, MFY_out, CX_out, CY_out, run_dt)
+             else
+                call fv_computeMassFluxes(uc_r8, vc_r8, DryPLE0_out, &
+                     MFX_out, MFY_out, CX_out, CY_out, run_dt)
+             endif
 #ifdef ADJOINT
-       else
-          firstRun = .false.
-       endif
+          else
+             firstRun = .false.
+          endif
 #endif
 
-       ! Deallocate local arrays
-       DEALLOCATE(uc_r8, vc_r8)
+          ! Deallocate local arrays
+          DEALLOCATE(uc_r8, vc_r8)
+
+       else
+          UC_out  = 0.0
+          VC_out  = 0.0
+          MFX_out = 0.0d0
+          MFY_out = 0.0d0
+          CX_out  = 0.0d0
+          CY_out  = 0.0d0
+       endif
 
     endif
 
-    if ( mapl_am_i_root() ) print *, "got here 5"
-
-    if (associated(UpwardsMassFlux_out)) then
+    if (associated(UpwardsMassFlux_out) .and. run_with_advcore) then
        call logger%debug('Calculating diagnostic export UpwardsMassFlux')
 
        ! Get vertical mass flux
