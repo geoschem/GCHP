@@ -176,8 +176,8 @@ support them (:program:`GCHPctmEnv`).
 
    .. describe:: 1
 		 
-      Advection will use moist air pressure.  This is currently experimental.
-   experimental.
+      Advection will use moist air pressure.  This is currently
+      experimental. 
 
 .. describe:: CORRECT_MASS_FLUX_FOR_HUMIDITY
 

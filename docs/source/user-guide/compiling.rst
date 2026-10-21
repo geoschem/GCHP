@@ -492,7 +492,7 @@ list of build settings for GCHP.
       Cloud-J, because OpenMP worker threads default to a 2 MB stack.
    #. Build with :literal:`MPI_LOAD_BALANCE=n`.  The load-balanced
       chemistry loop is not threaded, so with load balancing on, the
-      extra threads stay idle during KPP integration. Running with 
+      extra threads stay idle during KPP integration. Running with
       :literal:`OMP=y`, :literal:`MPI_LOAD_BALANCE=y` and more than one
       thread per MPI process will produce incorrect outputs.
    #. Expect no speedup over pure MPI at equal core count.  Our
@@ -514,7 +514,6 @@ list of build settings for GCHP.
       parallelize DO loops marked with :code:`!$OMP PARALLEL` within
       each MPI process, and MPI between processes.
 
-
 .. describe:: RRTMG
 
    Configures GCHP to use the `RRTMG radiative transfer model
@@ -531,10 +530,8 @@ list of build settings for GCHP.
 
 .. describe:: TOMAS
 
-   Configures GCHP to use the `TOMAS aerosol
-   microphysics package
-   <http://wiki.geos-chem.org/TOMAS_aerosol_microphysics>`_.  Accepted
-   values are:
+   Configures GCHP to use :ref:`tomas-guide`.  Accepted values
+   are:
 
    .. describe:: n
 
@@ -543,6 +540,15 @@ list of build settings for GCHP.
    .. describe:: y
 
       Activate TOMAS microphysics.
+
+      .. attention::
+
+         :ref:`tomas-guide` is not yet compatible with the
+         :ref:`wetdep-guide-luo`.  When TOMAS is activated,
+         :literal:`LUO_WETDEP` is automatically set to
+         :literal:`OFF`, and the :ref:`wetdep-guide-jacob` is used instead.
+         The TOMAS developers are working on a fix for this, which will be
+         available in the near future.
 
 .. describe:: TOMAS_BINS
 
@@ -612,26 +618,19 @@ list of build settings for GCHP.
 
 .. describe:: LUO_WETDEP
 
-   Configures GEOS-Chem to use the :cite:t:`Luo_et_al._2020`
-   wet deposition scheme.
-
-   .. note::
-
-      The :cite:t:`Luo_et_al._2020` wet deposition scheme will
-      eventually become the default wet deposition scheme in GEOS-Chem.
-      We have made it an option for the time being while further
-      evaluation is being done.
-
-   Accepted values are:
-
-   .. describe:: n
-
-      Deactivates the Luo et al., 2020 wet deposition scheme. **(Default
-      option)**
+   Configures GEOS-Chem to use the :ref:`wetdep-guide-luo`.  Accepted
+   values are:
 
    .. describe:: y
 
-      Activates the Luo et al., 2020 wet deposition scheme.
+      Activates the :cite:t:`Luo_and_Yu_2023` wet deposition
+      scheme. **(Default option)**
+
+   .. describe:: n
+
+      Deactivates the :cite:t:`Luo_and_Yu_2023` wet deposition
+      scheme.  In this case the :ref:`wetdep-guide-jacob` will be used
+      instead.
 
 .. describe:: SANITIZE
 
