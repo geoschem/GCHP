@@ -24,7 +24,7 @@ following software:
 
 * MPI (Message Passing Interface)
 
-  - OpenMPI ≥ 4.0, or
+  - OpenMPI 4.0, or
   - IntelMPI, or
   - MVAPICH2, or
   - MPICH, or
