@@ -20,7 +20,7 @@ following software:
 * Compilers (C, C++, and Fortran):
 
   - Intel compilers versions 2019-2021, or
-  - GNU compilers versions ≥ 10 and < 13
+  - GNU compilers versions ≥ 10 and < 14.3
 
 * MPI (Message Passing Interface)
 
