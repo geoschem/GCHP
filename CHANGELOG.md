@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated `.release/changeVersionNumbers.sh` to exit with an error if the `CITATION.cff` edits did not land
 - Renormalized `docs/make.bat` to LF in the repository (still checked out with CRLF, per `.gitattributes`)
 - Added read-only `permissions` blocks to the `cloud-benchmarking-workflow.yml` and `spack-deployment-workflow.yml` GitHub Actions
+- Updated MAPL3 support behind `MAPL3` preprocessor and CMake switches
 
 ### Fixed
 - Fixed stale version number and release date in `CITATION.cff` (now 14.8.0)
