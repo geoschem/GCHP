@@ -60,14 +60,38 @@ set(EXE_FILE_NAME gchp CACHE STRING
   "Default name for the GCHP executable file")
 mark_as_advanced(EXE_FILE_NAME)
 
-add_executable(${EXE_FILE_NAME}
-  GCHPctm.F90
-)
-target_link_libraries(${EXE_FILE_NAME}
-  PUBLIC
-  GCHP_GridComp
-  ${CMAKE_DL_LIBS}
-)
+if(MAPL3)
+  # MAPL3 (in development): gridded components are loaded at run time as
+  # shared libraries, so the executable links only MAPL and depends on them
+  add_executable(${EXE_FILE_NAME}
+    GCHPctm.mapl3.F90
+  )
+  target_compile_definitions(${EXE_FILE_NAME} PRIVATE MAPL3)
+  target_link_libraries(${EXE_FILE_NAME}
+    PUBLIC
+    MAPL
+    ${CMAKE_DL_LIBS}
+  )
+  add_dependencies(${EXE_FILE_NAME}
+    GCHP_GridComp
+    GCHPctmEnv_GridComp
+    FVdycoreCubed_GridComp
+    GEOSChem_GridComp
+    MAPL.cap
+    MAPL.extdata
+    MAPL.history
+  )
+else()
+  # MAPL2
+  add_executable(${EXE_FILE_NAME}
+    GCHPctm.F90
+  )
+  target_link_libraries(${EXE_FILE_NAME}
+    PUBLIC
+    GCHP_GridComp
+    ${CMAKE_DL_LIBS}
+  )
+endif()
 set_target_properties(${EXE_FILE_NAME}
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
