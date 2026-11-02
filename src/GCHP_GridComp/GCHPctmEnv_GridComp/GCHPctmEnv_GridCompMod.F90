@@ -214,7 +214,7 @@ contains
        call logger%warning("GCHPctmEnv config: RUN_WITH_ADVCORE is false. " // &
             "FV3 is not initialized, so exports UC, VC (C-grid winds), MFX, MFY " // &
             "(mass fluxes) and CX, CY (Courant numbers) are set to zero and " // &
-            "UpwardsMassFlux is not computed. All these exports are set to zero.")
+            "UpwardsMassFlux is skipped.")
     end if
 
     call logger%debug("GCHPctmEnv_GridCompMod.F90::Initialize done")
