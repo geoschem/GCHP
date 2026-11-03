@@ -211,7 +211,7 @@ contains
     call MAPL_GridCompGetResource(gc,       &
          'CORRECT_MASS_FLUX_FOR_HUMIDITY',  &
          correct_mass_flux_for_humidity,    &
-         default=.false.,                   &
+         default=.true.,                    &
          _RC)
     if (correct_mass_flux_for_humidity) then
        call logger%info("GCHPctmEnv config: will convert moist mass flux to dry for advection")
