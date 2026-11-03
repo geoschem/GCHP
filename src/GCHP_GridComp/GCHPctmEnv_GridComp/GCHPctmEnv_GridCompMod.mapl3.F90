@@ -7,9 +7,8 @@
 ! builds.
 ! The operational (MAPL2) version is in GCHPctmEnv_GridCompMod.F90.
 !
-! TODO(MAPL3): port the MAPL2 updates not yet in this file, e.g. the separate
-! met_*_is_top_down switches for winds, mass fluxes and humidity, and the
-! UpwardsMassFlux fix.
+! TODO(MAPL3): fix the UpwardsMassFlux diagnostic (flip and sign conversion
+! currently commented out because it gave a floating invalid error).
 !------------------------------------------------------------------------------
 #ifdef MAPL3
 #include "MAPL.h"
@@ -36,7 +35,9 @@ module GCHPctmEnv_GridCompMod
 
   ! Settings from gchpctmenv.yaml
   logical :: run_with_advcore
-  logical :: meteorology_vertical_index_is_top_down
+  logical :: met_wind_is_top_down
+  logical :: met_mass_flux_is_top_down
+  logical :: met_humidity_is_top_down
   logical :: use_total_air_pressure_in_advection
   logical :: correct_mass_flux_for_humidity
   real(REAL8) :: run_dt
@@ -110,46 +111,31 @@ contains
     ! Include auto-generated code for declaring non-vector imports
 #include "GCHPctmEnv_Import___.h"
 
-    ! Look up in yaml file whether to also import mass fluxes from ExtData or derive from winds
-    call MAPL_GridCompGetResource(gc,      &
-         'IMPORT_MASS_FLUX_FROM_EXTDATA',  &
-         import_mass_flux_from_extdata,    &
-         default=.false.,                  &
-         _RC)
+    ! Look up in yaml file the vertical direction of the meteorology imports
+    ! from ExtData (MAPL3 ExtData does not flip). Level 1 is TOA if top-down.
     if (import_mass_flux_from_extdata) then
-       call logger%info("GCHPctmEnv config: will use offline mass fluxes and courant numbers")
-       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
-            short_name= 'MFXY' ,                                              &
-            units='Pa m+2 s-1',                                               &
-            typekind=ESMF_TYPEKIND_R4,                                        &
-            dims='xyz',                                                       &
-            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
-            itemtype=MAPL_STATEITEM_VECTOR,                                   &
-            standard_name='pressure_weighted_(eastward,northward)_mass_flux', &
-            state_intent=ESMF_STATEINTENT_IMPORT,                             &
-            _RC)
-       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
-            short_name= 'CXY' ,                                               &
-            units='1',                                                        &
-            typekind=ESMF_TYPEKIND_R4,                                        &
-            dims='xyz',                                                       &
-            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
-            standard_name='(eastward,northward)_accumulated_courant_number',  &
-            itemtype=MAPL_STATEITEM_VECTOR,                                   &
-            state_intent=ESMF_STATEINTENT_IMPORT,                             &
-            _RC)
+       call MAPL_GridCompGetResource(gc, 'MET_MASS_FLUX_IS_TOP_DOWN', &
+            met_mass_flux_is_top_down, default=.true., _RC)
+       if (met_mass_flux_is_top_down) then
+          call logger%info("GCHPctmEnv config: mass flux imports are top-down")
+       else
+          call logger%info("GCHPctmEnv config: mass flux imports are bottom-up")
+       end if
     else
-       call logger%info("GCHPctmEnv config: will derive mass fluxes and courant numbers from offline winds")
-       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
-            short_name= 'UV' ,                                                &
-            units='m s-1',                                                    &
-            typekind=ESMF_TYPEKIND_R4,                                        &
-            dims='xyz',                                                       &
-            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
-            itemtype=MAPL_STATEITEM_VECTOR,                                   &
-            standard_name='(eastward,northward)_wind',                        &
-            state_intent=ESMF_STATEINTENT_IMPORT,                             &
-            _RC)
+       call MAPL_GridCompGetResource(gc, 'MET_WIND_IS_TOP_DOWN', &
+            met_wind_is_top_down, default=.false., _RC)
+       if (met_wind_is_top_down) then
+          call logger%info("GCHPctmEnv config: wind imports are top-down")
+       else
+          call logger%info("GCHPctmEnv config: wind imports are bottom-up")
+       end if
+    end if
+    call MAPL_GridCompGetResource(gc, 'MET_HUMIDITY_IS_TOP_DOWN', &
+         met_humidity_is_top_down, default=.false., _RC)
+    if (met_humidity_is_top_down) then
+       call logger%info("GCHPctmEnv config: humidity imports are top-down")
+    else
+       call logger%info("GCHPctmEnv config: humidity imports are bottom-up")
     end if
 
     ! Include auto-generated code for declaring exports
@@ -183,16 +169,31 @@ contains
     _ASSERT(dt_int>0, 'RUN_DT must be present in gchpctmenv.yaml')
     run_dt = dt_int
 
-    ! Look up in yaml file whether met vertical index is top down
-    call MAPL_GridCompGetResource(gc,               &
-         'METEOROLOGY_VERTICAL_INDEX_IS_TOP_DOWN',  &
-         meteorology_vertical_index_is_top_down,    &
-         default=.false.,                           &
-         _RC)
-    if (meteorology_vertical_index_is_top_down) then
-       call logger%info("GCHPctmEnv config: meteorology vertical index is top-down")
+    ! Look up in yaml file the vertical direction of the meteorology imports
+    ! from ExtData (MAPL3 ExtData does not flip). Level 1 is TOA if top-down.
+    if (import_mass_flux_from_extdata) then
+       call MAPL_GridCompGetResource(gc, 'MET_MASS_FLUX_IS_TOP_DOWN', &
+            met_mass_flux_is_top_down, default=.true., _RC)
+       if (met_mass_flux_is_top_down) then
+          call logger%info("GCHPctmEnv config: mass flux imports are top-down")
+       else
+          call logger%info("GCHPctmEnv config: mass flux imports are bottom-up")
+       end if
     else
-       call logger%info("GCHPctmEnv config: meteorology vertical index is bottom-up")
+       call MAPL_GridCompGetResource(gc, 'MET_WIND_IS_TOP_DOWN', &
+            met_wind_is_top_down, default=.false., _RC)
+       if (met_wind_is_top_down) then
+          call logger%info("GCHPctmEnv config: wind imports are top-down")
+       else
+          call logger%info("GCHPctmEnv config: wind imports are bottom-up")
+       end if
+    end if
+    call MAPL_GridCompGetResource(gc, 'MET_HUMIDITY_IS_TOP_DOWN', &
+         met_humidity_is_top_down, default=.false., _RC)
+    if (met_humidity_is_top_down) then
+       call logger%info("GCHPctmEnv config: humidity imports are top-down")
+    else
+       call logger%info("GCHPctmEnv config: humidity imports are bottom-up")
     end if
 
     ! Look up in yaml file whether to use total or dry air pressure in advection
@@ -322,7 +323,7 @@ contains
 
        ! Compute dry edge pressures for time before advection
        call Calculate_PLE( PS1_in, is, ie, js, je, DryPLE0_out, &
-            SPHU=SPHU1_in, topDownMet=meteorology_vertical_index_is_top_down )
+            SPHU=SPHU1_in, topDownMet=met_humidity_is_top_down )
 
        ! Convert units and vertically flip
        DryPLE0_out = 100.0d0 * DryPLE0_out
@@ -330,7 +331,7 @@ contains
 
        ! Compute dry edge pressures for time after advection
        call Calculate_PLE( PS2_in, is, ie, js, je, DryPLE1_out, &
-            SPHU=SPHU2_in, topDownMet=meteorology_vertical_index_is_top_down )
+            SPHU=SPHU2_in, topDownMet=met_humidity_is_top_down )
 
        ! Convert units and vertically flip
        DryPLE1_out = 100.0d0 * DryPLE1_out
@@ -342,7 +343,7 @@ contains
     ! ewl note: come back to this since not always needed
     ! Set specific humidity export as copy of import casted to real8
     ! and vertically flip if needed
-    if ( meteorology_vertical_index_is_top_down ) then
+    if ( met_humidity_is_top_down ) then
        SPHU0_out = dble(SPHU1_in)
        SPHU0_r4_out = SPHU1_in
     else
@@ -361,7 +362,7 @@ contains
        call MAPL_StateGetPointer(import, 'CXY', &
             farrayPtr_1=CX_in, farrayPtr_2=CY_in, _RC)
 
-       if (meteorology_vertical_index_is_top_down) then
+       if (met_mass_flux_is_top_down) then
           MFX_out =  dble(MFX_in(:,:,:))
           MFY_out =  dble(MFY_in(:,:,:))
           CX_out  =  dble(CX_in(:,:,:))
@@ -373,11 +374,12 @@ contains
           CY_out  =  dble(CY_in(:,:,nlev:1:-1))
        endif
 
-       if ( correct_mass_flux_for_humidity > 0 ) then
-          ! ewl: better to use the average humidity instead?
-          MFX_out = MFX_out / ( 1.d0 - SPHU1_in )
-          MFY_out = MFY_out / ( 1.d0 - SPHU1_in )
-       endif
+     if ( correct_mass_flux_for_humidity ) then
+        ! Use SPHU0, which is top-down like the flipped mass fluxes
+        ! ewl: better to use the average humidity instead?
+        MFX_out = MFX_out / ( 1.d0 - SPHU0_out )
+        MFY_out = MFY_out / ( 1.d0 - SPHU0_out )
+     endif
 
     else
 
@@ -398,7 +400,7 @@ contains
           _VERIFY(STATUS)
 
           ! Get r8 C-grid winds from r4 A-grid, flipping as needed so level 1 is TOA
-          if (meteorology_vertical_index_is_top_down) then
+          if (met_wind_is_top_down) then
              uc_r8 = dble(UA_in)
              vc_r8 = dble(VA_in)
           else
