@@ -25,6 +25,11 @@ on:
     branches:
       - dev/*
 
+# Give the GITHUB_TOKEN read-only access; this workflow
+# authenticates with its own repository secrets instead
+permissions:
+  contents: read
+
 jobs:
   trigger_step_function:
     runs-on: ubuntu-latest # aws cli comes pre-installed
