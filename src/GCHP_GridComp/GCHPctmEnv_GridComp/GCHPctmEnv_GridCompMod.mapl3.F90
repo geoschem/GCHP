@@ -111,31 +111,46 @@ contains
     ! Include auto-generated code for declaring non-vector imports
 #include "GCHPctmEnv_Import___.h"
 
-    ! Look up in yaml file the vertical direction of the meteorology imports
-    ! from ExtData (MAPL3 ExtData does not flip). Level 1 is TOA if top-down.
+    ! Look up in yaml file whether to also import mass fluxes from ExtData or derive from winds
+    call MAPL_GridCompGetResource(gc,      &
+         'IMPORT_MASS_FLUX_FROM_EXTDATA',  &
+         import_mass_flux_from_extdata,    &
+         default=.false.,                  &
+         _RC)
     if (import_mass_flux_from_extdata) then
-       call MAPL_GridCompGetResource(gc, 'MET_MASS_FLUX_IS_TOP_DOWN', &
-            met_mass_flux_is_top_down, default=.true., _RC)
-       if (met_mass_flux_is_top_down) then
-          call logger%info("GCHPctmEnv config: mass flux imports are top-down")
-       else
-          call logger%info("GCHPctmEnv config: mass flux imports are bottom-up")
-       end if
+       call logger%info("GCHPctmEnv config: will use offline mass fluxes and courant numbers")
+       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
+            short_name= 'MFXY' ,                                              &
+            units='Pa m+2 s-1',                                               &
+            typekind=ESMF_TYPEKIND_R4,                                        &
+            dims='xyz',                                                       &
+            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
+            itemtype=MAPL_STATEITEM_VECTOR,                                   &
+            standard_name='pressure_weighted_(eastward,northward)_mass_flux', &
+            state_intent=ESMF_STATEINTENT_IMPORT,                             &
+            _RC)
+       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
+            short_name= 'CXY' ,                                               &
+            units='1',                                                        &
+            typekind=ESMF_TYPEKIND_R4,                                        &
+            dims='xyz',                                                       &
+            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
+            standard_name='(eastward,northward)_accumulated_courant_number',  &
+            itemtype=MAPL_STATEITEM_VECTOR,                                   &
+            state_intent=ESMF_STATEINTENT_IMPORT,                             &
+            _RC)
     else
-       call MAPL_GridCompGetResource(gc, 'MET_WIND_IS_TOP_DOWN', &
-            met_wind_is_top_down, default=.false., _RC)
-       if (met_wind_is_top_down) then
-          call logger%info("GCHPctmEnv config: wind imports are top-down")
-       else
-          call logger%info("GCHPctmEnv config: wind imports are bottom-up")
-       end if
-    end if
-    call MAPL_GridCompGetResource(gc, 'MET_HUMIDITY_IS_TOP_DOWN', &
-         met_humidity_is_top_down, default=.false., _RC)
-    if (met_humidity_is_top_down) then
-       call logger%info("GCHPctmEnv config: humidity imports are top-down")
-    else
-       call logger%info("GCHPctmEnv config: humidity imports are bottom-up")
+       call logger%info("GCHPctmEnv config: will derive mass fluxes and courant numbers from offline winds")
+       call MAPL_GridCompAddSpec(gridcomp=gc,                                 &
+            short_name= 'UV' ,                                                &
+            units='m s-1',                                                    &
+            typekind=ESMF_TYPEKIND_R4,                                        &
+            dims='xyz',                                                       &
+            vertical_stagger=MAPL_VERTICAL_STAGGER_CENTER,                    &
+            itemtype=MAPL_STATEITEM_VECTOR,                                   &
+            standard_name='(eastward,northward)_wind',                        &
+            state_intent=ESMF_STATEINTENT_IMPORT,                             &
+            _RC)
     end if
 
     ! Include auto-generated code for declaring exports
@@ -409,6 +424,12 @@ contains
           end if
 
           call A2D2C(U=uc_r8, V=vc_r8, npz=nlev, getC=.true.)
+
+          ! TEMPORARY test: round C-grid winds to r4 to mimic MAPL2, where
+          ! FVdycoreCubed is built without -r8 so A2D2C U/V are real4.
+          ! Remove after the MAPL2/MAPL3 mass flux comparison.
+          uc_r8 = dble(real(uc_r8, kind=r4))
+          vc_r8 = dble(real(vc_r8, kind=r4))
 
           ! Set wind exports (c-grid)
           UC_out = real(uc_r8, kind=r4)
