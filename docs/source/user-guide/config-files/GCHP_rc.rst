@@ -128,6 +128,24 @@ support them (:program:`GCHPctmEnv`).
    Leave this set at :literal:`1`', which tells FVDycore that it is
    operating as a transport model rather than a prognostic model.
 
+.. describe:: SCALE_TRACERS_BY_RESTART_DELP_DRY
+
+   Option to conserve restart file tracer mass on the first time step
+   (1 = on, 0 = off). Enable this only if using a restart file generated
+   with different meteorology, grid resolution, or spin-up time not
+   matching start time of your simulation, and you know you wish to
+   conserve restart file mass rather than initialize with the mixing
+   ratio values as is in the file.
+   If enabled, a pressure scaling is applied if the restart file
+   contains a non-zero delta dry pressure field (DELP_DRY). Advected
+   tracer mixing ratios are then scaled by the ratio of restart file
+   DELP_DRY (computed in GEOS-Chem) to the delta dry pressure from
+   meteorology in the first timestep (computed in GCHPctmEnv gridded
+   component). This scaling occurs within FV before advection is
+   applied on the first time step.
+   Please note that using this feature will introduce small differences
+   when breaking up a GCHP run in time. This is due to pressure unit
+   conversions between hPa and Pa in GEOS-Chem.
 
 .. describe:: MET_WIND_IS_TOP_DOWN
 .. describe:: MET_HUMIDITY_IS_TOP_DOWN
