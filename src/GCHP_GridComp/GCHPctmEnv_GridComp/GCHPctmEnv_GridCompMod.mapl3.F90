@@ -300,6 +300,69 @@ contains
     ! Pointers to vectors will be done conditionally later on
 #include "GCHPctmEnv_GetPointer___.h"
 
+    !--- ewl debug: track import data addresses across timesteps (BEGIN) ---
+    block
+      use iso_c_binding, only : c_loc
+      integer, parameter :: nv = 3
+      character(len=10), parameter :: vname(nv) = &
+           [character(len=10) :: 'PS1', 'SPHU1', 'OCEAN_MASK']
+      character(len=12), parameter :: vkind(nv) = &
+           [character(len=12) :: '(2D dyn)', '(3D dyn)', '(2D static)']
+      character(len=*),  parameter :: fmt = '(a,a,a,i2,a,i16,a,i16,a,l1,a,2es12.4)'
+
+      integer(ESMF_KIND_I8), save :: prev(nv) = 0
+      integer(ESMF_KIND_I8)       :: cur(nv)
+      real(ESMF_KIND_R4)          :: mm(2*nv)
+      integer(ESMF_KIND_I8), allocatable :: all_cur(:), all_prev(:)
+      real(ESMF_KIND_R4),    allocatable :: all_mm(:)
+      integer, save               :: nstep = 0
+      type(ESMF_VM)               :: dbg_vm
+      type(ESMF_Time)             :: dbg_time
+      integer                     :: dbg_pet, dbg_npet, ipet, iv, k, m
+      character(len=ESMF_MAXSTR)  :: dbg_tstr
+
+      nstep = nstep + 1
+      call ESMF_VMGetCurrent(dbg_vm, _RC)
+      call ESMF_VMGet(dbg_vm, localPet=dbg_pet, petCount=dbg_npet, _RC)
+      call ESMF_ClockGet(clock, currTime=dbg_time, _RC)
+      call ESMF_TimeGet(dbg_time, timeString=dbg_tstr, _RC)
+
+      ! This PET's addresses and min/max
+      cur(1) = transfer(c_loc(PS1_in(1,1)),        0_ESMF_KIND_I8)
+      cur(2) = transfer(c_loc(SPHU1_in(1,1,1)),    0_ESMF_KIND_I8)
+      cur(3) = transfer(c_loc(OCEAN_MASK_in(1,1)), 0_ESMF_KIND_I8)
+      mm = [ minval(PS1_in),        maxval(PS1_in),        &
+             minval(SPHU1_in),      maxval(SPHU1_in),      &
+             minval(OCEAN_MASK_in), maxval(OCEAN_MASK_in) ]
+
+      ! Gather everything onto PET 0
+      allocate(all_cur(nv*dbg_npet), all_prev(nv*dbg_npet), all_mm(2*nv*dbg_npet))
+      call ESMF_VMGather(dbg_vm, sendData=cur,  recvData=all_cur,  count=nv,   rootPet=0, _RC)
+      call ESMF_VMGather(dbg_vm, sendData=prev, recvData=all_prev, count=nv,   rootPet=0, _RC)
+      call ESMF_VMGather(dbg_vm, sendData=mm,   recvData=all_mm,   count=2*nv, rootPet=0, _RC)
+
+      ! PET 0 prints everything, grouped by variable, in PET order
+      if (dbg_pet == 0) then
+         do iv = 1, nv
+            write(*,'(a,a,1x,a,a,a,a,i3)') 'Address debug ', trim(vname(iv)), &
+                 trim(vkind(iv)), ': ', trim(dbg_tstr), ' step=', nstep
+            do ipet = 0, dbg_npet - 1
+               k = ipet*nv   + iv          ! position in all_cur / all_prev
+               m = ipet*2*nv + 2*iv - 1    ! position of min in all_mm (max is m+1)
+               write(*,fmt) '  ', trim(vname(iv)), ', pet=', ipet, &
+                    ' cur=', all_cur(k), ' prev=', all_prev(k), &
+                    ' moved=', (nstep > 1 .and. all_cur(k) /= all_prev(k)), &
+                    ' min/max=', all_mm(m), all_mm(m+1)
+            enddo
+         enddo
+         flush(6)
+      endif
+
+      prev = cur
+      deallocate(all_cur, all_prev, all_mm)
+    end block
+    !--- ewl debug (END) ---
+    
     ! Get domain dimensions
     is = lbound(PLE0_out, 1)
     ie = ubound(PLE0_out, 1)

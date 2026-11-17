@@ -16,6 +16,7 @@ category: IMPORT
  PS2        | PS2_in     | hPa        | R4       | xy   |      |          | pressure_at_surface_after_advection
  SPHU1      | SPHU1_in   | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_after_advection
  SPHU2      | SPHU2_in   | kg kg-1    | R4       | xyz  | C    |          | specific_humidity_before_advection
+ OCEAN_MASK | OCEAN_MASK_in | 1       | R4       | xy   |      |          | ocean_fraction_debug
 
 category: EXPORT
 #----------------------------------------------------------------------------------------------
