@@ -1,0 +1,177 @@
+!------------------------------------------------------------------------------
+! MAPL3 DEVELOPMENT ONLY
+!
+! This is the top-level GCHP gridded component for GCHP built with MAPL3,
+! which is in development and not supported for general use. This file is
+! compiled only if GCHP is configured with -DMAPL3=y and is NOT used in
+! standard GCHP builds.
+! The operational (MAPL2) version is in GCHP_GridCompMod.F90.
+!------------------------------------------------------------------------------
+#ifdef MAPL3
+#include "MAPL.h"
+
+module GCHP_GridCompMod
+
+  use ESMF
+  use MAPL
+  use fv_arrays_mod, only: REAL4
+  use pflogger, only: logger_t => logger
+
+  implicit none
+  private
+
+  public SetServices
+  public Initialize
+  public Run
+  public Finalize
+
+  integer,  parameter :: r4 = REAL4
+
+contains
+
+  !=============================================================================
+
+    subroutine SetServices ( GC, RC )
+
+    type(ESMF_GridComp)  :: gc  ! gridded component
+    integer, intent(out) :: rc  ! return code
+
+    integer :: status
+    class(logger_t), pointer :: logger
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%info("SetServices::GCHP_GridCompMod: starting...")
+
+    ! Register services for this component
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Initialize,  Initialize, _RC)
+    call logger%info("SetServices::GCHP_GridCompMod: 1")
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Run, Run, phase_name="run", _RC)
+    call logger%info("SetServices::GCHP_GridCompMod: 2")
+    call MAPL_GridCompSetEntryPoint(gc, ESMF_Method_Finalize, Finalize, _RC)
+    call logger%info("SetServices::GCHP_GridCompMod: complete")
+    _RETURN(_SUCCESS)
+
+  end subroutine SetServices
+
+  !=============================================================================
+
+  subroutine Initialize( GC, IMPORT, EXPORT, CLOCK, RC )
+
+    type(ESMF_GridComp):: gc   ! composite gridded component
+    type(ESMF_State) :: import ! import state
+    type(ESMF_State) :: export ! export state
+    type(ESMF_Clock) :: clock  ! the clock
+    integer, intent(out) :: rc ! Error code, 0 all is well
+
+    integer :: status
+    class(logger_t), pointer :: logger
+    character(len=:), allocatable :: gchp_file
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%info("Initialize::GCHP_GridCompMod: starting...")
+
+    call logger%info("Initialize::GCHP_GridCompMod: complete")
+    _RETURN(_SUCCESS)
+
+  end subroutine Initialize
+
+  !=============================================================================
+
+  subroutine Run( GC, IMPORT, EXPORT, CLOCK, RC )
+
+    type(ESMF_GridComp):: gc   ! composite gridded component
+    type(ESMF_State) :: import ! import state
+    type(ESMF_State) :: export ! export state
+    type(ESMF_Clock) :: clock  ! the clock
+    integer, intent(out) :: rc ! Error code, 0 all is well
+
+    integer :: status
+    class(logger_t), pointer :: logger
+    type(ESMF_GRID) :: esmfgrid
+    type(ESMF_HConfig) :: hconfig
+    real(r4), pointer :: lats(:,:), lons(:,:), temp2d(:,:)
+
+    logical :: child_present
+
+    call MAPL_GridCompGet(gc, grid=esmfgrid, hconfig=hconfig, logger=logger, _RC)
+    call logger%info("Run::GCHP_GridCompMod: starting...")
+
+    call ESMF_GridValidate(esmfgrid, _RC) ! ewl: do we need this?
+
+    ! Run GCHPctmEnv gridcomp
+    child_present = has_child(gc, 'GCHPctmEnv', _RC)
+    if (child_present) &
+       call MAPL_GridCompRunChild(gc, 'GCHPctmEnv', phase_name='run', _RC)
+
+    ! Run AdvCore gridcomp
+    child_present = has_child(gc, 'AdvCore', _RC)
+    if (child_present) &
+       call MAPL_GridCompRunChild(gc, 'AdvCore', phase_name='run', _RC)
+
+    ! Run GEOS-Chem gridcomp
+    child_present = has_child(gc, 'GEOSChem', _RC)
+    if (child_present) &
+       call MAPL_GridCompRunChild(gc, 'GEOSChem', phase_name='run', _RC)
+
+    call logger%info("Run::GCHP_GridCompMod: complete")
+
+    _RETURN(_SUCCESS)
+
+  contains
+
+    logical function has_child(gc, child_name, rc)
+      type(ESMF_GridComp), intent(inout) :: gc
+      character(*), intent(in) :: child_name
+      integer, optional, intent(out) :: rc
+
+      integer :: status, n, i
+      character(:), allocatable :: name
+
+      call MAPL_GridCompGet(gc, num_children=n, _RC)
+      has_child = .false.
+      do i = 1, n
+         name = MAPL_GridCompGetChildName(gc, i, _RC)
+         if (name == child_name) then
+            has_child = .true.
+            exit
+         end if
+      end do
+
+      _RETURN(_SUCCESS)
+
+    end function has_child
+
+  end subroutine Run
+
+!=============================================================================
+
+  subroutine Finalize( GC, IMPORT, EXPORT, CLOCK, RC )
+
+    type(ESMF_GridComp):: gc   ! composite gridded component
+    type(ESMF_State) :: import ! import state
+    type(ESMF_State) :: export ! export state
+    type(ESMF_Clock) :: clock  ! the clock
+    integer, intent(out) :: rc ! Error code, 0 all is well
+
+    integer :: status
+    class(logger_t), pointer :: logger
+
+    call MAPL_GridCompGet(gc, logger=logger, _RC)
+    call logger%info("Finalize::GCHP_GridCompMod: starting...")
+
+    call logger%info("Finalize::GCHP_GridCompMod: complete")
+    _RETURN(ESMF_SUCCESS)
+  end subroutine Finalize
+
+!=============================================================================
+
+end module GCHP_GridCompMod
+
+subroutine GCHP_SetServices(gc, rc)
+   use ESMF
+   use GCHP_GridCompMod, only : mySetservices=>SetServices
+   type(ESMF_GridComp) :: gc
+   integer, intent(out) :: rc
+   call mySetServices(gc, rc=rc)
+end subroutine GCHP_SetServices
+#endif

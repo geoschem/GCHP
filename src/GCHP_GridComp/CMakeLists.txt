@@ -24,37 +24,23 @@ add_subdirectory(GCHPctmEnv_GridComp EXCLUDE_FROM_ALL)
 #--------------------------------
 # Create the GCHP_GridComp target
 #--------------------------------
-# MAPL2:
-add_library(GCHP_GridComp STATIC
-    GCHP_GridCompMod.F90
-)
+if(MAPL3)
 
-# For MAPL3 (in development)
-#add_library(GCHP_GridComp SHARED
-#    GCHP_GridCompMod.F90
-#)
+  # MAPL3 (in development): shared library loaded at run time by MAPL3
+  esma_set_this(OVERRIDE GCHP_GridComp)
+  esma_add_library(${this}
+    SRCS GCHP_GridCompMod.mapl3.F90
+    DEPENDENCIES MAPL fvdycore   # fvdycore only for fv_arrays_mod
+    TYPE SHARED
+  )
+  target_compile_definitions(${this} PRIVATE MAPL3)
 
-#----------------------------------------------------
-# Set compile definitions and link libraries
-#----------------------------------------------------
+else()
 
-# For MAPL2:
-target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
+  # MAPL2
+  add_library(GCHP_GridComp STATIC
+      GCHP_GridCompMod.F90
+  )
+  target_link_libraries(GCHP_GridComp PUBLIC GCHPctmEnv_GridComp GCHP $<LINK_ONLY:HCOI_MAPL_ESMF>)
 
-# For MAPL3:
-#target_link_libraries(GCHP_GridComp PUBLIC
-#  GCHPctmEnv_GridComp
-#  GEOSChem_GridComp
-#  GCHP
-#  $<LINK_ONLY:HCOI_MAPL_ESMF>
-#  $<LINK_ONLY:mapl3g>
-#)
-#target_link_libraries(GCHP_GridComp INTERFACE
-#  $<LINK_ONLY:MAPL.cap3g>
-#)
-#target_include_directories(GCHP_GridComp PUBLIC
-#  $<TARGET_PROPERTY:mapl3g,INTERFACE_INCLUDE_DIRECTORIES>
-#)
-#target_include_directories(GCHP_GridComp INTERFACE
-#  $<TARGET_PROPERTY:MAPL.cap3g,INTERFACE_INCLUDE_DIRECTORIES>
-#)
+endif()

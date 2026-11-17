@@ -8,12 +8,29 @@ cmake_policy(SET CMP0079 NEW)
 
 set(OMP OFF CACHE BOOL "Switch to enable/disable OpenMP")
 
+# MAPL3 (in development): not supported for general use, and requires
+# MAPL3-compatible versions of the MAPL and FVdycoreCubed_GridComp submodules
+set(MAPL3 OFF CACHE BOOL
+  "Experimental: build with MAPL3 rather than MAPL2 (in development, not supported)"
+)
+if(MAPL3)
+  message(WARNING
+    "MAPL3 is in development and not supported for production runs. "
+    "It requires MAPL3-compatible MAPL and FVdycoreCubed_GridComp submodules."
+  )
+endif()
+
 # Add ESMA_cmake and ecbuild's module directories to the module path
-list(APPEND CMAKE_MODULE_PATH 
+list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake 
+  ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/ESMA_cmake/ecbuild/cmake
 )
+
+# MAPL3 (in development): use the FindESMF.cmake module from MAPL
+if(MAPL3)
+  list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/MAPL/cmake)
+endif()
 
 # Run directory
 set(RUNDIR "" CACHE PATH "Path(s) to run directory (semicolon separated list). Specifies install locations for gchp")
@@ -82,29 +99,36 @@ set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
 add_subdirectory(src)
 
 # Fix the "all" target so it only contains GCHP: add EXCLUDE_FROM_ALL=TRUE to every
-# GMAO target. 
-set_target_properties(
-  MAPL_cfio_r8                    GMAO_pilgrim
-  NSIDC-OSTIA_SST-ICE_blend       GEOS_PertShared
-  GEOS_PertSvecs                  Tapenade        GMAO_psas
-  GMAO_transf                     GMAO_stoch      arpack
-  lanso                           planso          post
-  post_nompi                      nc_diag_write   nc_diag_res
-  nc_diag_read                    nc_diag_cat     parpack
-  putil                           util            GMAO_gfio_r4
-  MAPL.generic MAPL.oomph MAPL MAPL.gridcomps MAPL.cap MAPL.history
-  MAPL.orbit MAPL.ExtData MAPL.griddedio GEOS_Shared
-  GMAO_hermes CICE4 GMAO_pyobs GMAO_gfio_r8 FVdycoreCubed_GridComp
-  fvdycore
-  MAPL_cfio_r4 MAPL.pfio MAPL.profiler MAPL.shared MAPL.constants
-  MAPL.base GMAO_mpeu GMAO_eu mpi0 fms_r8
+# GMAO target.
+if(MAPL3)
+  # MAPL3 (in development)
+  set_target_properties(
+    GMAO_mpeu GMAO_hermes GEOS_Shared MAPL fms_r8
+    FVdycoreCubed_GridComp fvdycore
 
-  PROPERTIES EXCLUDE_FROM_ALL TRUE
-)
+    PROPERTIES EXCLUDE_FROM_ALL TRUE
+  )
+else()
+  # MAPL2
+  set_target_properties(
+    MAPL_cfio_r8                    GMAO_pilgrim
+    NSIDC-OSTIA_SST-ICE_blend       GEOS_PertShared
+    GEOS_PertSvecs                  Tapenade        GMAO_psas
+    GMAO_transf                     GMAO_stoch      arpack
+    lanso                           planso          post
+    post_nompi                      nc_diag_write   nc_diag_res
+    nc_diag_read                    nc_diag_cat     parpack
+    putil                           util            GMAO_gfio_r4
+    MAPL.generic MAPL.oomph MAPL MAPL.gridcomps MAPL.cap MAPL.history
+    MAPL.orbit MAPL.ExtData MAPL.griddedio GEOS_Shared
+    GMAO_hermes CICE4 GMAO_pyobs GMAO_gfio_r8 FVdycoreCubed_GridComp
+    fvdycore
+    MAPL_cfio_r4 MAPL.pfio MAPL.profiler MAPL.shared MAPL.constants
+    MAPL.base GMAO_mpeu GMAO_eu mpi0 fms_r8
 
-# For MAPL3 (in development)
-# Add to above list: mapl3g MAPL.cap3g MAPL.generic3g
-# Remove from the above list: MAPL.cap MAPL.history MAPL.ExtData
+    PROPERTIES EXCLUDE_FROM_ALL TRUE
+  )
+endif()
 
 
 #target_compile_definitions(Baselibs INTERFACE 
