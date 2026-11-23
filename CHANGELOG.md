@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed stale version number and release date in `CITATION.cff` (now 14.8.0)
 - Fixed the HEMCO submodule changelog path listed at the top of `CHANGELOG.md` (the submodule is at `src/GCHP_GridComp/GEOSChem_GridComp/HEMCO/HEMCO`)
 - Fixed finalization bug in MAPL causing silent seg faults at end of GCHP runs
+- Fixed dry mass flux derivation in GCHPctmEnv when using mass flux imports
 
 ## [14.8.0] - 2026-09-15
 ### Added
